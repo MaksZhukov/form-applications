@@ -9,7 +9,7 @@ export const getApplications = async (
 ) => {
 	const [data, meta] = await Promise.all([
 		executeQuery<Application[]>({
-			query: `SELECT id, date, title, description, deadline, phone, file, comment FROM applications ${
+			query: `SELECT id, date, title, description, deadline, phone, comment FROM applications ${
 				userRole === 'admin' ? '' : 'where user_id=?'
 			} LIMIT ${limit} OFFSET ${offset}`,
 			values: userRole === 'admin' ? [] : [`${userId}`]
@@ -25,7 +25,7 @@ export const getApplications = async (
 
 export const createApplication = async (data: Omit<Application, 'id'>) => {
 	return executeQuery({
-		query: 'INSERT INTO applications(title,description,date,deadline,phone,comment,file,user_id) VALUES(?,?,?,?,?,?,?,?)',
+		query: 'INSERT INTO applications(title,description,date,deadline,phone,comment,user_id) VALUES(?,?,?,?,?,?,?)',
 		values: getTemplateValues(data)
 	});
 };

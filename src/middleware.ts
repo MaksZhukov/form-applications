@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { getUser } from './services/db/users/users';
 import { getBearerToken, verify } from './services/jwt';
 import './services/ratelimit/ratelimit';
@@ -16,7 +17,6 @@ export async function middleware(request: NextRequest) {
 		try {
 			verify(token);
 		} catch (err) {
-			console.log(err);
 			NextResponse.redirect(new URL('/login', request.url));
 		}
 		const user = await getUser({ token });

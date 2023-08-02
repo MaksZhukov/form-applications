@@ -1,6 +1,6 @@
 {
   "name": "form-applications",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,10 +16,7 @@
     "bcrypt": "^5.1.0",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
-    "express-rate-limit": "^6.8.1",
-    "express-slow-down": "^1.6.0",
     "fast-ratelimit": "^3.0.1",
-    "formidable": "^3.5.0",
     "jose": "^4.14.4",
     "jsonwebtoken": "^9.0.1",
     "mysql": "^2.18.1",

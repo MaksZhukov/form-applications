@@ -3,7 +3,6 @@ export type Application = {
 	date: string;
 	title: string;
 	description: string;
-	file: string;
 	deadline: string;
 	phone: string;
 	comment: string;
