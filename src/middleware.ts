@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 import { getUser } from './services/db/users/users';
 import { getBearerToken, verify } from './services/jwt';
-import './services/ratelimit/ratelimit';
 import hasRateLimit from './services/ratelimit/ratelimit';
 
 export async function middleware(request: NextRequest) {
