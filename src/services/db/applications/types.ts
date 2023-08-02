@@ -6,5 +6,6 @@ export type Application = {
 	deadline: string;
 	phone: string;
 	comment: string;
+    status: string;
 	user_id: number;
 };

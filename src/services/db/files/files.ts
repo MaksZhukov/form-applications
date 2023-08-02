@@ -1,17 +1,16 @@
 import executeQuery from '../db';
+import { File } from './types';
 
-export const createFiles = async (applicationId: string, names: string[]) => {
+export const createFiles = async (data: Omit<File, 'id'>[]) => {
 	return executeQuery({
-		query: `INSERT INTO files(application_id,name) VALUES${names.map(
-			(item, index) => `('${applicationId}','${item}')`
-		)}`,
-		values: names
+		query: `INSERT INTO files(name,type) VALUES${data.map((item) => `('${item.name}','${item.type}')`)}`,
+		values: []
 	});
 };
 
-export const getFiles = async (applicationIDs: number[]) => {
+export const getFilesByApplicationID = async (applicationIDs: number[]) => {
 	return executeQuery({
-		query: `SELECT * FROM files WHERE application_id in (${applicationIDs});`,
+		query: `SELECT files.id, files.name, files.type, application_id FROM files LEFT JOIN applications_files ON files.id = applications_files.file_id WHERE application_id in (${applicationIDs});`,
 		values: []
 	});
 };

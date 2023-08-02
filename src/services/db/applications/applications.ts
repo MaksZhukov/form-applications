@@ -9,7 +9,7 @@ export const getApplications = async (
 ) => {
 	const [data, meta] = await Promise.all([
 		executeQuery<Application[]>({
-			query: `SELECT id, date, title, description, deadline, phone, comment FROM applications ${
+			query: `SELECT id, date, title, description, deadline, phone, comment, status FROM applications ${
 				userRole === 'admin' ? '' : 'where user_id=?'
 			} LIMIT ${limit} OFFSET ${offset}`,
 			values: userRole === 'admin' ? [] : [`${userId}`]

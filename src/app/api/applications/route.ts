@@ -1,7 +1,9 @@
 import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
 import { Application } from '@/services/db/applications/types';
-import { createFiles, getFiles } from '@/services/db/files/files';
+import { createApplicationsFiles } from '@/services/db/applicationsFiles/applicationsFiles';
+import { ApplicationFile } from '@/services/db/applicationsFiles/types';
+import { createFiles, getFilesByApplicationID } from '@/services/db/files/files';
 import { File } from '@/services/db/files/types';
 import { UserRole } from '@/services/db/users/types';
 import { getBearerToken, verify } from '@/services/jwt';
@@ -31,12 +33,12 @@ export async function GET(request: NextRequest) {
 		);
 
 		const ids = (data as Application[]).map((item) => item.id);
-		const files = await getFiles(ids);
+		const files = await getFilesByApplicationID(ids);
 		const dataWithFiles: ApiApplication[] = (data as Application[]).map((item) => ({
 			...item,
-			files: (files as File[])
+			files: (files as (File & ApplicationFile)[])
 				.filter((file) => file.application_id === item.id)
-				.map(({ id, name }) => ({ id, name }))
+				.map(({ id, name, type }) => ({ id, name, type }))
 		}));
 		const result = { data: dataWithFiles, meta };
 		setDataToCacheStore(token + request.nextUrl.href, result);
@@ -65,6 +67,7 @@ export async function POST(request: NextRequest) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 	let applicationId;
+	let filesIDS = [];
 	try {
 		const { insertId } = (await createApplication({
 			title,
@@ -73,6 +76,7 @@ export async function POST(request: NextRequest) {
 			deadline,
 			phone,
 			comment,
+			status: '',
 			user_id: id as number
 		})) as any;
 		applicationId = insertId;
@@ -87,26 +91,32 @@ export async function POST(request: NextRequest) {
 		if (files.length > 10) {
 			return new NextResponse('files more than 10', { status: 400 });
 		}
-		let fileNames = [];
+		let filesData = [];
 		try {
-			fileNames = await Promise.all(
+			filesData = await Promise.all(
 				files.map(async (item) => {
 					const fileName = Date.now().toString(36) + '-' + item.name;
 					await fs.promises.writeFile(`public/uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
-					return fileName;
+					return { type: item.type, name: fileName };
 				})
 			);
 		} catch (err) {
 			//@ts-expect-error error
 			return new NextResponse(`Error with uploading: ${err.message}`, { status: 500 });
 		}
-
 		try {
-			await createFiles(applicationId, fileNames);
+			const { insertId, affectedRows } = (await createFiles(filesData)) as any;
+			filesIDS = new Array(affectedRows).fill(null).map((_, index) => insertId + index);
 		} catch (err) {
 			//@ts-expect-error error
 			return new NextResponse(`Error with inserting files: ${err.message}`, { status: 500 });
 		}
+	}
+	try {
+		await createApplicationsFiles(applicationId, filesIDS);
+	} catch (err) {
+		//@ts-expect-error error
+		return new NextResponse(`Error with inserting applications and files: ${err.message}`, { status: 500 });
 	}
 	cacheStore.clear();
 	return new NextResponse(``, { status: 200 });
