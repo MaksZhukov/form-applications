@@ -1,4 +1,4 @@
-import { cacheStore } from '@/services/cacheStore/cacheStore';
+import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
 import { Application } from '@/services/db/applications/types';
 import { createFiles, getFiles } from '@/services/db/files/files';
@@ -10,14 +10,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ApiApplication } from './types';
 
 export async function GET(request: NextRequest) {
-	const cache = cacheStore.get(request.nextUrl.href);
+	const token = getBearerToken(request) as string;
+	const cache = getDataFromCacheStore(token + request.nextUrl.href);
 	if (cache) {
 		console.log(`CACHE HIT ON ROUTE: ${request.nextUrl.href}`);
 		return NextResponse.json(cache);
 	}
 	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || 25;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
-	const token = getBearerToken(request) as string;
 	if (limit > 25) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 				.map(({ id, name }) => ({ id, name }))
 		}));
 		const result = { data: dataWithFiles, meta };
-		cacheStore.set(request.nextUrl.href, result);
+		setDataToCacheStore(token + request.nextUrl.href, result);
 		return NextResponse.json(result);
 	} catch (err) {
 		//@ts-expect-error error
