@@ -1,3 +1,5 @@
+import { DATE_PATTERN } from '@/app/constants';
+import { API_LIMIT_ITEMS } from '@/constants';
 import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
 import { Application } from '@/services/db/applications/types';
@@ -18,14 +20,14 @@ export async function GET(request: NextRequest) {
 		console.log(`CACHE HIT ON ROUTE: ${request.nextUrl.href}`);
 		return NextResponse.json(cache);
 	}
-	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || 25;
+	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
-	if (limit > 25) {
+	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
 	try {
 		const {
-			payload: { id, role }
+			payload: { id, role },
 		} = await verify(token);
 		const { data, meta } = await getApplications(
 			{ userId: id as number, userRole: role as UserRole },
@@ -38,7 +40,7 @@ export async function GET(request: NextRequest) {
 			...item,
 			files: (files as (File & ApplicationFile)[])
 				.filter((file) => file.application_id === item.id)
-				.map(({ id, name, type }) => ({ id, name, type }))
+				.map(({ id, name, type }) => ({ id, name, type })),
 		}));
 		const result = { data: dataWithFiles, meta };
 		setDataToCacheStore(token + request.nextUrl.href, result);
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	const {
-		payload: { id }
+		payload: { id },
 	} = await verify(getBearerToken(request) as string);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
@@ -60,16 +62,23 @@ export async function POST(request: NextRequest) {
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
 	const comment = formData.get('comment') as string;
+	const name = formData.get('name') as string;
+	const email = formData.get('email') as string;
 
 	const files = Array.from(formData.values()).filter((item) => typeof item === 'object') as Blob[];
 
 	if (!title || !description || !date || !deadline || !phone || !comment) {
 		return new NextResponse('required fields', { status: 400 });
 	}
+
+	if (!date.match(DATE_PATTERN) || !deadline.match(DATE_PATTERN)) {
+		return new NextResponse('validate fields', { status: 400 });
+	}
+
 	let applicationId;
 	let filesIDS = [];
 	try {
-		const { insertId } = (await createApplication({
+		const { insertId, ...rest } = (await createApplication({
 			title,
 			description,
 			date,
@@ -77,7 +86,9 @@ export async function POST(request: NextRequest) {
 			phone,
 			comment,
 			status: '',
-			user_id: id as number
+			name,
+			email,
+			user_id: id as number,
 		})) as any;
 		applicationId = insertId;
 	} catch (err) {
