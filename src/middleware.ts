@@ -8,6 +8,7 @@ export async function middleware(request: NextRequest) {
 		return new NextResponse('Too Many Requests', { status: 429 });
 	}
 	const token = getBearerToken(request);
+
 	if (request.nextUrl.pathname.startsWith('/api/applications')) {
 		if (!token) {
 			return NextResponse.redirect(new URL('/login', request.url));

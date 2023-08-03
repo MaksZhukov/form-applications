@@ -1,3 +1,4 @@
+import { API_LIMIT_ITEMS } from '@/constants';
 import { getTemplateValues } from '../config';
 import executeQuery from '../db';
 import { UserRole } from '../users/types';
@@ -5,7 +6,7 @@ import { Application } from './types';
 
 export const getApplications = async (
 	{ userId, userRole }: { userId: number; userRole: UserRole },
-	{ limit = 25, offset = 0 }: { limit: number; offset: number }
+	{ limit = API_LIMIT_ITEMS, offset = 0 }: { limit: number; offset: number }
 ) => {
 	const [data, meta] = await Promise.all([
 		executeQuery<Application[]>({

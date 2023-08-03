@@ -1,3 +1,4 @@
+import { API_LIMIT_ITEMS } from '@/constants';
 import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
 import { Application } from '@/services/db/applications/types';
@@ -18,9 +19,9 @@ export async function GET(request: NextRequest) {
 		console.log(`CACHE HIT ON ROUTE: ${request.nextUrl.href}`);
 		return NextResponse.json(cache);
 	}
-	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || 25;
+	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
-	if (limit > 25) {
+	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
 	try {

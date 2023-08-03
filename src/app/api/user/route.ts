@@ -8,5 +8,5 @@ export async function GET(request: NextRequest) {
 	if (!userData) {
 		return new NextResponse('wrong token', { status: 400 });
 	}
-	return NextResponse.json({ token, id: userData.id, email: userData.email, role: userData.role });
+	return NextResponse.json({ data: { token, id: userData.id, email: userData.email, role: userData.role } });
 }
