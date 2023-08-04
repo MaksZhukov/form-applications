@@ -15,7 +15,6 @@ interface Props {
 
 const Table: FC<Props> = ({ data, total, page, onChangePage, onClickMore }) => {
 	const handleClickMore = (item: ApiApplication) => () => {
-		console.log('hello');
 		onClickMore(item);
 	};
 
@@ -47,18 +46,16 @@ const Table: FC<Props> = ({ data, total, page, onChangePage, onClickMore }) => {
 									<Typography variant='medium' className='font-normal'>
 										{item.title}
 									</Typography>
-									<Typography className='font-normal text-xs'>
-										Описание. {item.description}
-									</Typography>
+									<Typography className='font-normal text-xs'>Описание. {item.description}</Typography>
 								</td>
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
-										{new Date(item.date).toLocaleDateString()}
+										{item.date}
 									</Typography>
 								</td>
 								<td className={classes}>
 									<Typography variant='small' color='blue-gray' className='font-normal'>
-										{new Date(item.deadline).toLocaleDateString()}
+										{item.deadline}
 									</Typography>
 								</td>
 								<td className={classes}>
@@ -77,16 +74,19 @@ const Table: FC<Props> = ({ data, total, page, onChangePage, onClickMore }) => {
 				</tbody>
 			</table>
 			<div className='w-full flex'>
-				<ButtonGroup variant='outlined' className='mx-auto' color='blue-gray'>
-					{new Array(countPages).fill(null).map((item, index) => (
-						<IconButton
-							key={index + 1}
-							className={page === index + 1 ? 'bg-blue-100 text-blue-gray-900' : ''}
-							onClick={onChangePage(index + 1)}>
-							{index + 1}
-						</IconButton>
-					))}
-				</ButtonGroup>
+				{countPages > 1 && (
+					<ButtonGroup variant='outlined' className='mx-auto' color='blue-gray'>
+						{new Array(countPages).fill(null).map((item, index) => (
+							<IconButton
+								key={index + 1}
+								className={page === index + 1 ? 'bg-blue-100 text-blue-gray-900' : ''}
+								onClick={onChangePage(index + 1)}
+							>
+								{index + 1}
+							</IconButton>
+						))}
+					</ButtonGroup>
+				)}
 			</div>
 		</>
 	);

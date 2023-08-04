@@ -7,5 +7,7 @@ export type Application = {
 	phone: string;
 	comment: string;
     status: string;
+	name: string;
+	email:string;
 	user_id: number;
 };
