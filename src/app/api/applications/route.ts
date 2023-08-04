@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import { DATE_PATTERN } from '@/app/constants';
->>>>>>> d7e8a5ea59a7245ba25f4b7aef0936386870550d
 import { API_LIMIT_ITEMS } from '@/constants';
 import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
@@ -11,13 +8,13 @@ import { ApplicationFile } from '@/services/db/applicationsFiles/types';
 import { createFiles, getFilesByApplicationID } from '@/services/db/files/files';
 import { File } from '@/services/db/files/types';
 import { UserRole } from '@/services/db/users/types';
-import { getBearerToken, verify } from '@/services/jwt';
+import { verify } from '@/services/jwt';
 import fs from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiApplication } from './types';
 
 export async function GET(request: NextRequest) {
-	const token = getBearerToken(request) as string;
+	const token = request.cookies.get('token')?.value as string;
 	const cache = getDataFromCacheStore(token + request.nextUrl.href);
 	if (cache) {
 		console.log(`CACHE HIT ON ROUTE: ${request.nextUrl.href}`);
@@ -30,7 +27,7 @@ export async function GET(request: NextRequest) {
 	}
 	try {
 		const {
-			payload: { id, role },
+			payload: { id, role }
 		} = await verify(token);
 		const { data, meta } = await getApplications(
 			{ userId: id as number, userRole: role as UserRole },
@@ -43,7 +40,7 @@ export async function GET(request: NextRequest) {
 			...item,
 			files: (files as (File & ApplicationFile)[])
 				.filter((file) => file.application_id === item.id)
-				.map(({ id, name, type }) => ({ id, name, type })),
+				.map(({ id, name, type }) => ({ id, name, type }))
 		}));
 		const result = { data: dataWithFiles, meta };
 		setDataToCacheStore(token + request.nextUrl.href, result);
@@ -56,8 +53,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	const {
-		payload: { id },
-	} = await verify(getBearerToken(request) as string);
+		payload: { id }
+	} = await verify(request.cookies.get('token')?.value as string);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
 	const description = formData.get('description') as string;
@@ -91,7 +88,7 @@ export async function POST(request: NextRequest) {
 			status: '',
 			name,
 			email,
-			user_id: id as number,
+			user_id: id as number
 		})) as any;
 		applicationId = insertId;
 	} catch (err) {

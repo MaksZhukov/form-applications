@@ -22,6 +22,9 @@ module.exports = withMT({
 				xl: '5rem',
 				'2xl': '6rem'
 			}
+		},
+		colors: {
+			accent: '#0097b2'
 		}
 	},
 	plugins: []

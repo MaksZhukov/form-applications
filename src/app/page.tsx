@@ -2,6 +2,7 @@
 import { API_LIMIT_ITEMS } from '@/constants';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { fetchApplications } from './api/applications';
@@ -20,19 +21,19 @@ export default function Home() {
 		staleTime: Infinity,
 		retry: 0,
 		keepPreviousData: true,
-		queryFn: () => fetchApplications((page - 1) * API_LIMIT_ITEMS),
+		queryFn: () => fetchApplications((page - 1) * API_LIMIT_ITEMS)
 	});
 
 	const {
 		data: userData,
 		isError,
 		error,
-		isLoading: isLoadingUser,
+		isLoading: isLoadingUser
 	} = useQuery({
 		queryKey: ['user'],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUser(),
+		queryFn: () => fetchUser()
 	});
 
 	useEffect(() => {
@@ -63,6 +64,11 @@ export default function Home() {
 		refetch();
 	};
 
+	const handleClickLogo = () => {
+		setIsApplication(false);
+		setApplicationData(null);
+	};
+
 	if (isLoadingUser || isError) {
 		return (
 			<div className='container flex items-center h-screen mx-auto py-4'>
@@ -74,7 +80,13 @@ export default function Home() {
 	return (
 		<div className='container mx-auto py-4'>
 			<header className='flex justify-between mb-10'>
-				<span>logo</span>{' '}
+				<Image
+					className='cursor-pointer'
+					onClick={handleClickLogo}
+					src={'/logo.png'}
+					width={200}
+					height={29}
+					alt='Logo'></Image>
 				<span className='flex'>
 					Добро пожаловать
 					<span className='text-blue-500 font-bold pl-2'>
@@ -84,7 +96,11 @@ export default function Home() {
 			</header>
 
 			{isApplication ? (
-				<Application data={applicationData} onCreated={handleCreated} onClose={handleClose}></Application>
+				<Application
+					applicationNumber={data?.data.data.length ? data?.data?.data[0].id + 1 : 1}
+					data={applicationData}
+					onCreated={handleCreated}
+					onClose={handleClose}></Application>
 			) : isLoading ? (
 				<div>
 					<Spinner className='h-12 w-12 mx-auto'></Spinner>
@@ -93,7 +109,7 @@ export default function Home() {
 				data && (
 					<>
 						{' '}
-						<Button className='mb-4' onClick={handleNewApplication}>
+						<Button className='mb-4 bg-accent' onClick={handleNewApplication}>
 							Новая задача
 						</Button>
 						<Table
@@ -101,8 +117,7 @@ export default function Home() {
 							total={data.data.meta.total}
 							onChangePage={handleChangePage}
 							onClickMore={handleClickMore}
-							page={page}
-						></Table>
+							page={page}></Table>
 					</>
 				)
 			)}

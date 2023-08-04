@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUser } from './services/db/users/users';
-import { getBearerToken, verify } from './services/jwt';
-import hasRateLimit from './services/ratelimit/ratelimit';
+import { verify } from './services/jwt';
 
 export async function middleware(request: NextRequest) {
-	// if (hasRateLimit(request)) {
-	// 	return new NextResponse('Too Many Requests', { status: 429 });
-	// }
-	const token = getBearerToken(request);
-	if (request.nextUrl.pathname.startsWith('/api/applications') || request.nextUrl.pathname.startsWith('/api/user')) {
+	const token = request.cookies.get('token')?.value;
+	if (request.nextUrl.pathname.includes('uploads')) {
 		if (!token) {
-			return new NextResponse('wrong token', { status: 401 });
+			return new NextResponse('no token', { status: 401 });
 		}
 		try {
-			verify(token);
+			await verify(token);
+		} catch (err) {
+			return new NextResponse('wrong token', { status: 401 });
+		}
+	}
+	if (request.nextUrl.pathname.startsWith('/api/applications') || request.nextUrl.pathname.startsWith('/api/user')) {
+		if (!token) {
+			return new NextResponse('no token', { status: 401 });
+		}
+		try {
+			await verify(token);
 		} catch (err) {
 			return new NextResponse('wrong token', { status: 401 });
 		}

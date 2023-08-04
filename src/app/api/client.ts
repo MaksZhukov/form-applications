@@ -1,14 +1,5 @@
 import axios from 'axios';
-import { getToken } from '../localStorage';
 
-const client = axios.create();
-
-client.interceptors.request.use((config) => {
-	const token = getToken();
-	if (token) {
-		config.headers.set('authorization', `Bearer ${getToken()}`);
-	}
-	return config;
-});
+const client = axios.create({ headers: { 'Content-Type': 'text/plain;charset=UTF-8' } });
 
 export default client;

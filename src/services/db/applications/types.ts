@@ -6,8 +6,9 @@ export type Application = {
 	deadline: string;
 	phone: string;
 	comment: string;
-    status: string;
+	status: string;
 	name: string;
-	email:string;
+	email: string;
+	created_at: string;
 	user_id: number;
 };

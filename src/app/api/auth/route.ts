@@ -14,11 +14,12 @@ export async function POST(request: NextRequest) {
 	if (!(await bcrypt.compare(password, userData.password))) {
 		return new NextResponse('wrong password', { status: 400 });
 	}
-    console.log(userData);
 	const token = await sign({ id: userData.id, email, password, role: userData.role });
 	try {
 		if (await updateUser(userData.id, { token })) {
-			return NextResponse.json({ token, id: userData.id, email: userData.email, role: userData.role });
+			const response = NextResponse.json('', { status: 200 });
+			response.cookies.set('token', token);
+			return response;
 		}
 	} catch (err) {
 		return new NextResponse('error', { status: 400 });

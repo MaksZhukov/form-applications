@@ -12,22 +12,21 @@ export const getApplications = async (
 		executeQuery<Application[]>({
 			query: `SELECT id, date, title, description, deadline, phone, comment, status, name, email FROM applications ${
 				userRole === 'admin' ? '' : 'where user_id=?'
-			} LIMIT ${limit} OFFSET ${offset}`,
-			values: userRole === 'admin' ? [] : [`${userId}`],
+			} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
+			values: userRole === 'admin' ? [] : [`${userId}`]
 		}),
 		executeQuery<[{ total: number }]>({
 			query: `SELECT COUNT(*) AS total FROM applications ${userRole === 'admin' ? '' : 'where user_id=?'}`,
-			values: userRole === 'admin' ? [] : [`${userId}`],
-		}),
+			values: userRole === 'admin' ? [] : [`${userId}`]
+		})
 	]);
 	const total = Array.isArray(meta) ? meta[0].total : 0;
 	return { data, meta: { total, offset, limit } };
 };
 
-export const createApplication = async (data: Omit<Application, 'id'>) => {
+export const createApplication = async (data: Omit<Application, 'id' | 'created_at'>) => {
 	return executeQuery({
-		query:
-			'INSERT INTO applications(title,description,date,deadline,phone,comment,status,name,email,user_id) VALUES(?,?,?,?,?,?,?,?,?,?)',
-		values: getTemplateValues(data),
+		query: 'INSERT INTO applications(title,description,date,deadline,phone,comment,status,name,email,user_id) VALUES(?,?,?,?,?,?,?,?,?,?)',
+		values: getTemplateValues(data)
 	});
 };
