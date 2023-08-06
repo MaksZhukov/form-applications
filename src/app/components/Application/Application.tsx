@@ -23,7 +23,6 @@ const Application: FC<Props> = ({ data, onClose, onCreated, applicationNumber })
 		e.preventDefault();
 		if (ref.current) {
 			const formData = new FormData(ref.current);
-			console.log(formData.get('files'));
 			debugger;
 			await mutateAsync(formData);
 			onClose();
@@ -31,7 +30,6 @@ const Application: FC<Props> = ({ data, onClose, onCreated, applicationNumber })
 		}
 	};
 	const handleClickFile = () => {
-		console.log(inputFileRef);
 		inputFileRef.current?.click();
 	};
 	return (

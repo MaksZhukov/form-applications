@@ -14,3 +14,10 @@ export const getFilesByApplicationID = async (applicationIDs: number[]) => {
 		values: []
 	});
 };
+
+export const getFileByUserId = (userId: number, fileName: string) => {
+	return executeQuery<File[]>({
+		query: `SELECT files.id, files.name from files LEFT JOIN applications_files ON files.id = applications_files.file_id LEFT JOIN applications ON applications.id = applications_files.application_id LEFT JOIN users ON users.id = applications.user_id where user_id=${userId} and files.name='${fileName}'`,
+		values: []
+	});
+};
