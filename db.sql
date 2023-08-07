@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS `applications`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `applications` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `date` varchar(50) DEFAULT NULL,
   `title` varchar(50) DEFAULT NULL,
   `description` varchar(500) DEFAULT NULL,
