@@ -2,16 +2,12 @@ import { DATE_PATTERN } from '@/app/constants';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
-import { Application } from '@/services/db/applications/types';
 import { createApplicationsFiles } from '@/services/db/applicationsFiles/applicationsFiles';
-import { ApplicationFile } from '@/services/db/applicationsFiles/types';
-import { createFiles, getFilesByApplicationID } from '@/services/db/files/files';
-import { File } from '@/services/db/files/types';
+import { createFiles } from '@/services/db/files/files';
 import { UserRole } from '@/services/db/users/types';
 import { verify } from '@/services/jwt';
 import fs from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
-import { ApiApplication } from './types';
 
 export async function GET(request: NextRequest) {
 	const token = request.cookies.get('token')?.value as string;
@@ -27,22 +23,13 @@ export async function GET(request: NextRequest) {
 	}
 	try {
 		const {
-			payload: { id, role }
+			payload: { id, role },
 		} = await verify(token);
 		const { data, meta } = await getApplications(
 			{ userId: id as number, userRole: role as UserRole },
 			{ limit, offset }
 		);
-
-		const ids = (data as Application[]).map((item) => item.id);
-		const files = await getFilesByApplicationID(ids);
-		const dataWithFiles: ApiApplication[] = (data as Application[]).map((item) => ({
-			...item,
-			files: (files as (File & ApplicationFile)[])
-				.filter((file) => file.application_id === item.id)
-				.map(({ id, name, type }) => ({ id, name, type }))
-		}));
-		const result = { data: dataWithFiles, meta };
+		const result = { data, meta };
 		setDataToCacheStore(token + request.nextUrl.href, result);
 		return NextResponse.json(result);
 	} catch (err) {
@@ -53,7 +40,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	const {
-		payload: { id }
+		payload: { id },
 	} = await verify(request.cookies.get('token')?.value as string);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
@@ -88,7 +75,7 @@ export async function POST(request: NextRequest) {
 			status: '',
 			name,
 			email,
-			user_id: id as number
+			user_id: id as number,
 		})) as any;
 		applicationId = insertId;
 	} catch (err) {
@@ -107,7 +94,7 @@ export async function POST(request: NextRequest) {
 			filesData = await Promise.all(
 				files.map(async (item) => {
 					const fileName = Date.now().toString(36) + '-' + item.name;
-					await fs.promises.writeFile(`public/uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
+					await fs.promises.writeFile(`uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
 					return { type: item.type, name: fileName };
 				})
 			);

@@ -1,6 +1,11 @@
+'user client';
+
 import { ApiApplication } from '@/app/api/applications/types';
+import { fetchUser } from '@/app/api/user';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
 const TABLE_HEAD = ['№', 'Наименование задачи', 'Дата установки задачи', 'Дедлайн задачи', 'Статус', ''];
@@ -10,12 +15,13 @@ interface Props {
 	total: number;
 	page: number;
 	onChangePage: (page: number) => () => void;
-	onClickMore: (item: ApiApplication) => void;
 }
 
-const Table: FC<Props> = ({ data, total, page, onChangePage, onClickMore }) => {
+const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
+
+	const router = useRouter();
 	const handleClickMore = (item: ApiApplication) => () => {
-		onClickMore(item);
+		router.push(`/${item.id}`);
 	};
 
 	const countPages = Math.ceil(total / API_LIMIT_ITEMS);

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
 	const {
-		data: { password, email }
+		data: { password, email },
 	} = await request.json();
 	const userData = await getUser({ email });
 	if (!userData) {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 	try {
 		if (await updateUser(userData.id, { token })) {
 			const response = NextResponse.json('', { status: 200 });
-			response.cookies.set('token', token);
+			response.cookies.set('token', token, { httpOnly: true });
 			return response;
 		}
 	} catch (err) {

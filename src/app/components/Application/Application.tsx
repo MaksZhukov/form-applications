@@ -1,104 +1,179 @@
 'user client';
 
 import { createApplication } from '@/app/api/applications';
+import { updateApplication } from '@/app/api/applications/[id]';
 import { ApiApplication } from '@/app/api/applications/types';
+import { fetchUser } from '@/app/api/user';
 import BlankIcon from '@/icons/BlankIcon';
-import { Button, Input, Textarea, Typography } from '@material-tailwind/react';
-import { useMutation } from '@tanstack/react-query';
+import { Button, Typography } from '@material-tailwind/react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { FC, FormEventHandler, useRef } from 'react';
+
 interface Props {
 	data?: ApiApplication | null;
-	applicationNumber: number;
-	onClose: () => void;
-	onCreated: () => void;
+	newApplicationId?: number;
+	onCancel: () => void;
+	onCreated?: () => void;
 }
 
-const Application: FC<Props> = ({ data, onClose, onCreated, applicationNumber }) => {
+const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated }) => {
+	const { data: userData } = useQuery(['user'], { staleTime: Infinity, retry: 0, queryFn: () => fetchUser() });
+	const isAdmin = userData?.data.data.role === 'admin';
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
 
-	const { mutateAsync } = useMutation(createApplication);
+	const updateApplicationMutation = useMutation(updateApplication);
+	const createApplicationMutation = useMutation(createApplication);
 
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		if (ref.current) {
-			const formData = new FormData(ref.current);
-			debugger;
-			await mutateAsync(formData);
-			onClose();
-			onCreated();
+			if (isAdmin && data) {
+				const formData = new FormData(ref.current);
+				await updateApplicationMutation.mutateAsync({ id: data.id, data: formData });
+			} else if (!data) {
+				const formData = new FormData(ref.current);
+				await createApplicationMutation.mutateAsync(formData);
+				onCancel();
+				if (onCreated) {
+					onCreated();
+				}
+			}
 		}
 	};
 	const handleClickFile = () => {
 		inputFileRef.current?.click();
 	};
+
 	return (
 		<form ref={ref} onSubmit={handleSubmit}>
 			<div className='flex mb-5'>
 				<Typography className='mr-10'>№</Typography>{' '}
 				<span className='border-b border-black'>
-					AM-{(data?.id || applicationNumber).toString().padStart(6, '0')}
+					AM-{(data?.id || newApplicationId || 0).toString().padStart(6, '0')}
 				</span>
 			</div>
+			{isAdmin && (
+				<div className='flex mb-5'>
+					<Typography className='w-56'>Статус</Typography>{' '}
+					<select
+						defaultValue={data?.status}
+						name='status'
+						className='flex-0.25 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+						<option value='создана' selected>
+							Создана
+						</option>
+						<option value='в работе'>В работе</option>
+						<option value='сделана'>Сделана</option>
+					</select>
+				</div>
+			)}
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Наименование задачи</Typography>{' '}
-				<Input
-					required
-					className='focus:border-accent'
-					disabled={!!data}
+				<Typography className='w-56'>Наименование задачи*</Typography>{' '}
+				<input
+					type='text'
+					disabled={!isAdmin}
 					defaultValue={data?.title}
-					name='title'></Input>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+					name='title'
+					required
+				/>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Описание задачи</Typography>{' '}
+				<Typography className='w-56'>Описание задачи*</Typography>{' '}
 				<textarea
 					name='description'
+					defaultValue={data?.description}
 					required
+					disabled={!isAdmin}
 					rows={4}
-					className='block p-2.5 w-full text-sm rounded-lg border focus:ring-blue-500 focus:border-accent focus:border-accent'></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Имя</Typography>{' '}
-				<Input required disabled={!!data} defaultValue={data?.name} name='name'></Input>
+				<Typography className='w-56'>Имя*</Typography>{' '}
+				<input
+					type='text'
+					disabled={!isAdmin}
+					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+					name='name'
+					defaultValue={data?.name}
+					required
+				/>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Телефон</Typography>{' '}
-				<Input required disabled={!!data} defaultValue={data?.phone} name='phone'></Input>
+				<Typography className='w-56'>Телефон*</Typography>{' '}
+				<input
+					type='text'
+					disabled={!isAdmin}
+					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+					name='phone'
+					defaultValue={data?.phone}
+					required
+				/>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Email</Typography>{' '}
-				<Input required disabled={!!data} defaultValue={data?.email} name='email'></Input>
+				<Typography className='w-56'>Email*</Typography>{' '}
+				<input
+					type='text'
+					disabled={!isAdmin}
+					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+					name='email'
+					defaultValue={data?.email}
+					required
+				/>
 			</div>
 
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Дата задачи</Typography>{' '}
-				<Input
+				<Typography className='w-56'>Дата задачи*</Typography>{' '}
+				<input
+					type='text'
 					placeholder='11.11.2011'
-					required
-					className='pl-4'
-					variant='standard'
-					disabled={!!data}
+					disabled={!isAdmin}
+					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
+					name='date'
 					defaultValue={data?.date || new Date().toLocaleDateString()}
-					name='date'></Input>
+					required
+				/>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-1/4'>Срок выполнения</Typography>{' '}
-				<Input
-					variant='standard'
+				<Typography className='w-56'>Срок выполнения*</Typography>{' '}
+				<input
+					type='text'
 					placeholder='11.11.2011'
-					className='pl-4'
-					required
-					disabled={!!data}
+					disabled={!isAdmin}
+					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
+					name='deadline'
 					defaultValue={data?.deadline}
-					name='deadline'></Input>
+					required
+				/>
 			</div>
 			<div className='w-2/4'>
-				<Textarea required disabled={!!data} placeholder='Комментарий' name='comment'></Textarea>
+				<textarea
+					name='comment'
+					placeholder='Комментарий'
+					required
+					defaultValue={data?.comment}
+					disabled={!isAdmin}
+					rows={4}
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 
 			<div className='flex justify-end mt-4'>
 				{data?.files ? (
-					<>Show files</>
+					<div>
+						<Typography>Прикрепленные файлы:</Typography>
+						<div>
+							{data.files.map((item, index) => (
+								<Link
+									className='font-medium text-blue-600 dark:text-blue-500 hover:underline'
+									key={item.id}
+									href={`/api/uploads/${item.name}`}>
+									Файл {index + 1}
+								</Link>
+							))}
+						</div>
+					</div>
 				) : (
 					<div className='flex items-center'>
 						<Typography className='mr-4'>Прикрепить файл</Typography>{' '}
@@ -116,14 +191,18 @@ const Application: FC<Props> = ({ data, onClose, onCreated, applicationNumber })
 					</div>
 				)}
 				<div className='flex-1'></div>
-				<Button variant='text' color='gray' className='mr-1' onClick={onClose}>
+				<Button variant='text' color='gray' className='mr-1' onClick={onCancel}>
 					{data ? 'Вернуться' : 'Отмена'}
 				</Button>
-				{!data && (
+				{!data ? (
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Отправить задачу
 					</Button>
-				)}
+				) : isAdmin ? (
+					<Button variant='outlined' className='border-accent text-accent' type='submit'>
+						Обновить задачу
+					</Button>
+				) : null}
 			</div>
 		</form>
 	);
