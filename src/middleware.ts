@@ -4,7 +4,7 @@ import { verify } from './services/jwt';
 
 export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value;
-	if (request.nextUrl.pathname.startsWith('/api/applications') || request.nextUrl.pathname.startsWith('/api/user')) {
+	if (request.nextUrl.pathname === '/api/applications' || request.nextUrl.pathname === '/api/user') {
 		if (!token) {
 			const res = new NextResponse('no token', { status: 401 });
 			res.cookies.delete('token');
@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 			return NextResponse.redirect(new URL('/', request.url));
 		}
 	}
-	if (request.nextUrl.pathname.startsWith('/api/users') && request.method === 'POST') {
+	if (request.nextUrl.pathname === '/api/users' && request.method === 'POST') {
 		if (token !== process.env.ADMIN_TOKEN) {
 			return new NextResponse('wrong token', { status: 400 });
 		}
