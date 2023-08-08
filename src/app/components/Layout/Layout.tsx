@@ -2,6 +2,7 @@
 
 import { logout } from '@/app/api/logout';
 import { fetchUser } from '@/app/api/user';
+import { getLoginTime } from '@/app/localStorage';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
@@ -15,10 +16,9 @@ interface Props {
 const Layout: FC<Props> = ({ children }) => {
 	const router = useRouter();
 	const { data, error, isError, isLoading } = useQuery({
-		queryKey: ['user'],
+		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
-		retry: 0,
-		queryFn: () => fetchUser(),
+		queryFn: () => fetchUser()
 	});
 	const { mutateAsync } = useMutation({ mutationFn: () => logout() });
 
@@ -55,12 +55,15 @@ const Layout: FC<Props> = ({ children }) => {
 					src={'/logo.png'}
 					width={300}
 					height={29}
-					alt='Logo'
-				></Image>
+					alt='Logo'></Image>
 				<span className='flex items-center'>
 					Добро пожаловать
 					<span className='text-accent font-bold pl-2'>{data?.data.data.email}</span>
-					<Button size='sm' className='ml-1 p-2 border-accent text-accent' variant='outlined' onClick={handleLogout}>
+					<Button
+						size='sm'
+						className='ml-1 p-2 border-accent text-accent'
+						variant='outlined'
+						onClick={handleLogout}>
 						Выход
 					</Button>
 				</span>

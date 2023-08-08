@@ -1,4 +1,5 @@
 'use client';
+
 import { API_LIMIT_ITEMS } from '@/constants';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
@@ -7,16 +8,17 @@ import { useState } from 'react';
 import { fetchApplications } from './api/applications';
 import Layout from './components/Layout';
 import Table from './components/Table';
+import { getLoginTime } from './localStorage';
 
 export default function Home() {
 	const router = useRouter();
 	const [page, setPage] = useState(1);
 	const { data, isLoading } = useQuery({
-		queryKey: ['application', page],
+		queryKey: ['application', getLoginTime(), page],
 		staleTime: Infinity,
 		retry: 0,
 		keepPreviousData: true,
-		queryFn: () => fetchApplications((page - 1) * API_LIMIT_ITEMS),
+		queryFn: () => fetchApplications((page - 1) * API_LIMIT_ITEMS)
 	});
 
 	const handleChangePage = (newPage: number) => () => {
@@ -45,8 +47,7 @@ export default function Home() {
 							data={data.data.data}
 							total={data.data.meta.total}
 							onChangePage={handleChangePage}
-							page={page}
-						></Table>
+							page={page}></Table>
 					</>
 				)
 			)}

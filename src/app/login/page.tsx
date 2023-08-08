@@ -6,20 +6,20 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import { login } from '../api/login';
+import { saveLoginTime } from '../localStorage';
 
 export default function Login() {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
 	const router = useRouter();
 	const { mutateAsync } = useMutation<any, any, { email: string; password: string }>({
-		mutationFn: (data) => login(data.email, data.password),
-		onSuccess: () => {
-			router.push('/');
-		}
+		mutationFn: (data) => login(data.email, data.password)
 	});
 
 	const handleSignIn = async () => {
 		await mutateAsync({ email, password });
+		saveLoginTime(new Date().getTime().toString());
+		router.push('/');
 	};
 	const handleChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
@@ -31,7 +31,9 @@ export default function Login() {
 		<main className='container mx-auto flex h-screen items-center'>
 			<div className='text-center flex-1'>
 				<Image className='m-auto' alt='Service Desk' src='/service-desk.jpg' width={500} height={500}></Image>
-				<Typography variant='h2' className="text-gray-800">Service Desk</Typography>
+				<Typography variant='h2' className='text-gray-800'>
+					Service Desk
+				</Typography>
 			</div>
 			<div className='flex-1 flex flex-col'>
 				<Image className='mx-auto mb-12' src={'/logo.png'} width={350} height={29} alt='Logo'></Image>

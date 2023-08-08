@@ -1,10 +1,8 @@
 'user client';
 
 import { ApiApplication } from '@/app/api/applications/types';
-import { fetchUser } from '@/app/api/user';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
-import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
@@ -18,7 +16,6 @@ interface Props {
 }
 
 const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
-
 	const router = useRouter();
 	const handleClickMore = (item: ApiApplication) => () => {
 		router.push(`/${item.id}`);

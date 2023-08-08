@@ -4,9 +4,10 @@ import { createApplication } from '@/app/api/applications';
 import { updateApplication } from '@/app/api/applications/[id]';
 import { ApiApplication } from '@/app/api/applications/types';
 import { fetchUser } from '@/app/api/user';
+import { getLoginTime } from '@/app/localStorage';
 import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { FC, FormEventHandler, useRef } from 'react';
 
@@ -15,10 +16,17 @@ interface Props {
 	newApplicationId?: number;
 	onCancel: () => void;
 	onCreated?: () => void;
+	onUpdated?: () => void;
 }
 
-const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated }) => {
-	const { data: userData } = useQuery(['user'], { staleTime: Infinity, retry: 0, queryFn: () => fetchUser() });
+const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, onUpdated }) => {
+	const { data: userData } = useQuery(['user', getLoginTime()], {
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUser()
+	});
+	const client = useQueryClient();
+
 	const isAdmin = userData?.data.data.role === 'admin';
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
@@ -32,6 +40,9 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 			if (isAdmin && data) {
 				const formData = new FormData(ref.current);
 				await updateApplicationMutation.mutateAsync({ id: data.id, data: formData });
+				if (onUpdated) {
+					onUpdated();
+				}
 			} else if (!data) {
 				const formData = new FormData(ref.current);
 				await createApplicationMutation.mutateAsync(formData);
@@ -40,6 +51,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 					onCreated();
 				}
 			}
+			client.refetchQueries({ queryKey: ['application', getLoginTime(), 1] });
 		}
 	};
 	const handleClickFile = () => {
@@ -73,7 +85,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 				<Typography className='w-56'>Наименование задачи*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					defaultValue={data?.title}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='title'
@@ -86,7 +98,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 					name='description'
 					defaultValue={data?.description}
 					required
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
@@ -94,7 +106,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 				<Typography className='w-56'>Имя*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='name'
 					defaultValue={data?.name}
@@ -105,7 +117,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 				<Typography className='w-56'>Телефон*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='phone'
 					defaultValue={data?.phone}
@@ -116,7 +128,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 				<Typography className='w-56'>Email*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='email'
 					defaultValue={data?.email}
@@ -129,7 +141,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 				<input
 					type='text'
 					placeholder='11.11.2011'
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
 					name='date'
 					defaultValue={data?.date || new Date().toLocaleDateString()}
@@ -141,7 +153,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 				<input
 					type='text'
 					placeholder='11.11.2011'
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
 					name='deadline'
 					defaultValue={data?.deadline}
@@ -154,7 +166,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 					placeholder='Комментарий'
 					required
 					defaultValue={data?.comment}
-					disabled={!isAdmin}
+					disabled={!isAdmin && !!data}
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
@@ -166,7 +178,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated })
 						<div>
 							{data.files.map((item, index) => (
 								<Link
-									className='font-medium text-blue-600 dark:text-blue-500 hover:underline'
+									className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
 									key={item.id}
 									href={`/api/uploads/${item.name}`}>
 									Файл {index + 1}

@@ -10,9 +10,17 @@ import Layout from '../components/Layout';
 const ApplicationPage = () => {
 	const { id } = useParams();
 	const router = useRouter();
-	const { data, isLoading } = useQuery({ queryFn: () => fetchApplication(+id) });
+	const { data, isLoading, refetch } = useQuery({
+		queryKey: [id],
+		queryFn: () => fetchApplication(+id),
+		retry: 0,
+		staleTime: Infinity
+	});
 	const handleCancel = () => {
 		router.push('/');
+	};
+	const handleUpdated = () => {
+		refetch();
 	};
 	if (isLoading) {
 		return (
@@ -23,7 +31,7 @@ const ApplicationPage = () => {
 	}
 	return (
 		<Layout>
-			<Application data={data?.data.data || null} onCancel={handleCancel}></Application>
+			<Application data={data?.data.data || null} onCancel={handleCancel} onUpdated={handleUpdated}></Application>
 		</Layout>
 	);
 };

@@ -27,7 +27,7 @@ export const getApplications = async (
 export const getApplication = (id: number, userId: number, userRole: UserRole) => {
 	return executeQuery({
 		query: `SELECT id, date, title, description, deadline, phone, comment, status, name, email FROM applications where id=? ${
-			userRole === 'admin' ? '' : 'where user_id=?'
+			userRole === 'admin' ? '' : 'and user_id=?'
 		}`,
 		values: userRole === 'admin' ? [`${id}`] : [`${id}`, `${userId}`]
 	});
