@@ -12,7 +12,7 @@ export const getUser = async (data: { [key: string]: string | number }) => {
 
 export const createUser = async (data: { email: string; password: string; role: UserRole }) => {
 	return executeQuery({
-		query: `INSERT INTO users(email, password) VALUES('${data.email}', '${data.password}', '${data.role}')`,
+		query: `INSERT INTO users(email, password, role) VALUES('${data.email}', '${data.password}', '${data.role}')`,
 		values: getTemplateValues(data)
 	});
 };
