@@ -67,7 +67,7 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 										<Typography variant='medium' className='font-normal'>
 											{item.organization_name}
 										</Typography>
-										<Typography className='font-normal text-xs'>{item.uid}</Typography>
+										<Typography className='font-normal text-xs'>УНП: {item.uid}</Typography>
 									</td>
 								)}
 								<td className={classes + ' max-w-xs'}>
