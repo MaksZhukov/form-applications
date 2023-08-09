@@ -94,11 +94,8 @@ export async function POST(request: NextRequest) {
 		try {
 			filesData = await Promise.all(
 				files.map(async (item) => {
-					const fileName = Date.now().toString(36) + '-' + item.name;
-					await fs.promises.writeFile(
-						`uploads/${slugify(fileName, { lower: true, strict: true })}`,
-						Buffer.from(await item.arrayBuffer())
-					);
+					const fileName = slugify(Date.now().toString(36) + '-' + item.name, { lower: true, strict: true });
+					await fs.promises.writeFile(`uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
 					return { type: item.type, name: fileName };
 				})
 			);
