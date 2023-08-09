@@ -61,10 +61,16 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 	return (
 		<form ref={ref} onSubmit={handleSubmit}>
 			<div className='flex mb-5'>
-				<Typography className='mr-10'>№</Typography>{' '}
-				<span className='border-b border-black'>
-					AM-{(data?.id || newApplicationId || 0).toString().padStart(6, '0')}
-				</span>
+				<div className='flex mr-20'>
+					<Typography className='mr-10'>№</Typography>{' '}
+					<span className='border-b border-black'>
+						AM-{(data?.id || newApplicationId || 0).toString().padStart(6, '0')}
+					</span>
+				</div>
+				<div className='flex'>
+					<Typography className='mr-10'>Дата создания заявки</Typography>{' '}
+					<Typography>{data?.date || new Date().toLocaleDateString()}</Typography>
+				</div>
 			</div>
 
 			<div className='flex mb-5'>
@@ -139,32 +145,21 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				/>
 			</div>
 
-			<div className='flex mb-5'>
-				<Typography className='w-56'>Дата создания заявки*</Typography>{' '}
-				<input
-					type='text'
-					readOnly
-					placeholder='11.11.2011'
-					disabled={!isAdmin && !!data}
-					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
-					name='date'
-					defaultValue={data?.date || new Date().toLocaleDateString()}
-					required
-				/>
-			</div>
-			<div className='flex mb-5'>
-				<Typography className='w-56'>Срок выполнения*</Typography>{' '}
-				<input
-					type='text'
-					placeholder='11.11.2011'
-					disabled={!isAdmin && !!data}
-					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
-					name='deadline'
-					defaultValue={data?.deadline}
-					required
-				/>
-			</div>
-			<div className='w-2/4'>
+			{isAdmin && (
+				<div className='flex mb-5'>
+					<Typography className='w-56'>Срок выполнения*</Typography>{' '}
+					<input
+						type='text'
+						placeholder='11.11.2011'
+						disabled={!isAdmin && !!data}
+						className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
+						name='deadline'
+						defaultValue={data?.deadline}
+						required
+					/>
+				</div>
+			)}
+			<div className='w-3/4'>
 				<textarea
 					name='comment'
 					placeholder='Комментарий'

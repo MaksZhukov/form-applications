@@ -32,9 +32,9 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 
 	const TABLE_HEAD = [
 		'№',
-		...(isAdmin ? ['Организация'] : []),
+		'Дата создания заявки',
 		'Наименование задачи',
-		'Дата установки задачи',
+		...(isAdmin ? ['Организация'] : []),
 		'Дедлайн задачи',
 		'Статус',
 		''
@@ -47,7 +47,7 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 					<tr>
 						{TABLE_HEAD.map((head) => (
 							<th key={head} className='border-b border-gray-100 p-3'>
-								<Typography variant='small' className='font-normal leading-none opacity-90'>
+								<Typography variant='small' className='font-bold leading-none opacity-90'>
 									{head}
 								</Typography>
 							</th>
@@ -62,14 +62,11 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 						return (
 							<tr key={item.id}>
 								<td className={classes}>AM-{item.id.toString().padStart(6, '0')}</td>
-								{isAdmin && (
-									<td className={classes + ' max-w-xs'}>
-										<Typography variant='medium' className='font-normal'>
-											{item.organization_name}
-										</Typography>
-										<Typography className='font-normal text-xs'>УНП: {item.uid}</Typography>
-									</td>
-								)}
+								<td className={classes}>
+									<Typography variant='small' className='font-normal'>
+										{item.date}
+									</Typography>
+								</td>
 								<td className={classes + ' max-w-xs'}>
 									<Typography variant='medium' className='font-normal'>
 										{item.title}
@@ -78,11 +75,14 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 										Описание. {item.description}
 									</Typography>
 								</td>
-								<td className={classes}>
-									<Typography variant='small' className='font-normal'>
-										{item.date}
-									</Typography>
-								</td>
+								{isAdmin && (
+									<td className={classes + ' max-w-xs'}>
+										<Typography variant='medium' className='font-normal'>
+											{item.organization_name}
+										</Typography>
+										<Typography className='font-normal text-xs'>УНП: {item.uid}</Typography>
+									</td>
+								)}
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
 										{item.deadline}
