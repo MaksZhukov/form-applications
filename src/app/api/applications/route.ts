@@ -8,6 +8,7 @@ import { UserRole } from '@/services/db/users/types';
 import { verify } from '@/services/jwt';
 import fs from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
+import slugify from 'slugify';
 
 export async function GET(request: NextRequest) {
 	const token = request.cookies.get('token')?.value as string;
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
 	let applicationId;
 	let filesIDS = [];
 	try {
-		const { insertId} = (await createApplication({
+		const { insertId } = (await createApplication({
 			title,
 			description,
 			date,
@@ -94,7 +95,10 @@ export async function POST(request: NextRequest) {
 			filesData = await Promise.all(
 				files.map(async (item) => {
 					const fileName = Date.now().toString(36) + '-' + item.name;
-					await fs.promises.writeFile(`uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
+					await fs.promises.writeFile(
+						`uploads/${slugify(fileName, { lower: true, strict: true })}`,
+						Buffer.from(await item.arrayBuffer())
+					);
 					return { type: item.type, name: fileName };
 				})
 			);
