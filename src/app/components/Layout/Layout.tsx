@@ -18,6 +18,7 @@ const Layout: FC<Props> = ({ children }) => {
 	const { data, error, isError, isLoading } = useQuery({
 		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
+        retry: 0,
 		queryFn: () => fetchUser()
 	});
 	const { mutateAsync } = useMutation({ mutationFn: () => logout() });

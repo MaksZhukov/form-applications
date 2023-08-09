@@ -10,7 +10,7 @@ export const getApplications = async (
 ) => {
 	const [data, meta] = await Promise.all([
 		executeQuery<Application[]>({
-			query: `SELECT id, date, title, description, deadline, status FROM applications ${
+			query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id ${
 				userRole === 'admin' ? '' : 'where user_id=?'
 			} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
 			values: userRole === 'admin' ? [] : [`${userId}`]
@@ -26,7 +26,7 @@ export const getApplications = async (
 
 export const getApplication = (id: number, userId: number, userRole: UserRole) => {
 	return executeQuery({
-		query: `SELECT id, date, title, description, deadline, phone, comment, status, name, email FROM applications where id=? ${
+		query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id where applications.id=? ${
 			userRole === 'admin' ? '' : 'and user_id=?'
 		}`,
 		values: userRole === 'admin' ? [`${id}`] : [`${id}`, `${userId}`]

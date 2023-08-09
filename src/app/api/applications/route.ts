@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 	}
 	try {
 		const {
-			payload: { id, role },
+			payload: { id, role }
 		} = await verify(token);
 		const { data, meta } = await getApplications(
 			{ userId: id as number, userRole: role as UserRole },
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	const {
-		payload: { id },
+		payload: { id }
 	} = await verify(request.cookies.get('token')?.value as string);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
 	const files = Array.from(formData.values()).filter((item) => typeof item === 'object') as Blob[];
 
-	if (!title || !description || !date || !deadline || !phone || !comment) {
+	if (!title || !description || !date || !deadline || !phone) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
@@ -65,17 +65,17 @@ export async function POST(request: NextRequest) {
 	let applicationId;
 	let filesIDS = [];
 	try {
-		const { insertId, ...rest } = (await createApplication({
+		const { insertId} = (await createApplication({
 			title,
 			description,
 			date,
 			deadline,
 			phone,
 			comment,
-			status: '',
+			status: 'В обработке',
 			name,
 			email,
-			user_id: id as number,
+			user_id: id as number
 		})) as any;
 		applicationId = insertId;
 	} catch (err) {

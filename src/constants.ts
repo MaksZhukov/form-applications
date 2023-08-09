@@ -1,1 +1,1 @@
-export const API_LIMIT_ITEMS = 3;
+export const API_LIMIT_ITEMS = 25;

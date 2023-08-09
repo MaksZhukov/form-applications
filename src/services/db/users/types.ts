@@ -6,4 +6,6 @@ export type User = {
 	password: string;
 	role: UserRole;
 	token: string;
+	organization_name: string;
+	uid: string;
 };

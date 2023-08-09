@@ -66,21 +66,25 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 					AM-{(data?.id || newApplicationId || 0).toString().padStart(6, '0')}
 				</span>
 			</div>
-			{isAdmin && (
-				<div className='flex mb-5'>
-					<Typography className='w-56'>Статус</Typography>{' '}
+
+			<div className='flex mb-5'>
+				<Typography className='w-56'>Статус</Typography>{' '}
+				{isAdmin ? (
 					<select
 						defaultValue={data?.status}
 						name='status'
 						className='flex-0.25 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-						<option value='создана' selected>
-							Создана
+						<option value='В обработке' selected>
+							В обработке
 						</option>
-						<option value='в работе'>В работе</option>
-						<option value='сделана'>Сделана</option>
+						<option value='В работе'>В работе</option>
+						<option value='Выполнена'>Выполнена</option>
 					</select>
-				</div>
-			)}
+				) : (
+					<Typography>{data?.status}</Typography>
+				)}
+			</div>
+
 			<div className='flex mb-5'>
 				<Typography className='w-56'>Наименование задачи*</Typography>{' '}
 				<input
@@ -125,21 +129,21 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				/>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-56'>Email*</Typography>{' '}
+				<Typography className='w-56'>Email</Typography>{' '}
 				<input
 					type='text'
 					disabled={!isAdmin && !!data}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='email'
 					defaultValue={data?.email}
-					required
 				/>
 			</div>
 
 			<div className='flex mb-5'>
-				<Typography className='w-56'>Дата задачи*</Typography>{' '}
+				<Typography className='w-56'>Дата создания заявки*</Typography>{' '}
 				<input
 					type='text'
+					readOnly
 					placeholder='11.11.2011'
 					disabled={!isAdmin && !!data}
 					className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
@@ -164,7 +168,6 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				<textarea
 					name='comment'
 					placeholder='Комментарий'
-					required
 					defaultValue={data?.comment}
 					disabled={!isAdmin && !!data}
 					rows={4}

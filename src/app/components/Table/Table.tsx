@@ -1,12 +1,13 @@
 'user client';
 
 import { ApiApplication } from '@/app/api/applications/types';
+import { fetchUser } from '@/app/api/user';
+import { getLoginTime } from '@/app/localStorage';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
-
-const TABLE_HEAD = ['№', 'Наименование задачи', 'Дата установки задачи', 'Дедлайн задачи', 'Статус', ''];
 
 interface Props {
 	data: ApiApplication[];
@@ -16,12 +17,28 @@ interface Props {
 }
 
 const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
+	const { data: userData } = useQuery(['user', getLoginTime()], {
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUser()
+	});
+	const isAdmin = userData?.data.data.role === 'admin';
 	const router = useRouter();
 	const handleClickMore = (item: ApiApplication) => () => {
 		router.push(`/${item.id}`);
 	};
 
 	const countPages = Math.ceil(total / API_LIMIT_ITEMS);
+
+	const TABLE_HEAD = [
+		'№',
+		...(isAdmin ? ['Организация'] : []),
+		'Наименование задачи',
+		'Дата установки задачи',
+		'Дедлайн задачи',
+		'Статус',
+		''
+	];
 
 	return (
 		<>
@@ -43,8 +60,16 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 						const classes = isLast ? 'p-3 align-baseline' : 'p-3 border-b border-accent align-baseline';
 
 						return (
-							<tr key={item.title}>
+							<tr key={item.id}>
 								<td className={classes}>AM-{item.id.toString().padStart(6, '0')}</td>
+								{isAdmin && (
+									<td className={classes + ' max-w-xs'}>
+										<Typography variant='medium' className='font-normal'>
+											{item.organization_name}
+										</Typography>
+										<Typography className='font-normal text-xs'>{item.uid}</Typography>
+									</td>
+								)}
 								<td className={classes + ' max-w-xs'}>
 									<Typography variant='medium' className='font-normal'>
 										{item.title}

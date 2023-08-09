@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
 	const name = formData.get('name') as string;
 	const email = formData.get('email') as string;
 
-	if (!title || !description || !date || !deadline || !phone || !comment) {
+	if (!title || !description || !date || !deadline || !phone) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 

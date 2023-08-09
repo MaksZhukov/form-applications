@@ -1,6 +1,6 @@
 import { getTemplateEqual, getTemplateValues } from '../config';
 import executeQuery from '../db';
-import { User, UserRole } from './types';
+import { User } from './types';
 
 export const getUser = async (data: { [key: string]: string | number }) => {
 	const res = await executeQuery<User[]>({
@@ -10,9 +10,9 @@ export const getUser = async (data: { [key: string]: string | number }) => {
 	return Array.isArray(res) ? res[0] : null;
 };
 
-export const createUser = async (data: { email: string; password: string; role: UserRole }) => {
+export const createUser = async (data: Omit<User, 'id' | 'token'>) => {
 	return executeQuery({
-		query: `INSERT INTO users(email, password, role) VALUES('${data.email}', '${data.password}', '${data.role}')`,
+		query: `INSERT INTO users(email, password, role, organization_name, uid) VALUES(?,?,?,?,?)`,
 		values: getTemplateValues(data)
 	});
 };
