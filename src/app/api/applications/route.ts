@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 	const title = formData.get('title') as string;
 	const description = formData.get('description') as string;
 	const date = formData.get('date') as string;
-	const deadline = formData.get('deadline') as string;
+	const deadline = (formData.get('deadline') || '') as string;
 	const phone = formData.get('phone') as string;
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;

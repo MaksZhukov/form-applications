@@ -34,15 +34,15 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 	const updateApplicationMutation = useMutation(updateApplication);
 	const createApplicationMutation = useMutation(createApplication);
 
-	const disabledEdit = isAdmin || !data ? false : data?.status !== 'В обработке';
+	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'В обработке';
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		if (ref.current) {
+			const formData = new FormData(ref.current);
+			if (inputFileRef.current?.files?.length === 0) {
+				formData.delete('files');
+			}
 			if ((isAdmin && data) || data?.status === 'В обработке') {
-				const formData = new FormData(ref.current);
-				if (inputFileRef.current?.files?.length === 0) {
-					formData.delete('files');
-				}
 				await updateApplicationMutation.mutateAsync({ id: data.id, data: formData });
 				if (inputFileRef.current) {
 					inputFileRef.current.value = '';
@@ -51,7 +51,6 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 					onUpdated();
 				}
 			} else if (!data) {
-				const formData = new FormData(ref.current);
 				await createApplicationMutation.mutateAsync(formData);
 				onCancel();
 				if (onCreated) {
