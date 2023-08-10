@@ -2,22 +2,41 @@ import { API_LIMIT_ITEMS } from '@/constants';
 import { getTemplateEqual, getTemplateValues } from '../config';
 import executeQuery from '../db';
 import { UserRole } from '../users/types';
-import { Application } from './types';
+import { Application, ApplicationStatus } from './types';
 
 export const getApplications = async (
-	{ userId, userRole }: { userId: number; userRole: UserRole },
+	{
+		userId,
+		userRole,
+		status,
+		organization_name
+	}: { userId: number; userRole: UserRole; status?: ApplicationStatus; organization_name?: string },
 	{ limit = API_LIMIT_ITEMS, offset = 0 }: { limit: number; offset: number }
 ) => {
+	let filters: any = {};
+	if (status) {
+		filters.status = status;
+	}
+	if (organization_name) {
+		filters.organization_name = organization_name;
+	}
+	console.log(filters);
 	const [data, meta] = await Promise.all([
 		executeQuery<Application[]>({
 			query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id ${
-				userRole === 'admin' ? '' : 'where user_id=?'
+				userRole === 'admin'
+					? `${Object.keys(filters).length ? `where ${getTemplateEqual(filters)}` : ''}`
+					: 'where user_id=?'
 			} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
-			values: userRole === 'admin' ? [] : [`${userId}`]
+			values: userRole === 'admin' ? getTemplateValues(filters) : [`${userId}`]
 		}),
 		executeQuery<[{ total: number }]>({
-			query: `SELECT COUNT(*) AS total FROM applications ${userRole === 'admin' ? '' : 'where user_id=?'}`,
-			values: userRole === 'admin' ? [] : [`${userId}`]
+			query: `SELECT COUNT(*) AS total FROM applications ${
+				userRole === 'admin'
+					? `${Object.keys(filters).length ? `where ${getTemplateEqual(filters)}` : ''}`
+					: 'where user_id=?'
+			}`,
+			values: userRole === 'admin' ? getTemplateValues(filters) : [`${userId}`]
 		})
 	]);
 	const total = Array.isArray(meta) ? meta[0].total : 0;

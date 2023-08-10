@@ -32,4 +32,19 @@ export async function middleware(request: NextRequest) {
 			return new NextResponse('wrong token', { status: 401 });
 		}
 	}
+
+	if (request.nextUrl.pathname === '/api/users' && request.method === 'GET' && token) {
+		try {
+			const {
+				payload: { role }
+			} = await verify(token);
+			if (role === 'admin') {
+				return NextResponse.next();
+			}
+		} catch (err) {
+			const res = new NextResponse('no permissions', { status: 401 });
+			res.cookies.delete('token');
+			return res;
+		}
+	}
 }

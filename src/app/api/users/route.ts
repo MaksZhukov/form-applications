@@ -1,6 +1,15 @@
-import { createUser } from '@/services/db/users/users';
+import { createUser, getUsers } from '@/services/db/users/users';
 import bcrypt from 'bcrypt';
 import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+	try {
+		const users = await getUsers();
+		return NextResponse.json({ data: users });
+	} catch (err) {
+		return new NextResponse('error getting users', { status: 500 });
+	}
+}
 
 export async function POST(request: NextRequest) {
 	const {

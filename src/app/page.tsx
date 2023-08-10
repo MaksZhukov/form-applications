@@ -1,11 +1,13 @@
 'use client';
 
 import { API_LIMIT_ITEMS } from '@/constants';
+import { ApplicationStatus } from '@/services/db/applications/types';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { fetchApplications } from './api/applications';
+import { fetchUsers } from './api/users';
 import Layout from './components/Layout';
 import Table from './components/Table';
 import { getLoginTime } from './localStorage';
@@ -13,17 +15,40 @@ import { getLoginTime } from './localStorage';
 export default function Home() {
 	const router = useRouter();
 	const [page, setPage] = useState(1);
-	const { data, isLoading } = useQuery({
-		queryKey: ['application', getLoginTime(), page],
+	const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | 'none'>('none');
+	const [selectedOrganization, setSelectedOrganization] = useState<string | 'none'>('none');
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['application', getLoginTime(), page, selectedStatus, selectedOrganization],
 		staleTime: Infinity,
 		retry: 0,
 		keepPreviousData: true,
-		queryFn: () => fetchApplications((page - 1) * API_LIMIT_ITEMS)
+		queryFn: () =>
+			fetchApplications(
+				(page - 1) * API_LIMIT_ITEMS,
+				selectedStatus === 'none' ? undefined : selectedStatus,
+				selectedOrganization === 'none' ? undefined : selectedOrganization
+			)
+	});
+
+	const { data: usersData } = useQuery({
+		queryKey: ['users', getLoginTime()],
+		staleTime: Infinity,
+		enabled: isSuccess,
+		retry: 0,
+		queryFn: () => fetchUsers()
 	});
 
 	const handleChangePage = (newPage: number) => () => {
 		setPage(newPage);
 		window.scroll(0, 0);
+	};
+
+	const handleChangeStatus = (e: ChangeEvent<HTMLSelectElement>) => {
+		setSelectedStatus(e.target.value as ApplicationStatus | 'none');
+	};
+
+	const handleChangeOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
+		setSelectedOrganization(e.target.value);
 	};
 
 	const handleClickNew = () => {
@@ -44,6 +69,11 @@ export default function Home() {
 							Новая задача
 						</Button>
 						<Table
+							users={usersData?.data.data}
+							selectedOrganization={selectedOrganization}
+							selectedStatus={selectedStatus}
+							onChangeStatus={handleChangeStatus}
+							onChangeOrganization={handleChangeOrganization}
 							data={data.data.data}
 							total={data.data.meta.total}
 							onChangePage={handleChangePage}

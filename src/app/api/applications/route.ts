@@ -2,6 +2,7 @@ import { DATE_PATTERN } from '@/app/constants';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { createApplication, getApplications } from '@/services/db/applications/applications';
+import { ApplicationStatus } from '@/services/db/applications/types';
 import { createApplicationsFiles } from '@/services/db/applicationsFiles/applicationsFiles';
 import { createFiles } from '@/services/db/files/files';
 import { UserRole } from '@/services/db/users/types';
@@ -19,6 +20,9 @@ export async function GET(request: NextRequest) {
 	}
 	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
+	const status = request.nextUrl.searchParams.get('status') as ApplicationStatus;
+	const organizationName = request.nextUrl.searchParams.get('organizationName') as string;
+
 	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
@@ -27,7 +31,7 @@ export async function GET(request: NextRequest) {
 			payload: { id, role }
 		} = await verify(token);
 		const { data, meta } = await getApplications(
-			{ userId: id as number, userRole: role as UserRole },
+			{ userId: id as number, userRole: role as UserRole, status, organization_name: organizationName },
 			{ limit, offset }
 		);
 		const result = { data, meta };

@@ -2,6 +2,13 @@ import { getTemplateEqual, getTemplateValues } from '../config';
 import executeQuery from '../db';
 import { User } from './types';
 
+export const getUsers = async () => {
+	return executeQuery<User[]>({
+		query: `SELECT id, email, organization_name FROM users`,
+		values: []
+	});
+};
+
 export const getUser = async (data: { [key: string]: string | number }) => {
 	const res = await executeQuery<User[]>({
 		query: `SELECT * FROM users where ${getTemplateEqual(data)}`,
