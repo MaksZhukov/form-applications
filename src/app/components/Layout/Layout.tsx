@@ -50,7 +50,7 @@ const Layout: FC<Props> = ({ children }) => {
 	}
 
 	return (
-		<div className='container mx-auto py-4'>
+		<div className='container mx-auto py-4 pb-12'>
 			<header className='flex justify-between mb-10'>
 				<Image
 					onClick={handleClickLogo}
