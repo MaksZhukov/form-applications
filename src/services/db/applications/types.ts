@@ -1,3 +1,5 @@
+export type ApplicationStatus = 'В обработке' | 'В работе' | 'Выполена';
+
 export type Application = {
 	id: number;
 	date: string;
@@ -6,7 +8,7 @@ export type Application = {
 	deadline: string;
 	phone: string;
 	comment: string;
-	status: string;
+	status: ApplicationStatus;
 	name: string;
 	email: string;
 	created_at: string;

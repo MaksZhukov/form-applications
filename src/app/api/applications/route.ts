@@ -55,11 +55,11 @@ export async function POST(request: NextRequest) {
 
 	const files = Array.from(formData.values()).filter((item) => typeof item === 'object') as Blob[];
 
-	if (!title || !description || !date || !deadline || !phone) {
+	if (!title || !description || !date || !phone || !name) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
-	if (!date.match(DATE_PATTERN) || !deadline.match(DATE_PATTERN)) {
+	if (!date.match(DATE_PATTERN) || (deadline && !deadline.match(DATE_PATTERN))) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
 

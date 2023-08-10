@@ -34,12 +34,17 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 	const updateApplicationMutation = useMutation(updateApplication);
 	const createApplicationMutation = useMutation(createApplication);
 
+	const disabledEdit = !((!isAdmin && !!data) || data?.status !== 'В обработке');
+
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		if (ref.current) {
-			if (isAdmin && data) {
+			if ((isAdmin && data) || data?.status === 'В обработке') {
 				const formData = new FormData(ref.current);
 				await updateApplicationMutation.mutateAsync({ id: data.id, data: formData });
+				if (inputFileRef.current) {
+					inputFileRef.current.value = '';
+				}
 				if (onUpdated) {
 					onUpdated();
 				}
@@ -58,6 +63,22 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 		inputFileRef.current?.click();
 	};
 
+	const renderPinnedFiles = (
+		<div>
+			<Typography>Прикрепленные файлы:</Typography>
+			<div>
+				{data?.files.map((item, index) => (
+					<Link
+						className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
+						key={item.id}
+						href={`/api/uploads/${item.name}`}>
+						Файл {index + 1}
+					</Link>
+				))}
+			</div>
+		</div>
+	);
+
 	return (
 		<form ref={ref} onSubmit={handleSubmit}>
 			<div className='flex mb-5'>
@@ -69,7 +90,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				</div>
 				<div className='flex'>
 					<Typography className='mr-10'>Дата создания заявки</Typography>{' '}
-					<Typography>{data?.date || new Date().toLocaleDateString()}</Typography>
+					<input readOnly name='date' defaultValue={data?.date || new Date().toLocaleDateString()}></input>
 				</div>
 			</div>
 
@@ -87,15 +108,15 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 						<option value='Выполнена'>Выполнена</option>
 					</select>
 				) : (
-					<Typography>{data?.status}</Typography>
+					<input readOnly name='status' defaultValue={data?.status || 'В обработке'}></input>
 				)}
 			</div>
 
 			<div className='flex mb-5'>
-				<Typography className='w-56'>Наименование задачи*</Typography>{' '}
+				<Typography className='w-56'>Наименование*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin && !!data}
+					disabled={disabledEdit}
 					defaultValue={data?.title}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='title'
@@ -103,12 +124,12 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				/>
 			</div>
 			<div className='flex mb-5'>
-				<Typography className='w-56'>Описание задачи*</Typography>{' '}
+				<Typography className='w-56'>Описание*</Typography>{' '}
 				<textarea
 					name='description'
 					defaultValue={data?.description}
 					required
-					disabled={!isAdmin && !!data}
+					disabled={disabledEdit}
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
@@ -116,7 +137,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				<Typography className='w-56'>Имя*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin && !!data}
+					disabled={disabledEdit}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='name'
 					defaultValue={data?.name}
@@ -127,7 +148,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				<Typography className='w-56'>Телефон*</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin && !!data}
+					disabled={disabledEdit}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='phone'
 					defaultValue={data?.phone}
@@ -138,7 +159,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				<Typography className='w-56'>Email</Typography>{' '}
 				<input
 					type='text'
-					disabled={!isAdmin && !!data}
+					disabled={disabledEdit}
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='email'
 					defaultValue={data?.email}
@@ -151,7 +172,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 					<input
 						type='text'
 						placeholder='11.11.2011'
-						disabled={!isAdmin && !!data}
+						disabled={disabledEdit}
 						className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
 						name='deadline'
 						defaultValue={data?.deadline}
@@ -164,41 +185,38 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 					name='comment'
 					placeholder='Комментарий'
 					defaultValue={data?.comment}
-					disabled={!isAdmin && !!data}
+					disabled={disabledEdit}
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 
-			<div className='flex justify-end mt-4'>
-				{data?.files ? (
-					<div>
-						<Typography>Прикрепленные файлы:</Typography>
-						<div>
-							{data.files.map((item, index) => (
-								<Link
-									className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
-									key={item.id}
-									href={`/api/uploads/${item.name}`}>
-									Файл {index + 1}
-								</Link>
-							))}
-						</div>
-					</div>
+			<div className='flex justify-end items-center mt-4'>
+				{data?.files && data?.status !== 'В обработке' ? (
+					renderPinnedFiles
 				) : (
-					<div className='flex items-center'>
-						<Typography className='mr-4'>Прикрепить файл</Typography>{' '}
-						<div onClick={handleClickFile} className='inline-block p-1 rounded-full border-gray-500 border'>
-							<BlankIcon className='text-gray-500' fontSize={25}></BlankIcon>
-							<input
-								ref={inputFileRef}
-								className='hidden'
-								accept='.jpg, .png, .jpeg, .rar, .zip, .docx, .pdf'
-								type='file'
-								name='files'
-								max={10}
-								multiple></input>
+					<>
+						<div>
+							<div className='flex items-center'>
+								<Typography className='mr-4'>
+									Прикрепить файлы(до {10 - (data?.files.length || 0)})
+								</Typography>{' '}
+								<div
+									onClick={handleClickFile}
+									className='inline-block p-1 rounded-full border-gray-500 border'>
+									<BlankIcon className='text-gray-500' fontSize={25}></BlankIcon>
+									<input
+										ref={inputFileRef}
+										className='hidden'
+										accept='.jpg, .png, .jpeg, .rar, .zip, .docx, .pdf'
+										type='file'
+										name='files'
+										max={10 - (data?.files.length || 0)}
+										multiple></input>
+								</div>
+							</div>
+							{data?.files && renderPinnedFiles}
 						</div>
-					</div>
+					</>
 				)}
 				<div className='flex-1'></div>
 				<Button variant='text' color='gray' className='mr-1' onClick={onCancel}>
@@ -208,7 +226,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Отправить задачу
 					</Button>
-				) : isAdmin ? (
+				) : isAdmin || data.status === 'В обработке' ? (
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Обновить задачу
 					</Button>

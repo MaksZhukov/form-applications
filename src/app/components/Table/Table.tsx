@@ -32,10 +32,9 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 
 	const TABLE_HEAD = [
 		'№',
-		'Дата создания заявки',
-		'Наименование задачи',
-		...(isAdmin ? ['Организация'] : []),
-		'Дедлайн задачи',
+		'Дата создания',
+		'Наименование',
+		...(isAdmin ? ['Организация', 'Дедлайн'] : []),
 		'Статус',
 		''
 	];
@@ -83,11 +82,13 @@ const Table: FC<Props> = ({ data, total, page, onChangePage }) => {
 										<Typography className='font-normal text-xs'>УНП: {item.uid}</Typography>
 									</td>
 								)}
-								<td className={classes}>
-									<Typography variant='small' className='font-normal'>
-										{item.deadline}
-									</Typography>
-								</td>
+								{isAdmin && (
+									<td className={classes}>
+										<Typography variant='small' className='font-normal'>
+											{item.deadline}
+										</Typography>
+									</td>
+								)}
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
 										{item.status}
