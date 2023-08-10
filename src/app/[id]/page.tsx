@@ -1,26 +1,32 @@
 'use client';
 
 import { Spinner } from '@material-tailwind/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../api/applications/[id]';
+import { ApiApplication } from '../api/applications/types';
+import { ApiResponse } from '../api/types';
 import Application from '../components/Application';
 import Layout from '../components/Layout';
 
 const ApplicationPage = () => {
 	const { id } = useParams();
 	const router = useRouter();
-	const { data, isLoading, refetch } = useQuery({
+	const client = useQueryClient();
+	const { data, isLoading } = useQuery({
 		queryKey: [id],
 		queryFn: () => fetchApplication(+id),
 		retry: 0,
 		staleTime: Infinity
 	});
+
 	const handleCancel = () => {
 		router.push('/');
 	};
-	const handleUpdated = () => {
-		refetch();
+	const handleUpdated = (updatedData: ApiApplication) => {
+		client.setQueryData<ApiResponse<ApiApplication>>([id], (currData) =>
+			currData ? { ...currData, data: updatedData } : currData
+		);
 	};
 	if (isLoading) {
 		return (
@@ -31,7 +37,7 @@ const ApplicationPage = () => {
 	}
 	return (
 		<Layout>
-			<Application data={data?.data.data || null} onCancel={handleCancel} onUpdated={handleUpdated}></Application>
+			<Application data={data?.data || null} onCancel={handleCancel} onUpdated={handleUpdated}></Application>
 		</Layout>
 	);
 };

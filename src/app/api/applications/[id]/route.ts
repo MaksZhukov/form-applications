@@ -1,5 +1,5 @@
 import { DATE_PATTERN } from '@/app/constants';
-import { cacheStore, getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
+import { getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
 import { getApplication, updateApplication } from '@/services/db/applications/applications';
 import { Application, ApplicationStatus } from '@/services/db/applications/types';
 import { createApplicationsFiles } from '@/services/db/applicationsFiles/applicationsFiles';
@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
 		const {
 			payload: { id: userID, role }
 		} = await verify(token);
-		const data = (await getApplication(id, userID as number, role as UserRole)) as Application[];
-		if (data[0]) {
-			const files = await getFilesByApplicationIDs([data[0].id]);
-			const result = { data: { ...data[0], files } };
+		const data = await getApplication(id, userID as number, role as UserRole);
+		if (data) {
+			const files = await getFilesByApplicationIDs([data.id]);
+			const result = { data: { ...data, files } };
 			setDataToCacheStore(token + request.nextUrl.href, result);
 			return NextResponse.json(result);
 		} else {
@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+	const token = request.cookies.get('token')?.value as string;
 	const id = parseInt(request.nextUrl.pathname.split('/')[3]);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
@@ -120,6 +121,22 @@ export async function PUT(request: NextRequest) {
 		//@ts-expect-error error
 		return new NextResponse(`Error with inserting applications and files: ${err.message}`, { status: 500 });
 	}
-	cacheStore.clear();
-	return new NextResponse(``, { status: 200 });
+	try {
+		const {
+			payload: { id: userId, role }
+		} = await verify(token);
+		const data = await getApplication(id, userId as number, role as UserRole);
+		if (data) {
+			const files = await getFilesByApplicationIDs([data.id]);
+			const result = { data: { ...data, files } };
+			setDataToCacheStore(token + request.nextUrl.href, result);
+			return NextResponse.json(result);
+		} else {
+			return new NextResponse(`not found`, { status: 400 });
+		}
+	} catch (err) {
+		if (err instanceof Error) {
+			return new NextResponse(`Error with inserting applications and files: ${err.message}`, { status: 500 });
+		}
+	}
 }

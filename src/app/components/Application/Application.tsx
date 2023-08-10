@@ -15,11 +15,10 @@ interface Props {
 	data?: ApiApplication | null;
 	newApplicationId?: number;
 	onCancel: () => void;
-	onCreated?: () => void;
-	onUpdated?: () => void;
+	onUpdated?: (data: ApiApplication) => void;
 }
 
-const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, onUpdated }) => {
+const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
 	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
@@ -30,7 +29,6 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 	const isAdmin = userData?.data.data.role === 'admin';
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
-
 	const updateApplicationMutation = useMutation(updateApplication);
 	const createApplicationMutation = useMutation(createApplication);
 
@@ -43,19 +41,19 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onCreated, o
 				formData.delete('files');
 			}
 			if ((isAdmin && data) || data?.status === 'В обработке') {
-				await updateApplicationMutation.mutateAsync({ id: data.id, data: formData });
+				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
+					id: data.id,
+					data: formData
+				});
 				if (inputFileRef.current) {
 					inputFileRef.current.value = '';
 				}
 				if (onUpdated) {
-					onUpdated();
+					onUpdated(updatedData);
 				}
 			} else if (!data) {
 				await createApplicationMutation.mutateAsync(formData);
 				onCancel();
-				if (onCreated) {
-					onCreated();
-				}
 			}
 			client.refetchQueries({ queryKey: ['application', getLoginTime(), 1] });
 		}

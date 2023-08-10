@@ -24,13 +24,15 @@ export const getApplications = async (
 	return { data, meta: { total, offset, limit } };
 };
 
-export const getApplication = (id: number, userId: number, userRole: UserRole) => {
-	return executeQuery({
+export const getApplication = async (id: number, userId: number, userRole: UserRole) => {
+	const data = await executeQuery<Application[]>({
 		query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status,applications.name, applications.phone,applications.email, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id where applications.id=? ${
 			userRole === 'admin' ? '' : 'and user_id=?'
 		}`,
 		values: userRole === 'admin' ? [`${id}`] : [`${id}`, `${userId}`]
 	});
+
+	return Array.isArray(data) ? data[0] : null;
 };
 
 export const getNewApplicationId = () => {
