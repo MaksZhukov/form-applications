@@ -18,7 +18,7 @@ const Layout: FC<Props> = ({ children }) => {
 	const { data, error, isError, isLoading } = useQuery({
 		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
-        retry: 0,
+		retry: 0,
 		queryFn: () => fetchUser()
 	});
 	const { mutateAsync } = useMutation({ mutationFn: () => logout() });
@@ -26,16 +26,18 @@ const Layout: FC<Props> = ({ children }) => {
 	useEffect(() => {
 		//@ts-expect-error error
 		if (error?.response.status === 401) {
-			router.replace('/login');
+			handleLogout();
 		}
-	}, [error, router]);
+	}, [error]);
 
 	const handleClickLogo = () => {
 		router.push('/');
 	};
 
 	const handleLogout = async () => {
-		await mutateAsync();
+		try {
+			await mutateAsync();
+		} catch (err) {}
 		router.push('/login');
 	};
 

@@ -89,7 +89,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					</span>
 				</div>
 				<div className='flex'>
-					<Typography className='mr-10'>Дата создания заявки</Typography>{' '}
+					<Typography className='mr-10'>Дата создания</Typography>{' '}
 					<input readOnly name='date' defaultValue={data?.date || new Date().toLocaleDateString()}></input>
 				</div>
 			</div>

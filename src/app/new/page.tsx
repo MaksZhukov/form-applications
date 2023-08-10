@@ -9,7 +9,7 @@ import Layout from '../components/Layout';
 
 const ApplicationPage = () => {
 	const router = useRouter();
-	const { data, isLoading } = useQuery({ queryFn: () => fetchNewApplicationId() });
+	const { data, isLoading } = useQuery({ queryKey: [], queryFn: () => fetchNewApplicationId() });
 	const handleCancel = () => {
 		router.push('/');
 	};

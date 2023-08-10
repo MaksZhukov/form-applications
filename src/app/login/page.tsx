@@ -9,6 +9,7 @@ import { login } from '../api/login';
 import { saveLoginTime } from '../localStorage';
 
 export default function Login() {
+	console.log('hello');
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
 	const router = useRouter();

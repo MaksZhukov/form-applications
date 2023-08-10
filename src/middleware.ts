@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
 	}
 	if (request.nextUrl.pathname === '/api/users' && request.method === 'POST') {
 		if (token !== process.env.ADMIN_TOKEN) {
-			return new NextResponse('wrong token', { status: 400 });
+			return new NextResponse('wrong token', { status: 401 });
 		}
 	}
 }
