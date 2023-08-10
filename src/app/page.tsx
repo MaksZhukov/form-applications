@@ -17,7 +17,7 @@ export default function Home() {
 	const [page, setPage] = useState(1);
 	const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | 'none'>('none');
 	const [selectedOrganization, setSelectedOrganization] = useState<string | 'none'>('none');
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryKey: ['application', getLoginTime(), page, selectedStatus, selectedOrganization],
 		staleTime: Infinity,
 		retry: 0,
@@ -33,7 +33,6 @@ export default function Home() {
 	const { data: usersData } = useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
-		enabled: isSuccess,
 		retry: 0,
 		queryFn: () => fetchUsers()
 	});

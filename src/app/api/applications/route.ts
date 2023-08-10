@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const email = formData.get('email') as string;
+	const organizationUserId = formData.get('organizationUserId') as string;
 
 	const files = Array.from(formData.values()).filter((item) => typeof item === 'object') as Blob[];
 
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
 			status: 'В обработке',
 			name,
 			email,
-			user_id: id as number
+			user_id: (organizationUserId || id) as number
 		})) as any;
 		applicationId = insertId;
 	} catch (err) {

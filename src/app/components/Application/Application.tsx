@@ -4,6 +4,7 @@ import { createApplication } from '@/app/api/applications';
 import { updateApplication } from '@/app/api/applications/[id]';
 import { ApiApplication } from '@/app/api/applications/types';
 import { fetchUser } from '@/app/api/user';
+import { fetchUsers } from '@/app/api/users';
 import { getLoginTime } from '@/app/localStorage';
 import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';
@@ -19,14 +20,22 @@ interface Props {
 }
 
 const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
-	const { data: userData } = useQuery(['user', getLoginTime()], {
+	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: () => fetchUser()
 	});
+	const isAdmin = userData?.data.data.role === 'admin';
+	const { data: usersData } = useQuery({
+		queryKey: ['users', getLoginTime()],
+		staleTime: Infinity,
+		enabled: isAdmin,
+		retry: 0,
+		queryFn: () => fetchUsers()
+	});
+
 	const client = useQueryClient();
 
-	const isAdmin = userData?.data.data.role === 'admin';
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
 	const updateApplicationMutation = useMutation(updateApplication);
@@ -94,21 +103,42 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 				</div>
 			</div>
 
-			<div className='flex mb-5'>
-				<Typography className='w-56'>Статус</Typography>{' '}
-				{isAdmin ? (
-					<select
-						defaultValue={data?.status}
-						name='status'
-						className='flex-0.25 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-						<option value='В обработке' selected>
-							В обработке
-						</option>
-						<option value='В работе'>В работе</option>
-						<option value='Выполнена'>Выполнена</option>
-					</select>
-				) : (
-					<input readOnly name='status' defaultValue={data?.status || 'В обработке'}></input>
+			<div className='flex mb-5 gap-10'>
+				<div className='flex flex-1'>
+					<Typography className='w-56'>Статус</Typography>{' '}
+					{isAdmin ? (
+						<select
+							defaultValue={data?.status}
+							name='status'
+							className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+							<option value='В обработке' selected>
+								В обработке
+							</option>
+							<option value='В работе'>В работе</option>
+							<option value='Выполнена'>Выполнена</option>
+						</select>
+					) : (
+						<input readOnly name='status' defaultValue={data?.status || 'В обработке'}></input>
+					)}
+				</div>
+				{isAdmin && usersData && (
+					<div className='flex flex-1'>
+						<Typography className='w-56'>Организация</Typography>
+						<select
+							required
+							defaultValue={
+								usersData.data.data.find((item) => item.organization_name === data?.organization_name)
+									?.id
+							}
+							name='organizationUserId'
+							className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+							{usersData.data.data.map((item) => (
+								<option key={item.id} value={item.id}>
+									{item.organization_name}
+								</option>
+							))}
+						</select>
+					</div>
 				)}
 			</div>
 
