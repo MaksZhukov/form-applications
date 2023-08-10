@@ -20,7 +20,6 @@ export const getApplications = async (
 	if (organization_name) {
 		filters.organization_name = organization_name;
 	}
-	console.log(filters);
 	const [data, meta] = await Promise.all([
 		executeQuery<Application[]>({
 			query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id ${

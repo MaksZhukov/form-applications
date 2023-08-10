@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import { fetchApplications } from './api/applications';
+import { fetchUser } from './api/user';
 import { fetchUsers } from './api/users';
 import Layout from './components/Layout';
 import Table from './components/Table';
@@ -30,9 +31,19 @@ export default function Home() {
 			)
 	});
 
+	const { data: userData } = useQuery({
+		queryKey: ['user', getLoginTime()],
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUser()
+	});
+
+	const isAdmin = userData?.data.data.role === 'admin';
+
 	const { data: usersData } = useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
+		enabled: isAdmin,
 		retry: 0,
 		queryFn: () => fetchUsers()
 	});
