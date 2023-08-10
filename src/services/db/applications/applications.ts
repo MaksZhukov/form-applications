@@ -34,7 +34,7 @@ export const getApplication = (id: number, userId: number, userRole: UserRole) =
 };
 
 export const getNewApplicationId = () => {
-	return executeQuery({ query: 'SELECT id from applications ORDER BY id LIMIT 1', values: [] });
+	return executeQuery({ query: 'SELECT id from applications ORDER BY id DESC LIMIT 1', values: [] });
 };
 
 export const createApplication = async (data: Omit<Application, 'id' | 'created_at'>) => {
