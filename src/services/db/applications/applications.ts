@@ -26,7 +26,7 @@ export const getApplications = async (
 
 export const getApplication = (id: number, userId: number, userRole: UserRole) => {
 	return executeQuery({
-		query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id where applications.id=? ${
+		query: `SELECT applications.id, applications.date, applications.title, applications.description, applications.deadline, applications.status,applications.name, applications.phone,applications.email, users.uid, users.organization_name FROM applications LEFT JOIN users ON users.id = applications.user_id where applications.id=? ${
 			userRole === 'admin' ? '' : 'and user_id=?'
 		}`,
 		values: userRole === 'admin' ? [`${id}`] : [`${id}`, `${userId}`]
@@ -44,7 +44,7 @@ export const createApplication = async (data: Omit<Application, 'id' | 'created_
 	});
 };
 
-export const updateApplication = async (id: number, data: Omit<Application, 'id' | 'created_at' | 'user_id'>) => {
+export const updateApplication = async (id: number, data: Partial<Application>) => {
 	return executeQuery({
 		query: `UPDATE applications SET ${getTemplateEqual(data, ',')} where id=${id}`,
 		values: getTemplateValues(data)

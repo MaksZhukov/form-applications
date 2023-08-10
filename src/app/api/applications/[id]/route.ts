@@ -51,7 +51,6 @@ export async function PUT(request: NextRequest) {
 	const email = formData.get('email') as string;
 
 	const files = Array.from(formData.values()).filter((item) => typeof item === 'object') as Blob[];
-	console.log(title, description, date, phone, name);
 	if (!title || !description || !date || !phone || !name) {
 		return new NextResponse('required fields', { status: 400 });
 	}
@@ -62,7 +61,7 @@ export async function PUT(request: NextRequest) {
 
 	let filesIDS = [];
 	try {
-		await updateApplication(id, {
+		const updateData = {
 			title,
 			description,
 			date,
@@ -72,12 +71,22 @@ export async function PUT(request: NextRequest) {
 			status,
 			name,
 			email
-		});
+		};
+		await updateApplication(
+			id,
+			Object.keys(updateData).reduce(
+				(prev, curr) =>
+					updateData[curr as keyof typeof updateData]
+						? { ...prev, [curr]: updateData[curr as keyof typeof updateData] }
+						: prev,
+				{} as Application
+			)
+		);
 	} catch (err) {
 		//@ts-expect-error error
 		return new NextResponse(`Error with creating application: ${err.message}`, { status: 500 });
 	}
-	if (files) {
+	if (files.length) {
 		if (files.every((item) => item.size > 5000000)) {
 			return new NextResponse('file it too large max 5mb', { status: 400 });
 		}

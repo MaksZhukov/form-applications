@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 		//@ts-expect-error error
 		return new NextResponse(`Error with creating application: ${err.message}`, { status: 500 });
 	}
-	if (files) {
+	if (files.length) {
 		if (files.every((item) => item.size > 5000000)) {
 			return new NextResponse('file it too large max 5mb', { status: 400 });
 		}
