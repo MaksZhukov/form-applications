@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.31, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: form_applications
+-- Host: localhost    Database: form_applications
 -- ------------------------------------------------------
--- Server version	8.0.29
+-- Server version	8.0.31
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18,13 +18,12 @@
 --
 -- Table structure for table `applications`
 --
-USE form_applications;
+
 DROP TABLE IF EXISTS `applications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `applications` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `date` varchar(50) DEFAULT NULL,
   `title` varchar(50) DEFAULT NULL,
   `description` varchar(500) DEFAULT NULL,
@@ -34,11 +33,12 @@ CREATE TABLE `applications` (
   `status` varchar(45) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `user_id` int NOT NULL,
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,7 +57,7 @@ CREATE TABLE `applications_files` (
   KEY `file_id_idx` (`file_id`),
   CONSTRAINT `application_id` FOREIGN KEY (`application_id`) REFERENCES `applications` (`id`),
   CONSTRAINT `file_id` FOREIGN KEY (`file_id`) REFERENCES `files` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,7 +72,7 @@ CREATE TABLE `files` (
   `name` varchar(200) NOT NULL,
   `type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,11 +87,16 @@ CREATE TABLE `users` (
   `email` varchar(50) NOT NULL,
   `password` varchar(100) NOT NULL,
   `token` varchar(300) DEFAULT NULL,
-  `role` varchar(45) DEFAULT 'regular',
+  `role` varchar(45) NOT NULL DEFAULT 'regular',
+  `organization_name` varchar(100) NOT NULL,
+  `uid` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `organization_name_UNIQUE` (`organization_name`),
+  UNIQUE KEY `organization_name` (`organization_name`),
+  UNIQUE KEY `organization_name_2` (`organization_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -103,4 +108,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-08-04 17:35:36
+-- Dump completed on 2023-08-11 10:24:57
