@@ -10,7 +10,7 @@ export const applicationSchema: ModelAttributes = {
 	updatedAt: DataTypes.DATE,
 	title: { type: DataTypes.STRING, allowNull: false },
 	description: { type: DataTypes.STRING, allowNull: false },
-	deadline: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+	deadline: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
 	phone: { type: DataTypes.STRING, defaultValue: '' },
 	comment: { type: DataTypes.STRING, defaultValue: '' },
 	name: { type: DataTypes.STRING, allowNull: false },

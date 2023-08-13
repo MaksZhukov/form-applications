@@ -140,7 +140,6 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<Typography className='mr-10'>Дата создания</Typography>{' '}
 					<input
 						readOnly
-						name='date'
 						defaultValue={
 							data?.createdAt
 								? new Date(data?.createdAt).toLocaleDateString()

@@ -46,7 +46,6 @@ export async function POST(request: NextRequest) {
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
 	const description = formData.get('description') as string;
-	const date = formData.get('date') as string;
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
 	const comment = formData.get('comment') as string;
@@ -56,11 +55,11 @@ export async function POST(request: NextRequest) {
 	const email = formData.get('email') as string;
 	const organizationUserId = formData.get('organizationUserId') as string;
 
-	if (!title || !description || !date || !phone || !name) {
+	if (!title || !description || !phone || !name) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
-	if (!date.match(DATE_PATTERN) || (deadline && !deadline.match(DATE_PATTERN))) {
+	if (deadline && !deadline.match(DATE_PATTERN)) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
 

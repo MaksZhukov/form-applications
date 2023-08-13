@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 		} = await verify(token);
 		const { ApplicationModel, OrganizationModel } = await initialize();
 		const data = await ApplicationModel.findOne({
-			where: { id, organizationId: orgId as number },
+			where: role === 'admin' ? { id } : { id, organizationId: orgId as number },
 			include: { model: OrganizationModel, attributes: ['id', 'name', 'email'] }
 		});
 		if (data) {
@@ -37,41 +37,42 @@ export async function PUT(request: NextRequest) {
 	const title = formData.get('title') as string;
 	const status = formData.get('status') as ApplicationStatus;
 	const description = formData.get('description') as string;
-	const date = formData.get('date') as string;
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const email = formData.get('email') as string;
 	const isUrgent = formData.get('isUrgent') as string;
+	const isArchived = formData.get('isArchived') as string;
 
-	if (!title || !description || !date || !phone || !name) {
+	if (!title || !description || !phone || !name) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
-	if (!date.match(DATE_PATTERN) || (deadline && !deadline.match(DATE_PATTERN))) {
+	if (deadline && !deadline.match(DATE_PATTERN)) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
+
+	console.log(deadline);
 
 	const {
 		payload: { id: orgId }
 	} = await verify(token);
 
 	const { ApplicationModel, OrganizationModel } = await initialize();
-
 	try {
 		await ApplicationModel.update(
 			omitBy(
 				{
 					title,
 					description,
-					date,
 					deadline,
 					phone,
 					comment,
 					status,
+					isArchived: Boolean(isArchived),
 					name,
-					isUrgent: !!isUrgent,
+					isUrgent: Boolean(isUrgent),
 					email
 				},
 				isNil

@@ -45,7 +45,6 @@ export const initialize = async () => {
 	FileModel = sequelize.define<Model<FileAttributes, FileAttributesCreation>>('file', fileSchema);
 
 	FileModel.belongsTo(ApplicationModel);
-	// ApplicationModel.sync({ alter: true });
 
 	return { OrganizationModel, ApplicationModel, FileModel };
 };
