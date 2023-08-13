@@ -4,10 +4,10 @@ import { Spinner } from '@material-tailwind/react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../api/applications/[id]';
-import { ApiApplication } from '../api/applications/types';
 import { ApiResponse } from '../api/types';
 import Application from '../components/Application';
 import Layout from '../components/Layout';
+import { ApplicationAttributes } from '@/db/application/types';
 
 const ApplicationPage = () => {
 	const { id } = useParams();
@@ -23,8 +23,8 @@ const ApplicationPage = () => {
 	const handleCancel = () => {
 		router.push('/');
 	};
-	const handleUpdated = (updatedData: ApiApplication) => {
-		client.setQueryData<ApiResponse<ApiApplication>>([id], (currData) =>
+	const handleUpdated = (updatedData: ApplicationAttributes) => {
+		client.setQueryData<ApiResponse<ApplicationAttributes>>([id], (currData) =>
 			currData ? { ...currData, data: updatedData } : currData
 		);
 	};

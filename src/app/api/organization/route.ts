@@ -2,7 +2,8 @@ import { initialize } from '@/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-	const token = request.cookies.get('token')?.value as string;
+	// IT NEEDS for BUILD ''
+	const token = request.cookies.get('token')?.value || '';
 	const { OrganizationModel } = await initialize();
 	const userData = (
 		await OrganizationModel.findOne({ where: { token }, attributes: ['id', 'email', 'role'] })
