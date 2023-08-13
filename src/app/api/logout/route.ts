@@ -1,4 +1,4 @@
-import { updateUser } from '@/services/db/users/users';
+import { initialize } from '@/db';
 import { verify } from '@/services/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -13,7 +13,8 @@ export async function POST(request: NextRequest) {
 		const {
 			payload: { id }
 		} = await verify(token);
-		await updateUser(id as number, { token: '' });
+		const { OrganizationModel } = await initialize();
+		await OrganizationModel.update({ token: '' }, { where: { id: id as string } });
 		const response = new NextResponse();
 		response.cookies.delete('token');
 		return response;

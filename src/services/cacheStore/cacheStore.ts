@@ -6,4 +6,6 @@ export const setDataToCacheStore = (key: string, data: any) => {
 	cacheStore.set(key, data);
 };
 
+export const clearCacheByKey = (key: string) => cacheStore.set(key, undefined);
+
 export const getDataFromCacheStore = (key: string) => cacheStore.get(key);

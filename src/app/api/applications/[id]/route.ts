@@ -1,32 +1,25 @@
 import { DATE_PATTERN } from '@/app/constants';
-import { getDataFromCacheStore, setDataToCacheStore } from '@/services/cacheStore/cacheStore';
-import { getApplication, updateApplication } from '@/services/db/applications/applications';
-import { Application, ApplicationStatus } from '@/services/db/applications/types';
-import { createApplicationsFiles } from '@/services/db/applicationsFiles/applicationsFiles';
-import { createFiles, getFilesByApplicationIDs } from '@/services/db/files/files';
-import { UserRole } from '@/services/db/users/types';
+import { initialize } from '@/db';
+import { ApplicationStatus } from '@/db/application/types';
 import { verify } from '@/services/jwt';
-import fs from 'fs';
+import isNil from 'lodash/isNil';
+import omitBy from 'lodash/omitBy';
 import { NextRequest, NextResponse } from 'next/server';
-import slugify from 'slugify';
 
 export async function GET(request: NextRequest) {
 	const id = parseInt(request.nextUrl.pathname.split('/')[3]);
 	const token = request.cookies.get('token')?.value as string;
-	const cache = getDataFromCacheStore(token + request.nextUrl.href);
-	if (cache) {
-		console.log(`CACHE HIT ON ROUTE: ${request.nextUrl.href}`);
-		return NextResponse.json(cache);
-	}
 	try {
 		const {
-			payload: { id: userID, role }
+			payload: { id: orgId, role }
 		} = await verify(token);
-		const data = await getApplication(id, userID as number, role as UserRole);
+		const { ApplicationModel, OrganizationModel } = await initialize();
+		const data = await ApplicationModel.findOne({
+			where: { id, organizationId: orgId as number },
+			include: { model: OrganizationModel, attributes: ['id', 'name', 'email'] }
+		});
 		if (data) {
-			const files = await getFilesByApplicationIDs([data.id]);
-			const result = { data: { ...data, files } };
-			setDataToCacheStore(token + request.nextUrl.href, result);
+			const result = { data };
 			return NextResponse.json(result);
 		} else {
 			return new NextResponse(`not found`, { status: 400 });
@@ -50,8 +43,8 @@ export async function PUT(request: NextRequest) {
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const email = formData.get('email') as string;
+	const isUrgent = formData.get('isUrgent') as string;
 
-	const files = Array.from(formData.values()).filter((item) => typeof item === 'object') as Blob[];
 	if (!title || !description || !date || !phone || !name) {
 		return new NextResponse('required fields', { status: 400 });
 	}
@@ -60,83 +53,39 @@ export async function PUT(request: NextRequest) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
 
-	let filesIDS = [];
+	const {
+		payload: { id: orgId }
+	} = await verify(token);
+
+	const { ApplicationModel, OrganizationModel } = await initialize();
+
 	try {
-		const updateData = {
-			title,
-			description,
-			date,
-			deadline,
-			phone,
-			comment,
-			status,
-			name,
-			email
-		};
-		await updateApplication(
-			id,
-			Object.keys(updateData).reduce(
-				(prev, curr) =>
-					updateData[curr as keyof typeof updateData]
-						? { ...prev, [curr]: updateData[curr as keyof typeof updateData] }
-						: prev,
-				{} as Application
-			)
+		await ApplicationModel.update(
+			omitBy(
+				{
+					title,
+					description,
+					date,
+					deadline,
+					phone,
+					comment,
+					status,
+					name,
+					isUrgent: !!isUrgent,
+					email
+				},
+				isNil
+			),
+			{ where: { id, organizationId: orgId as number } }
 		);
-	} catch (err) {
-		//@ts-expect-error error
-		return new NextResponse(`Error with creating application: ${err.message}`, { status: 500 });
-	}
-	if (files.length) {
-		if (files.every((item) => item.size > 5000000)) {
-			return new NextResponse('file it too large max 5mb', { status: 400 });
-		}
-		if (files.length > 10) {
-			return new NextResponse('files more than 10', { status: 400 });
-		}
-		let filesData = [];
-		try {
-			filesData = await Promise.all(
-				files.map(async (item) => {
-					const fileName = slugify(Date.now().toString(36) + '-' + item.name, { lower: true, strict: true });
-					await fs.promises.writeFile(`uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
-					return { type: item.type, name: fileName };
-				})
-			);
-		} catch (err) {
-			//@ts-expect-error error
-			return new NextResponse(`Error with uploading: ${err.message}`, { status: 500 });
-		}
-		try {
-			const { insertId, affectedRows } = (await createFiles(filesData)) as any;
-			filesIDS = new Array(affectedRows).fill(null).map((_, index) => insertId + index);
-		} catch (err) {
-			//@ts-expect-error error
-			return new NextResponse(`Error with inserting files: ${err.message}`, { status: 500 });
-		}
-	}
-	try {
-		await createApplicationsFiles(id, filesIDS);
-	} catch (err) {
-		//@ts-expect-error error
-		return new NextResponse(`Error with inserting applications and files: ${err.message}`, { status: 500 });
-	}
-	try {
-		const {
-			payload: { id: userId, role }
-		} = await verify(token);
-		const data = await getApplication(id, userId as number, role as UserRole);
-		if (data) {
-			const files = await getFilesByApplicationIDs([data.id]);
-			const result = { data: { ...data, files } };
-			setDataToCacheStore(token + request.nextUrl.href, result);
-			return NextResponse.json(result);
-		} else {
-			return new NextResponse(`not found`, { status: 400 });
-		}
+		const data = await ApplicationModel.findByPk(id, {
+			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name', 'email'] }
+		});
+
+		return NextResponse.json({ data });
 	} catch (err) {
 		if (err instanceof Error) {
-			return new NextResponse(`Error with inserting applications and files: ${err.message}`, { status: 500 });
+			return new NextResponse(`Error with updating application: ${err.message}`, { status: 500 });
 		}
 	}
 }

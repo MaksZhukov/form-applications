@@ -2,10 +2,14 @@
 
 import { createApplication } from '@/app/api/applications';
 import { updateApplication } from '@/app/api/applications/[id]';
-import { ApiApplication } from '@/app/api/applications/types';
-import { fetchUser } from '@/app/api/user';
-import { fetchUsers } from '@/app/api/users';
+import { getFiles, uploadFiles } from '@/app/api/files';
+import { fetchOrganization } from '@/app/api/organization';
+import { fetchOrganizations } from '@/app/api/organizations';
+import { ApiResponse } from '@/app/api/types';
 import { getLoginTime } from '@/app/localStorage';
+import { ApplicationAttributes } from '@/db/application/types';
+import { FileAttributes } from '@/db/files/types';
+import { OrganizationAttributes } from '@/db/organization/types';
 import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,25 +17,34 @@ import Link from 'next/link';
 import { FC, FormEventHandler, useRef } from 'react';
 
 interface Props {
-	data?: ApiApplication | null;
+	data?: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name'> }) | null;
 	newApplicationId?: number;
 	onCancel: () => void;
-	onUpdated?: (data: ApiApplication) => void;
+	onUpdated?: (data: ApplicationAttributes) => void;
 }
 
 const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
-	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
+	const { data: organizationData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUser()
+		queryFn: fetchOrganization
 	});
-	const isAdmin = userData?.data.data.role === 'admin';
-	const { data: usersData } = useQuery({
+
+	const isAdmin = organizationData?.data.role === 'admin';
+	const { data: organizations } = useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
 		enabled: isAdmin,
 		retry: 0,
-		queryFn: () => fetchUsers()
+		queryFn: () => fetchOrganizations()
+	});
+
+	const { data: files } = useQuery({
+		queryKey: ['files', data?.id],
+		queryFn: () => getFiles(data?.id as number),
+		staleTime: Infinity,
+		retry: 0,
+		enabled: !!data?.id
 	});
 
 	const client = useQueryClient();
@@ -39,29 +52,55 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
 	const updateApplicationMutation = useMutation(updateApplication);
+	const uploadFilesMutation = useMutation(uploadFiles);
 	const createApplicationMutation = useMutation(createApplication);
 
-	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'В обработке';
+	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'в обработке';
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		if (ref.current) {
 			const formData = new FormData(ref.current);
-			if (inputFileRef.current?.files?.length === 0) {
-				formData.delete('files');
-			}
-			if ((isAdmin && data) || data?.status === 'В обработке') {
+			let applicationId = data?.id;
+			if ((isAdmin && data) || data?.status === 'в обработке') {
 				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
 					id: data.id,
 					data: formData
 				});
-				if (inputFileRef.current) {
-					inputFileRef.current.value = '';
-				}
 				if (onUpdated) {
 					onUpdated(updatedData);
 				}
 			} else if (!data) {
-				await createApplicationMutation.mutateAsync(formData);
+				const {
+					data: { data: createApplication }
+				} = await createApplicationMutation.mutateAsync(formData);
+				applicationId = createApplication.id;
+			}
+
+			if (inputFileRef.current?.files?.length) {
+				const formDataFiles = new FormData();
+				for (let i = 0; i < inputFileRef.current.files.length; i++) {
+					const file = inputFileRef.current.files[i];
+					formDataFiles.append('files', file, file.name);
+					const { data: uploadedFiles } = await uploadFilesMutation.mutateAsync({
+						applicationId: applicationId as number,
+						data: formDataFiles
+					});
+
+					if (files) {
+						client.setQueryData<ApiResponse<FileAttributes[]>>(['files', data?.id], (prev) =>
+							prev
+								? {
+										...prev,
+										data: [...prev.data, ...uploadedFiles]
+								  }
+								: undefined
+						);
+					}
+				}
+				// inputFileRef.current.value = '';
+			}
+
+			if (!data) {
 				onCancel();
 			}
 			client.refetchQueries({ queryKey: ['application', getLoginTime(), 1] });
@@ -76,11 +115,11 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		<div>
 			<Typography>Прикрепленные файлы:</Typography>
 			<div>
-				{data?.files.map((item, index) => (
+				{files?.data.map((item, index) => (
 					<Link
 						className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
 						key={item.id}
-						href={`/api/uploads/${item.name}`}>
+						href={`/api/files/${item.name}`}>
 						Файл {index + 1}
 					</Link>
 				))}
@@ -99,42 +138,54 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 				</div>
 				<div className='flex'>
 					<Typography className='mr-10'>Дата создания</Typography>{' '}
-					<input readOnly name='date' defaultValue={data?.date || new Date().toLocaleDateString()}></input>
+					<input
+						readOnly
+						name='date'
+						defaultValue={
+							data?.createdAt
+								? new Date(data?.createdAt).toLocaleDateString()
+								: new Date().toLocaleDateString()
+						}></input>
 				</div>
 			</div>
 
 			<div className='flex mb-5 gap-10'>
-				<div className='flex flex-1'>
-					<Typography className='w-56'>Статус</Typography>{' '}
-					{isAdmin ? (
-						<select
-							defaultValue={data?.status}
-							name='status'
-							className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-							<option value='В обработке' selected>
-								В обработке
-							</option>
-							<option value='В работе'>В работе</option>
-							<option value='Выполнена'>Выполнена</option>
-						</select>
-					) : (
-						<input readOnly name='status' defaultValue={data?.status || 'В обработке'}></input>
-					)}
+				<div className='flex flex-1 justify-between'>
+					<div className='flex'>
+						<Typography className='w-56'>Статус</Typography>{' '}
+						{isAdmin ? (
+							<select
+								defaultValue={data?.status}
+								name='status'
+								className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								<option value='в обработке' selected>
+									В обработке
+								</option>
+								<option value='в работе'>В работе</option>
+								<option value='выполнена'>Выполнена</option>
+							</select>
+						) : (
+							<input readOnly name='status' defaultValue={data?.status || 'в обработке'}></input>
+						)}
+					</div>
+					<div className='flex'>
+						<Typography className='w-56'>Срочная задача</Typography>
+						<input type='checkbox' name='isUrgent' defaultChecked={data?.isUrgent}></input>
+					</div>
 				</div>
-				{isAdmin && usersData && (
+				{isAdmin && organizations && (
 					<div className='flex flex-1'>
 						<Typography className='w-56'>Организация</Typography>
 						<select
 							required
 							defaultValue={
-								usersData.data.data.find((item) => item.organization_name === data?.organization_name)
-									?.id
+								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
 							}
 							name='organizationUserId'
 							className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-							{usersData.data.data.map((item) => (
+							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
-									{item.organization_name}
+									{item.name}
 								</option>
 							))}
 						</select>
@@ -205,7 +256,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						disabled={disabledEdit}
 						className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
 						name='deadline'
-						defaultValue={data?.deadline}
+						defaultValue={data?.deadline ? new Date(data?.deadline).toLocaleDateString() : ''}
 						required
 					/>
 				</div>
@@ -221,14 +272,14 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			</div>
 
 			<div className='flex justify-end items-center mt-4'>
-				{data?.files && data?.status !== 'В обработке' ? (
+				{files?.data && data?.status !== 'в обработке' ? (
 					renderPinnedFiles
 				) : (
 					<>
 						<div>
 							<div className='flex items-center'>
 								<Typography className='mr-4'>
-									Прикрепить файлы(до {10 - (data?.files.length || 0)})
+									Прикрепить файлы(до {10 - (files?.data.length || 0)})
 								</Typography>{' '}
 								<div
 									onClick={handleClickFile}
@@ -239,12 +290,11 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 										className='hidden'
 										accept='.jpg, .png, .jpeg, .rar, .zip, .docx, .pdf'
 										type='file'
-										name='files'
-										max={10 - (data?.files.length || 0)}
+										max={10 - (files?.data.length || 0)}
 										multiple></input>
 								</div>
 							</div>
-							{data?.files && renderPinnedFiles}
+							{files?.data && renderPinnedFiles}
 						</div>
 					</>
 				)}
@@ -256,7 +306,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Отправить задачу
 					</Button>
-				) : isAdmin || data.status === 'В обработке' ? (
+				) : isAdmin || data.status === 'в обработке' ? (
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Обновить задачу
 					</Button>

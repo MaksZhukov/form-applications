@@ -1,10 +1,11 @@
-import { getNewApplicationId } from '@/services/db/applications/applications';
-import { NextRequest, NextResponse } from 'next/server';
+import { initialize } from '@/db';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
 	try {
-		const data = (await getNewApplicationId()) as [{ id: number }];
-		return NextResponse.json({ data: data.length ? data[0].id + 1 : 1 });
+		const { ApplicationModel } = await initialize();
+		const items = await ApplicationModel.findAll({ order: [['id', 'DESC']], limit: 1 });
+		return NextResponse.json({ data: items.length ? items[0].toJSON().id + 1 : 1 });
 	} catch (err) {
 		//@ts-expect-error error
 		return new NextResponse(`Error getting new app id: ${err.message}`, { status: 500 });

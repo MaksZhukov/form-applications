@@ -1,13 +1,14 @@
-import { getUser, updateUser } from '@/services/db/users/users';
+import { initialize } from '@/db';
 import { sign } from '@/services/jwt';
 import bcrypt from 'bcrypt';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
 	const {
-		data: { password, email },
+		data: { password, email }
 	} = await request.json();
-	const userData = await getUser({ email });
+	const { OrganizationModel } = await initialize();
+	const userData = (await OrganizationModel.findOne({ where: { email } }))?.toJSON();
 	if (!userData) {
 		return new NextResponse('wrong email', { status: 400 });
 	}
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
 	}
 	const token = await sign({ id: userData.id, email, password, role: userData.role });
 	try {
-		if (await updateUser(userData.id, { token })) {
+		if (await OrganizationModel.update({ token }, { where: { id: userData.id } })) {
 			const response = NextResponse.json('', { status: 200 });
 			response.cookies.set('token', token, { httpOnly: true });
 			return response;
@@ -24,4 +25,4 @@ export async function POST(request: NextRequest) {
 	} catch (err) {
 		return new NextResponse('error', { status: 400 });
 	}
-}
+};

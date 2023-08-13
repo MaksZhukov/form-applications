@@ -1,23 +1,23 @@
 'user client';
 
-import { ApiApplication } from '@/app/api/applications/types';
-import { fetchUser } from '@/app/api/user';
+import { fetchOrganization } from '@/app/api/organization';
 import { getLoginTime } from '@/app/localStorage';
 import { API_LIMIT_ITEMS } from '@/constants';
-import { ApplicationStatus } from '@/services/db/applications/types';
-import { User } from '@/services/db/users/types';
+import { ApplicationAttributes, ApplicationStatus } from '@/db/application/types';
+import { OrganizationAttributes } from '@/db/organization/types';
+
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FC } from 'react';
 
 interface Props {
-	data: ApiApplication[];
-	users?: User[];
-	total: number;
+	data: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name' | 'uid'> })[];
+	organizations?: Pick<OrganizationAttributes, 'id' | 'name'>[];
+	total?: number;
 	page: number;
 	selectedStatus: ApplicationStatus | 'none';
-	selectedOrganization: string | 'none';
+	selectedOrganizationId: string | 'none';
 	onChangeStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangeOrganization: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangePage: (page: number) => () => void;
@@ -25,23 +25,23 @@ interface Props {
 
 const Table: FC<Props> = ({
 	data,
-	total,
-	users = [],
+	total = 0,
+	organizations = [],
 	page,
-	selectedOrganization,
+	selectedOrganizationId,
 	selectedStatus,
 	onChangePage,
 	onChangeOrganization,
 	onChangeStatus
 }) => {
-	const { data: userData } = useQuery(['user', getLoginTime()], {
+	const { data: organizationData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUser()
+		queryFn: fetchOrganization
 	});
-	const isAdmin = userData?.data.data.role === 'admin';
+	const isAdmin = organizationData?.data.role === 'admin';
 	const router = useRouter();
-	const handleClickMore = (item: ApiApplication) => () => {
+	const handleClickMore = (item: ApplicationAttributes) => () => {
 		router.push(`/${item.id}`);
 	};
 
@@ -57,13 +57,13 @@ const Table: FC<Props> = ({
 						name: 'Организация',
 						filter: (
 							<select
-								value={selectedOrganization}
+								value={selectedOrganizationId}
 								onChange={onChangeOrganization}
 								className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 								<option value='none'>Не выбрано</option>
-								{users.map((item) => (
-									<option key={item.id} value={item.organization_name}>
-										{item.organization_name}
+								{organizations.map((item) => (
+									<option key={item.id} value={item.id}>
+										{item.name}
 									</option>
 								))}
 							</select>
@@ -86,6 +86,7 @@ const Table: FC<Props> = ({
 				</select>
 			)
 		},
+		{ name: 'Срочность' },
 		{ name: '' }
 	];
 
@@ -114,7 +115,7 @@ const Table: FC<Props> = ({
 								<td className={classes}>AM-{item.id.toString().padStart(6, '0')}</td>
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
-										{item.date}
+										{item.createdAt}
 									</Typography>
 								</td>
 								<td className={classes + ' max-w-xs'}>
@@ -128,9 +129,11 @@ const Table: FC<Props> = ({
 								{isAdmin && (
 									<td className={classes + ' max-w-xs'}>
 										<Typography variant='medium' className='font-normal'>
-											{item.organization_name}
+											{item.organization.name}
 										</Typography>
-										<Typography className='font-normal text-xs'>УНП: {item.uid}</Typography>
+										<Typography className='font-normal text-xs'>
+											УНП: {item.organization.uid}
+										</Typography>
 									</td>
 								)}
 								{isAdmin && (
@@ -144,6 +147,9 @@ const Table: FC<Props> = ({
 									<Typography variant='small' className='font-normal'>
 										{item.status}
 									</Typography>
+								</td>
+								<td className={classes}>
+									{item.isUrgent ? <div className='w-6 h-6 bg-accent rounded-full'></div> : ''}
 								</td>
 								<td className={classes}>
 									<Button

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUser } from './services/db/users/users';
 import { verify } from './services/jwt';
 
 export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value;
-	if (request.nextUrl.pathname === '/api/applications' || request.nextUrl.pathname === '/api/user') {
+	if (request.nextUrl.pathname === '/api/applications' || request.nextUrl.pathname === '/api/organization') {
 		if (!token) {
 			const res = new NextResponse('no token', { status: 401 });
 			res.cookies.delete('token');
@@ -12,14 +11,11 @@ export async function middleware(request: NextRequest) {
 		}
 		try {
 			await verify(token);
+			return NextResponse.next();
 		} catch (err) {
 			const res = new NextResponse('no token', { status: 401 });
 			res.cookies.delete('token');
 			return res;
-		}
-		const user = await getUser({ token });
-		if (user) {
-			return NextResponse.next();
 		}
 	}
 	if (request.nextUrl.pathname.startsWith('/login')) {
@@ -27,13 +23,20 @@ export async function middleware(request: NextRequest) {
 			return NextResponse.redirect(new URL('/', request.url));
 		}
 	}
-	if (request.nextUrl.pathname === '/api/users' && request.method === 'POST') {
-		if (token !== process.env.ADMIN_TOKEN) {
+	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'POST') {
+		let isAdmin = false;
+		if (token) {
+			const {
+				payload: { role }
+			} = await verify(token);
+			isAdmin = role === 'admin';
+		}
+		if (token !== process.env.ADMIN_TOKEN ? !isAdmin : true) {
 			return new NextResponse('wrong token', { status: 401 });
 		}
 	}
 
-	if (request.nextUrl.pathname === '/api/users' && request.method === 'GET' && token) {
+	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'GET' && token) {
 		try {
 			const {
 				payload: { role }
