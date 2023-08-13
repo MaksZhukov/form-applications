@@ -1,5 +1,5 @@
+---
 deployment:
   tasks:
+    - cd /home/user/repositories/form-applications
     - npm i
-    - npm build
-    - npm start
