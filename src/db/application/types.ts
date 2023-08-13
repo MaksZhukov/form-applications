@@ -16,6 +16,7 @@ export type ApplicationAttributes = {
 	email: string;
 	organizationId: number;
 	isUrgent: boolean;
+	isArchived: boolean;
 };
 
 export interface ApplicationAttributesCreation

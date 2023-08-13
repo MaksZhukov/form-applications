@@ -37,9 +37,6 @@ const Layout: FC<Props> = ({ children }) => {
 		router.push('/');
 	};
 
-
-    
-
 	const handleLogout = async () => {
 		try {
 			await mutateAsync();
@@ -101,7 +98,7 @@ const Layout: FC<Props> = ({ children }) => {
 					</span>
 				</div>
 			</header>
-			<div className='container mx-auto pt-20'>{children}</div>
+			<div className='container mx-auto pt-20 pb-10'>{children}</div>
 			<footer className='p-10 border-t-accent border-t'></footer>
 			{showModal && (
 				<>

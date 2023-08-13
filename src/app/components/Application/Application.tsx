@@ -97,7 +97,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						);
 					}
 				}
-				// inputFileRef.current.value = '';
+				inputFileRef.current.value = '';
 			}
 
 			if (!data) {
@@ -151,7 +151,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 
 			<div className='flex mb-5 gap-10'>
 				<div className='flex flex-1 justify-between'>
-					<div className='flex'>
+					<div className='flex items-center'>
 						<Typography className='w-56'>Статус</Typography>{' '}
 						{isAdmin ? (
 							<select
@@ -168,13 +168,9 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							<input readOnly name='status' defaultValue={data?.status || 'в обработке'}></input>
 						)}
 					</div>
-					<div className='flex'>
-						<Typography className='w-56'>Срочная задача</Typography>
-						<input type='checkbox' name='isUrgent' defaultChecked={data?.isUrgent}></input>
-					</div>
 				</div>
 				{isAdmin && organizations && (
-					<div className='flex flex-1'>
+					<div className='flex flex-1 items-center'>
 						<Typography className='w-56'>Организация</Typography>
 						<select
 							required
@@ -182,13 +178,23 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
 							}
 							name='organizationUserId'
-							className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+							className='mt-1 border h-full border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
 									{item.name}
 								</option>
 							))}
 						</select>
+					</div>
+				)}
+				<div className='flex items-center'>
+					<Typography className='mr-2'>Срочная задача</Typography>
+					<input type='checkbox' name='isUrgent' defaultChecked={data?.isUrgent}></input>
+				</div>
+				{isAdmin && (
+					<div className='flex items-center'>
+						<Typography className='mr-2'>Добавить в архив</Typography>
+						<input type='checkbox' name='isArchived' defaultChecked={data?.isArchived}></input>
 					</div>
 				)}
 			</div>

@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
 			payload: { role, id }
 		} = await verify(token);
 		const { rows, count } = await ApplicationModel.findAndCountAll({
-			where: _.omitBy({ status, organizationId: role === 'admin' ? organizationId : id }, _.isNil),
+			where: _.omitBy(
+				{ isArchived: false, status, organizationId: role === 'admin' ? organizationId : id },
+				_.isNil
+			),
 			order: [['createdAt', 'DESC']],
 			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name', 'email'] },
 			limit,
@@ -49,6 +52,7 @@ export async function POST(request: NextRequest) {
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const isUrgent = formData.get('isUrgent') as string;
+	const isArchived = formData.get('isArchived') as string;
 	const email = formData.get('email') as string;
 	const organizationUserId = formData.get('organizationUserId') as string;
 
@@ -68,6 +72,7 @@ export async function POST(request: NextRequest) {
 			deadline,
 			phone,
 			comment,
+			isArchived: Boolean(isArchived),
 			name,
 			status: 'в обработке',
 			email,

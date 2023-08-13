@@ -16,5 +16,6 @@ export const applicationSchema: ModelAttributes = {
 	name: { type: DataTypes.STRING, allowNull: false },
 	status: { type: DataTypes.ENUM('в обработке', 'в работе', 'выполнено'), allowNull: false },
 	email: { type: DataTypes.STRING, allowNull: false },
-	isUrgent: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
+	isUrgent: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+	isArchived: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
 };
