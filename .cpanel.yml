@@ -1,5 +1,5 @@
----
 deployment:
   tasks:
-    - cd /home/user/repositories/form-applications
-    - npm i
+    - export DEPLOYPATH=/home/example/public_html/
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp style.css $DEPLOYPATH
