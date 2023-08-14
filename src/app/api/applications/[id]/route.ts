@@ -2,8 +2,7 @@ import { DATE_PATTERN } from '@/app/constants';
 import { initialize } from '@/db';
 import { ApplicationStatus } from '@/db/application/types';
 import { verify } from '@/services/jwt';
-import isNil from 'lodash/isNil';
-import omitBy from 'lodash/omitBy';
+import { isNil, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
