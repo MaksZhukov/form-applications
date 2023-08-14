@@ -20,4 +20,4 @@ export type ApplicationAttributes = {
 };
 
 export interface ApplicationAttributesCreation
-	extends Optional<ApplicationAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+	extends Optional<ApplicationAttributes, 'id' | 'createdAt' | 'updatedAt' | 'deadline'> {}

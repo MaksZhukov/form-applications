@@ -3,7 +3,7 @@ import { API_LIMIT_ITEMS } from '@/constants';
 import { initialize } from '@/db';
 import { ApplicationStatus } from '@/db/application/types';
 import { verify } from '@/services/jwt';
-import _ from 'lodash';
+import { isNil, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,10 +22,7 @@ export async function GET(request: NextRequest) {
 			payload: { role, id }
 		} = await verify(token);
 		const { rows, count } = await ApplicationModel.findAndCountAll({
-			where: _.omitBy(
-				{ isArchived: false, status, organizationId: role === 'admin' ? organizationId : id },
-				_.isNil
-			),
+			where: omitBy({ isArchived: false, status, organizationId: role === 'admin' ? organizationId : id }, isNil),
 			order: [['createdAt', 'DESC']],
 			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name', 'email'] },
 			limit,
@@ -68,7 +65,7 @@ export async function POST(request: NextRequest) {
 		const application = await ApplicationModel.create({
 			title,
 			description,
-			deadline,
+			deadline: deadline ?? '',
 			phone,
 			comment,
 			isArchived: Boolean(isArchived),
@@ -78,6 +75,7 @@ export async function POST(request: NextRequest) {
 			isUrgent: Boolean(isUrgent),
 			organizationId: organizationUserId ? +organizationUserId : (id as number)
 		});
+
 		return NextResponse.json({ data: application });
 	} catch (err) {
 		//@ts-expect-error error
