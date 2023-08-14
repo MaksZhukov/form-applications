@@ -1,7 +1,11 @@
 import { initialize } from '@/db';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+	const token = request.cookies.get('token')?.value;
+	if (!token) {
+		return new NextResponse('no token', { status: 401 });
+	}
 	try {
 		const { ApplicationModel } = await initialize();
 		const items = await ApplicationModel.findAll({ order: [['id', 'DESC']], limit: 1 });
