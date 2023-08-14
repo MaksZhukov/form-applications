@@ -53,8 +53,6 @@ export async function PUT(request: NextRequest) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
 
-	console.log(deadline);
-
 	const {
 		payload: { id: orgId }
 	} = await verify(token);
