@@ -21,14 +21,14 @@ export const initialize = async () => {
 		host: process.env.DATABASE_HOST,
 		port: process.env.DATABASE_PORT,
 		user: process.env.DATABASE_USER,
-		password: process.env.DATABASE_USER_PASSWORD
+		password: process.env.DATABASE_USER_PASSWORD,
 	});
 	await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DATABASE}\`;`);
 
 	sequelize = new Sequelize(process.env.DATABASE, process.env.DATABASE_USER, process.env.DATABASE_USER_PASSWORD, {
 		dialect: 'mysql',
 		dialectModule: mysql,
-		omitNull: true
+		omitNull: true,
 	});
 
 	OrganizationModel = sequelize.define<Model<OrganizationAttributes, OrganizationAttributesCreation>>(
@@ -45,6 +45,6 @@ export const initialize = async () => {
 	FileModel = sequelize.define<Model<FileAttributes, FileAttributesCreation>>('file', fileSchema);
 
 	FileModel.belongsTo(ApplicationModel);
-
+	await sequelize.sync({ alter: true });
 	return { OrganizationModel, ApplicationModel, FileModel };
 };
