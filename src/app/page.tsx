@@ -6,7 +6,7 @@ import { ApplicationStatus } from '@/db/application/types';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { fetchApplications } from './api/applications';
 import { fetchOrganization } from './api/organization';
 import { fetchOrganizations } from './api/organizations';
@@ -19,6 +19,8 @@ export default function Home() {
 	const [page, setPage] = useState(1);
 	const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | 'none'>('none');
 	const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | 'none'>('none');
+	// IT NEEDS FOR CSR
+	useEffect(() => {}, []);
 	const { data, isLoading } = useQuery({
 		queryKey: ['application', getLoginTime(), page, selectedStatus, selectedOrganizationId],
 		staleTime: Infinity,
