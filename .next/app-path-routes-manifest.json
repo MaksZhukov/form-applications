@@ -1,0 +1,16 @@
+{
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/",
+  "/[id]/page": "/[id]",
+  "/login/page": "/login",
+  "/new/page": "/new",
+  "/api/applications/route": "/api/applications",
+  "/api/files/route": "/api/files",
+  "/api/logout/route": "/api/logout",
+  "/api/organization/route": "/api/organization",
+  "/api/organizations/route": "/api/organizations",
+  "/api/login/route": "/api/login",
+  "/api/applications/[id]/route": "/api/applications/[id]",
+  "/api/applications/new/route": "/api/applications/new",
+  "/api/files/[name]/route": "/api/files/[name]"
+}
