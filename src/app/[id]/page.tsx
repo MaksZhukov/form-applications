@@ -43,3 +43,8 @@ const ApplicationPage = () => {
 };
 
 export default ApplicationPage;
+
+export const getStaticProps = async () => {
+	return { props: {} };
+};
+

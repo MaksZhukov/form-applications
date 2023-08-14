@@ -13,6 +13,7 @@ import { fetchOrganizations } from './api/organizations';
 import Layout from './components/Layout';
 import Table from './components/Table';
 import { getLoginTime } from './localStorage';
+import { GetStaticProps } from 'next';
 
 export default function Home() {
 	const router = useRouter();
@@ -97,3 +98,7 @@ export default function Home() {
 		</Layout>
 	);
 }
+
+export const getStaticProps = async () => {
+	return { props: {} };
+};
