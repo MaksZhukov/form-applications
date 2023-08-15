@@ -53,7 +53,7 @@ export async function PUT(request: NextRequest) {
 	}
 
 	const {
-		payload: { id: orgId }
+		payload: { id: orgId, role }
 	} = await verify(token);
 
 	const { ApplicationModel, OrganizationModel } = await initialize();
@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest) {
 				},
 				isNil
 			),
-			{ where: { id, organizationId: orgId as number } }
+			{ where: role === 'admin' ? { id } : { id, organizationId: orgId as number } }
 		);
 		const data = await ApplicationModel.findByPk(id, {
 			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name', 'email'] }

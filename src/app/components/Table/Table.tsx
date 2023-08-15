@@ -115,7 +115,7 @@ const Table: FC<Props> = ({
 								<td className={classes}>AM-{item.id.toString().padStart(6, '0')}</td>
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
-										{item.createdAt}
+										{new Date(item.createdAt).toLocaleDateString()}
 									</Typography>
 								</td>
 								<td className={classes + ' max-w-xs'}>
