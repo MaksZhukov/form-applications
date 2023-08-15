@@ -161,7 +161,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 									В обработке
 								</option>
 								<option value='в работе'>В работе</option>
-								<option value='выполнена'>Выполнена</option>
+								<option value='выполнено'>Выполнено</option>
 							</select>
 						) : (
 							<input readOnly name='status' defaultValue={data?.status || 'в обработке'}></input>
