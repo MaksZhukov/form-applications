@@ -21,6 +21,6 @@ jobs:
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
       - name: Go to folder
-        run: cd ..
+        run: cd ../..
       - name: Install
         run: npm i
