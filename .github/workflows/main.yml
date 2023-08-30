@@ -1,0 +1,7 @@
+name: Actions
+on: [push]
+jobs:
+  install:
+    runs-on: asus-mz
+    steps:
+      - run: npm i
