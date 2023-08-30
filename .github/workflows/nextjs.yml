@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Powershell allow
         shell: cmd
-        run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+        run: powershell -Command "Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force"
       - name: Go to folder
         run: cd "C:\Users\maks_\Desktop\form-applications"
       - name: Install
