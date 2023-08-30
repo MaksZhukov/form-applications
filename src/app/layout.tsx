@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from './query';
+import { saveSelectedOrganizationId } from './localStorage';
 const inter = Inter({ subsets: ['latin'] });
+
+typeof window !== 'undefined' && saveSelectedOrganizationId('none');
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
