@@ -32,12 +32,12 @@ const Table: FC<Props> = ({
 	selectedStatus,
 	onChangePage,
 	onChangeOrganization,
-	onChangeStatus
+	onChangeStatus,
 }) => {
 	const { data: organizationData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchOrganization
+		queryFn: fetchOrganization,
 	});
 	const isAdmin = organizationData?.data.role === 'admin';
 	const router = useRouter();
@@ -59,7 +59,8 @@ const Table: FC<Props> = ({
 							<select
 								value={selectedOrganizationId}
 								onChange={onChangeOrganization}
-								className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+							>
 								<option value='none'>Не выбрано</option>
 								{organizations.map((item) => (
 									<option key={item.id} value={item.id}>
@@ -67,27 +68,28 @@ const Table: FC<Props> = ({
 									</option>
 								))}
 							</select>
-						)
+						),
 					},
-					{ name: 'Дедлайн' }
 			  ]
 			: []),
+		{ name: 'Дедлайн' },
 		{
 			name: 'Статус',
 			filter: isAdmin && (
 				<select
 					value={selectedStatus}
 					onChange={onChangeStatus}
-					className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+					className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+				>
 					<option value='none'>Не выбрано</option>
 					<option value='В обработке'>В обработке</option>
 					<option value='В работе'>В работе</option>
 					<option value='Выполнена'>Выполнена</option>
 				</select>
-			)
+			),
 		},
 		{ name: 'Срочность' },
-		{ name: '' }
+		{ name: '' },
 	];
 
 	return (
@@ -122,27 +124,22 @@ const Table: FC<Props> = ({
 									<Typography variant='medium' className='font-normal'>
 										{item.title}
 									</Typography>
-									<Typography className='font-normal text-xs'>
-										Описание. {item.description}
-									</Typography>
+									<Typography className='font-normal text-xs'>Описание. {item.description}</Typography>
 								</td>
 								{isAdmin && (
 									<td className={classes + ' max-w-xs'}>
 										<Typography variant='medium' className='font-normal'>
 											{item.organization.name}
 										</Typography>
-										<Typography className='font-normal text-xs'>
-											УНП: {item.organization.uid}
-										</Typography>
+										<Typography className='font-normal text-xs'>УНП: {item.organization.uid}</Typography>
 									</td>
 								)}
-								{isAdmin && (
-									<td className={classes}>
-										<Typography variant='small' className='font-normal'>
-											{item.deadline}
-										</Typography>
-									</td>
-								)}
+								<td className={classes}>
+									<Typography variant='small' className='font-normal'>
+										{item.deadline}
+									</Typography>
+								</td>
+
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
 										{item.status}
@@ -152,10 +149,7 @@ const Table: FC<Props> = ({
 									{item.isUrgent ? <div className='w-6 h-6 bg-accent rounded-full'></div> : ''}
 								</td>
 								<td className={classes}>
-									<Button
-										variant='outlined'
-										className='border-accent text-accent'
-										onClick={handleClickMore(item)}>
+									<Button variant='outlined' className='border-accent text-accent' onClick={handleClickMore(item)}>
 										Подробнее
 									</Button>
 								</td>
@@ -171,7 +165,8 @@ const Table: FC<Props> = ({
 							<IconButton
 								key={index + 1}
 								className={page === index + 1 ? 'bg-blue-100 text-blue-gray-900' : ''}
-								onClick={onChangePage(index + 1)}>
+								onClick={onChangePage(index + 1)}
+							>
 								{index + 1}
 							</IconButton>
 						))}
