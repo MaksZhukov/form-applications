@@ -24,22 +24,24 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'POST') {
-		let isAdmin = false;
 		if (token) {
-			const {
-				payload: { role }
-			} = await verify(token);
-			isAdmin = role === 'admin';
-		}
-		if (token !== process.env.ADMIN_TOKEN ? !isAdmin : true) {
-			return new NextResponse('wrong token', { status: 401 });
+			if (token !== process.env.ADMIN_TOKEN) {
+				const {
+					payload: { role },
+				} = await verify(token);
+				if (role !== 'admin') {
+					return new NextResponse('wrong token', { status: 401 });
+				}
+			}
+		} else {
+			return new NextResponse('no token', { status: 401 });
 		}
 	}
 
 	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'GET' && token) {
 		try {
 			const {
-				payload: { role }
+				payload: { role },
 			} = await verify(token);
 			if (role === 'admin') {
 				return NextResponse.next();
