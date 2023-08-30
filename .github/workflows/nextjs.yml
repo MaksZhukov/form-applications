@@ -17,9 +17,12 @@ jobs:
   build:
     runs-on: asus-mz
     steps:
-      - name: Policy
-        shell: cmd
-        run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
+      - uses: actions/checkout@v3
+      - name: Install
+        run: npm i
+      # - name: Policy
+      #   shell: cmd
+      #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
       # - name: Go to folder
       #   run: cd C:\test\
       # - name: Install
