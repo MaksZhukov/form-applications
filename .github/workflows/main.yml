@@ -4,4 +4,4 @@ jobs:
   install:
     runs-on: asus-mz
     steps:
-      - run: npm i
+      - run: echo "hello"
