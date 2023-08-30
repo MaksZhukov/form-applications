@@ -12,10 +12,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-defaults:
- run:
-  working-directory: C:/Users/maks_/Desktop/form-applications
-
 jobs:
   # Build job
   build:
@@ -25,4 +21,4 @@ jobs:
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
       - name: Install
-        run: npm i
+        run: xcopy package-lock.json C:/
