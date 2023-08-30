@@ -18,7 +18,12 @@ jobs:
     runs-on: asus-mz
     steps:
       - name: Policy
-        run: Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+        run: |
+              Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+              cd C:\test\
+              npm i
+              npm run build
+              npm start
       - name: Go to folder
         run: cd C:\test\
       - name: Install
