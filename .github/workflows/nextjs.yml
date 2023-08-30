@@ -20,5 +20,5 @@ jobs:
       - name: Powershell allow
         shell: cmd
         run: | 
-            powershell -Command "Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope MachinePolicy"
+            powershell -Command "Get-ExecutionPolicy -Scope CurrentUsery"
             cd C:\Users\maks_\
