@@ -18,6 +18,7 @@ jobs:
     runs-on: asus-mz
     steps:
       - name: Powershell allow
+        working-directory: C:\Users\maks_\Desktop\form-applications
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
       - name: Go to folder
