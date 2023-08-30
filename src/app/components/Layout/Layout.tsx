@@ -7,8 +7,10 @@ import { getLoginTime } from '@/app/localStorage';
 import { Button, Menu, MenuHandler, MenuItem, MenuList, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
+import { useReducer } from 'react';
 import { useRouter } from 'next/navigation';
 import { FC, FormEventHandler, ReactNode, useEffect, useState } from 'react';
+import { reducer, setSelectedOrganizationIdAction } from '@/app/reducer';
 
 interface Props {
 	children: ReactNode;
@@ -16,12 +18,13 @@ interface Props {
 
 const Layout: FC<Props> = ({ children }) => {
 	const router = useRouter();
+	const [, dispatch] = useReducer(reducer, { selectedOrganizationId: 'none' });
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const { data, error, isError, isLoading } = useQuery({
 		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchOrganization
+		queryFn: fetchOrganization,
 	});
 	const { mutateAsync } = useMutation({ mutationFn: () => logout() });
 	const createOrganizationMutation = useMutation(createOrganization);
@@ -41,6 +44,7 @@ const Layout: FC<Props> = ({ children }) => {
 		try {
 			await mutateAsync();
 		} catch (err) {}
+		dispatch(setSelectedOrganizationIdAction('none'));
 		router.push('/login');
 	};
 
@@ -78,7 +82,8 @@ const Layout: FC<Props> = ({ children }) => {
 						src={'/logo.png'}
 						width={300}
 						height={29}
-						alt='Logo'></Image>
+						alt='Logo'
+					></Image>
 					<span className='flex items-center'>
 						Добро пожаловать
 						<span className='text-accent font-bold pl-2'>{data?.data.email}</span>
@@ -89,9 +94,7 @@ const Layout: FC<Props> = ({ children }) => {
 								</Button>
 							</MenuHandler>
 							<MenuList>
-								{data.data.role === 'admin' && (
-									<MenuItem onClick={handleClickAdd}>Добавить организацию</MenuItem>
-								)}
+								{data.data.role === 'admin' && <MenuItem onClick={handleClickAdd}>Добавить организацию</MenuItem>}
 								<MenuItem onClick={handleLogout}>Выход</MenuItem>
 							</MenuList>
 						</Menu>{' '}
@@ -107,7 +110,8 @@ const Layout: FC<Props> = ({ children }) => {
 							{/*content*/}
 							<form
 								onSubmit={handleSubmit}
-								className='border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none'>
+								className='border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none'
+							>
 								{/*header*/}
 								<div className='flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t'>
 									<h3 className='text-3xl font-semibold'>Добавление организации</h3>
@@ -157,14 +161,11 @@ const Layout: FC<Props> = ({ children }) => {
 										onClick={handleCancel}
 										size='sm'
 										className='ml-1 p-2 border-accent text-accent'
-										variant='outlined'>
+										variant='outlined'
+									>
 										Отмена
 									</Button>
-									<Button
-										type='submit'
-										size='sm'
-										className='ml-1 p-2 border-accent text-accent'
-										variant='outlined'>
+									<Button type='submit' size='sm' className='ml-1 p-2 border-accent text-accent' variant='outlined'>
 										Добавить
 									</Button>
 								</div>

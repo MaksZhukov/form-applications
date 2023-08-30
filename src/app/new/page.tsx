@@ -13,6 +13,10 @@ const ApplicationPage = () => {
 	const handleCancel = () => {
 		router.push('/');
 	};
+
+	const handleLogout = () => {
+
+	}
 	if (isLoading) {
 		return (
 			<div className='container flex items-center h-screen mx-auto py-4'>
@@ -20,6 +24,7 @@ const ApplicationPage = () => {
 			</div>
 		);
 	}
+
 	return (
 		<Layout>
 			<Application newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></Application>
