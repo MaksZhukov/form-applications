@@ -20,5 +20,7 @@ jobs:
       - name: Powershell allow
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+      - name: Go to folder
+        run: C:\Users\maks_\Desktop\form-applications
       - name: Install
-        run: ls ${{ github.workspace }}
+        run: npm i
