@@ -25,11 +25,11 @@ jobs:
               npm i
               npm run build
               npm start
-      - name: Go to folder
-        run: cd C:\test\
-      - name: Install
-        run: npm i
-      - name: Build
-        run: npm run build
-      - name: Start
-        run: npm start
+      # - name: Go to folder
+      #   run: cd C:\test\
+      # - name: Install
+      #   run: npm i
+      # - name: Build
+      #   run: npm run build
+      # - name: Start
+      #   run: npm start
