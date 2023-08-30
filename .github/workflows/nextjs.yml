@@ -19,6 +19,6 @@ jobs:
     steps:
       - name: Powershell allow
         shell: cmd
-        run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
-      - name: Install
-        run: xcopy package-lock.json C:/
+        run: | 
+            powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+            cd C:/
