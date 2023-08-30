@@ -14,7 +14,7 @@ import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
+import Datepicker, { DateType, DateValueType } from 'react-tailwindcss-datepicker';
 import { FC, FormEventHandler, useRef, useState } from 'react';
 
 interface Props {
@@ -31,7 +31,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		queryFn: fetchOrganization,
 	});
 
-	const [deadline, setDeadline] = useState<null | DateType>(null);
+	const [deadline, setDeadline] = useState<null | DateType>(data?.deadline || null);
 
 	const isAdmin = organizationData?.data.role === 'admin';
 	const { data: organizations } = useQuery({
@@ -264,6 +264,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 				<div className='flex mb-5'>
 					<Typography className='w-56'>Срок выполнения*</Typography>{' '}
 					<Datepicker
+						minDate={new Date()}
 						value={{ startDate: deadline, endDate: deadline }}
 						onChange={handleChangeDeadline}
 						asSingle
