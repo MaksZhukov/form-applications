@@ -257,11 +257,11 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<Typography className='w-56'>Срок выполнения*</Typography>{' '}
 					<input
 						type='text'
-						placeholder='11.11.2011'
+						placeholder='24.08.2012'
 						disabled={disabledEdit}
 						className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
 						name='deadline'
-						defaultValue={data?.deadline ? new Date(data?.deadline).toLocaleDateString() : ''}
+						defaultValue={data?.deadline || ''}
 						required
 					/>
 				</div>
