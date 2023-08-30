@@ -14,33 +14,20 @@ on:
 
 jobs:
   # Build job
-  install:
+  prepare:
     runs-on: asus-mz
     steps:
       - uses: actions/checkout@v3
       - name: Install
         run: npm i
-      - uses: actions/upload-artifact@v3
-        with:
-          name: repo
-          path: node_modules
-  build:
-    runs-on: asus-mz
-    needs: install
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: repo
-          path: artifacts
-          working-directory: repo
       - name: Build
-        run: npm build
-  # deploy:
-  #   runs-on: asus-mz
-  #   needs: build
-  #   steps:
-  #     - name: Move to public folder
-  #       run: move .next C:\test\
+        run: npm run build
+  deploy:
+    runs-on: asus-mz
+    needs: build
+    steps:
+      - name: Move to public folder
+        run: move .next C:\test\
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
