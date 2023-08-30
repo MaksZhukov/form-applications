@@ -14,12 +14,17 @@ on:
 
 jobs:
   # Build job
-  build:
+  install:
     runs-on: asus-mz
     steps:
       - uses: actions/checkout@v3
       - name: Install
         run: npm i
+  build:
+    runs-on: asus-mz
+    steps:
+      - name: Build
+        run: npm build
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
