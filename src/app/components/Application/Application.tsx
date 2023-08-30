@@ -14,7 +14,8 @@ import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { FC, FormEventHandler, useRef } from 'react';
+import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
+import { FC, FormEventHandler, useRef, useState } from 'react';
 
 interface Props {
 	data?: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name'> }) | null;
@@ -27,8 +28,10 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	const { data: organizationData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchOrganization
+		queryFn: fetchOrganization,
 	});
+
+	const [deadline, setDeadline] = useState<null | DateType>(null);
 
 	const isAdmin = organizationData?.data.role === 'admin';
 	const { data: organizations } = useQuery({
@@ -36,7 +39,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		staleTime: Infinity,
 		enabled: isAdmin,
 		retry: 0,
-		queryFn: () => fetchOrganizations()
+		queryFn: () => fetchOrganizations(),
 	});
 
 	const { data: files } = useQuery({
@@ -44,7 +47,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		queryFn: () => getFiles(data?.id as number),
 		staleTime: Infinity,
 		retry: 0,
-		enabled: !!data?.id
+		enabled: !!data?.id,
 	});
 
 	const client = useQueryClient();
@@ -64,14 +67,14 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			if ((isAdmin && data) || data?.status === 'в обработке') {
 				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
 					id: data.id,
-					data: formData
+					data: formData,
 				});
 				if (onUpdated) {
 					onUpdated(updatedData);
 				}
 			} else if (!data) {
 				const {
-					data: { data: createApplication }
+					data: { data: createApplication },
 				} = await createApplicationMutation.mutateAsync(formData);
 				applicationId = createApplication.id;
 			}
@@ -83,7 +86,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					formDataFiles.append('files', file, file.name);
 					const { data: uploadedFiles } = await uploadFilesMutation.mutateAsync({
 						applicationId: applicationId as number,
-						data: formDataFiles
+						data: formDataFiles,
 					});
 
 					if (files) {
@@ -91,7 +94,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							prev
 								? {
 										...prev,
-										data: [...prev.data, ...uploadedFiles]
+										data: [...prev.data, ...uploadedFiles],
 								  }
 								: undefined
 						);
@@ -111,6 +114,10 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		inputFileRef.current?.click();
 	};
 
+	const handleChangeDeadline = (value: DateValueType) => {
+		setDeadline(value ? value.startDate : null);
+	};
+
 	const renderPinnedFiles = (
 		<div>
 			<Typography>Прикрепленные файлы:</Typography>
@@ -119,7 +126,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<Link
 						className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
 						key={item.id}
-						href={`/api/files/${item.name}`}>
+						href={`/api/files/${item.name}`}
+					>
 						Файл {index + 1}
 					</Link>
 				))}
@@ -141,10 +149,9 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<input
 						readOnly
 						defaultValue={
-							data?.createdAt
-								? new Date(data?.createdAt).toLocaleDateString()
-								: new Date().toLocaleDateString()
-						}></input>
+							data?.createdAt ? new Date(data?.createdAt).toLocaleDateString() : new Date().toLocaleDateString()
+						}
+					></input>
 				</div>
 			</div>
 
@@ -156,7 +163,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							<select
 								defaultValue={data?.status}
 								name='status'
-								className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+							>
 								<option value='в обработке' selected>
 									В обработке
 								</option>
@@ -173,11 +181,10 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						<Typography className='w-56'>Организация</Typography>
 						<select
 							required
-							defaultValue={
-								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
-							}
+							defaultValue={organizations.data.data.find((item) => item.name === data?.organization.name)?.id}
 							name='organizationUserId'
-							className='mt-1 border h-full border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+							className='mt-1 border h-full border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+						>
 							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
 									{item.name}
@@ -217,7 +224,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					required
 					disabled={disabledEdit}
 					rows={4}
-					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+				></textarea>
 			</div>
 			<div className='flex mb-5'>
 				<Typography className='w-56'>Имя*</Typography>{' '}
@@ -255,14 +263,19 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			{isAdmin && (
 				<div className='flex mb-5'>
 					<Typography className='w-56'>Срок выполнения*</Typography>{' '}
-					<input
-						type='text'
-						placeholder='24.08.2012'
-						disabled={disabledEdit}
-						className='flex-0.25 border-b border-black text-sm block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none'
-						name='deadline'
-						defaultValue={data?.deadline || ''}
-						required
+					<Datepicker
+						value={{ startDate: deadline, endDate: deadline }}
+						onChange={handleChangeDeadline}
+						asSingle
+						i18n='ru'
+						displayFormat='DD.MM.YYYY'
+						useRange={false}
+						placeholder='24.12.2012'
+						inputName='deadline'
+						inputClassName={(cl) =>
+							`${cl} border-b border-black rounded-none focus:outline-none focus:shadow-none focus:transition-none`
+						}
+						containerClassName={(cl) => `${cl} flex-0.25`}
 					/>
 				</div>
 			)}
@@ -273,7 +286,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					defaultValue={data?.comment}
 					disabled={disabledEdit}
 					rows={4}
-					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+				></textarea>
 			</div>
 
 			<div className='flex justify-end items-center mt-4'>
@@ -283,12 +297,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<>
 						<div>
 							<div className='flex items-center'>
-								<Typography className='mr-4'>
-									Прикрепить файлы(до {10 - (files?.data.length || 0)})
-								</Typography>{' '}
-								<div
-									onClick={handleClickFile}
-									className='inline-block p-1 rounded-full border-gray-500 border'>
+								<Typography className='mr-4'>Прикрепить файлы(до {10 - (files?.data.length || 0)})</Typography>{' '}
+								<div onClick={handleClickFile} className='inline-block p-1 rounded-full border-gray-500 border'>
 									<BlankIcon className='text-gray-500' fontSize={25}></BlankIcon>
 									<input
 										ref={inputFileRef}
@@ -296,7 +306,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 										accept='.jpg, .png, .jpeg, .rar, .zip, .docx, .pdf'
 										type='file'
 										max={10 - (files?.data.length || 0)}
-										multiple></input>
+										multiple
+									></input>
 								</div>
 							</div>
 							{files?.data && renderPinnedFiles}
