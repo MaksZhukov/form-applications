@@ -20,7 +20,7 @@ jobs:
       - name: Go to folder
         shell: cmd
         run: | 
-              powershell -Command "Get-ExecutionPolicy -Scope CurrentUser"
+              powershell -Command "Get-ExecutionPolicy -Scope Process"
               cd C:\test\
       - name: Install
         run: npm i
