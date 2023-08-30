@@ -22,6 +22,7 @@ jobs:
         run: npm i
   build:
     runs-on: asus-mz
+    needs: install
     steps:
       - name: Build
         run: npm build
