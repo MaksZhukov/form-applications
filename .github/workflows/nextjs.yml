@@ -18,8 +18,9 @@ jobs:
     runs-on: asus-mz
     steps:
       - name: Policy
+        shell: cmd
         run: |
-              Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+              powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
               cd C:\test\
               npm i
               npm run build
