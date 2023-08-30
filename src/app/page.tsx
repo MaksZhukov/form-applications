@@ -12,13 +12,15 @@ import { fetchOrganization } from './api/organization';
 import { fetchOrganizations } from './api/organizations';
 import Layout from './components/Layout';
 import Table from './components/Table';
-import { getLoginTime } from './localStorage';
+import { getLoginTime, getSelectedOrganizationId, saveSelectedOrganizationId } from './localStorage';
 
 export default function Home() {
 	const router = useRouter();
 	const [page, setPage] = useState(1);
 	const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | 'none'>('none');
-	const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | 'none'>('none');
+	const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | 'none'>(
+		getSelectedOrganizationId() || 'none'
+	);
 	// IT NEEDS FOR CSR
 	useEffect(() => {}, []);
 	const { data, isLoading } = useQuery({
@@ -62,6 +64,7 @@ export default function Home() {
 
 	const handleChangeOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
 		setSelectedOrganizationId(e.target.value);
+		saveSelectedOrganizationId(e.target.value);
 	};
 
 	const handleClickNew = () => {

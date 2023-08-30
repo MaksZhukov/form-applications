@@ -3,7 +3,7 @@
 import { logout } from '@/app/api/logout';
 import { fetchOrganization } from '@/app/api/organization';
 import { createOrganization } from '@/app/api/organizations';
-import { getLoginTime } from '@/app/localStorage';
+import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
 import { Button, Menu, MenuHandler, MenuItem, MenuList, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
@@ -41,6 +41,7 @@ const Layout: FC<Props> = ({ children }) => {
 		try {
 			await mutateAsync();
 		} catch (err) {}
+		saveSelectedOrganizationId('none');
 		router.push('/login');
 	};
 
