@@ -20,5 +20,5 @@ jobs:
       - name: Powershell allow
         shell: cmd
         run: | 
-            powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+            powershell -Command "Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser"
             cd C:\Users\maks_\
