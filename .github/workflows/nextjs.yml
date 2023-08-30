@@ -24,7 +24,7 @@ jobs:
         run: npm run build
   deploy:
     runs-on: asus-mz
-    needs: build
+    needs: prepare
     steps:
       - name: Move to public folder
         run: move .next C:\test\
