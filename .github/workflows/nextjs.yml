@@ -21,4 +21,4 @@ jobs:
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
       - name: Install
-        run: npm i
+        run: ls ${{ github.workspace }}
