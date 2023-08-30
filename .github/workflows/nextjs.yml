@@ -21,6 +21,6 @@ jobs:
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
       - name: Go to folder
-        run: C:\Users\maks_\Desktop\form-applications
+        run: cd C:\Users\maks_\Desktop\form-applications
       - name: Install
         run: npm i
