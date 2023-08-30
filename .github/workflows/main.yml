@@ -4,4 +4,5 @@ jobs:
   install:
     runs-on: asus-mz
     steps:
-      - run: ls ${{ github.workspace }}
+      - run: | 
+              ls
