@@ -22,10 +22,17 @@ jobs:
         run: npm i
       - name: Build
         run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .next
   deploy:
     runs-on: asus-mz
     needs: prepare
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
       - name: Move to public folder
         run: move .next C:\test\
       # - name: Policy
