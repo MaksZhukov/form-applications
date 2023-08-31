@@ -58,7 +58,7 @@ jobs:
       - name: Start
         shell: cmd
         working-directory: C:\test
-        run: start cmd /b npm start
+        run: RUNNER_TRACKING_ID="" && start cmd /b npm start
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
