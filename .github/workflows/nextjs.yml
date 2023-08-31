@@ -57,7 +57,7 @@ jobs:
       #   run: move .next C:\test\
       - name: Start
         working-directory: C:\test
-        run: npm start
+        run: start /b npm run start
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
