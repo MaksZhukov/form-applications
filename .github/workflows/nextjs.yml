@@ -62,7 +62,7 @@ jobs:
       - name: Start
         working-directory: C:\test
         shell: cmd
-        run: npm i pm2 -g && pm2 start server.js
+        run: npm i pm2 -g && npx pm2 start server.js
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
