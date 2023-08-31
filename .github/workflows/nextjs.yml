@@ -36,8 +36,10 @@ jobs:
       - name: Install npm
         run: npm install npm -g
       - name: Stop
+        if: always()
         run: npx kill-port 3000
       - name: Clean
+        if: always()
         run: rmdir C:\test\.next
       - name: Move to public folder
         run: move .next C:\test\
