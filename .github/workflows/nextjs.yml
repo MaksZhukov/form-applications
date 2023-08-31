@@ -59,10 +59,13 @@ jobs:
       #   run: rmdir C:\test\.next
       # - name: Move to public folder
       #   run: move .next C:\test\
-      - name: Start
-        working-directory: C:\test
-        shell: cmd
-        run: RUNNER_TRACKING_ID=""
-        env:
-          PORT: 3000
-          RUNNER_TRACKING_ID: ""
+        - name: Start Server
+          run: |
+              Start-Process -FilePath "YourServer.exe" -WindowStyle Hidden
+          shell: pwsh
+        - name: Start
+          working-directory: C:\test
+          shell: cmd
+          run: npm i pm2 -g && npx pm2 start server.js
+          env:
+            PORT: 3000
