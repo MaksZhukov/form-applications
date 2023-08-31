@@ -62,7 +62,9 @@ jobs:
       - name: Start
         working-directory: C:\test
         shell: cmd
-        run: npm i pm2 -g && PORT=3000 npx pm2 restart server.js
+        run: npm i pm2 -g && npx pm2 restart server.js
+        env:
+          PORT: 3000
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
