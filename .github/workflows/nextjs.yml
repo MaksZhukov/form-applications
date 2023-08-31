@@ -62,7 +62,6 @@ jobs:
         - name: Start Server
           run: |
               Start-Process -FilePath "YourServer.exe" -WindowStyle Hidden
-          shell: pwsh
         - name: Start
           working-directory: C:\test
           shell: cmd
