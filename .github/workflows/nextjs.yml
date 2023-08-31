@@ -56,6 +56,7 @@ jobs:
       # - name: Move to public folder
       #   run: move .next C:\test\
       - name: Start
+        shell: cmd
         run: start cmd.exe /B /K cd C:\test\ && npm run start
       # - name: Policy
       #   shell: cmd
