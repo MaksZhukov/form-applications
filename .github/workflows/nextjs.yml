@@ -33,8 +33,10 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: build
-      # - name: Stop
-      #   run: npx kill-port 3000
+      - name: Install npm
+        run: npm install npm -g
+      - name: Stop
+        run: npx kill-port 3000
       - name: Clean
         run: rmdir C:\test\.next
       - name: Move to public folder
