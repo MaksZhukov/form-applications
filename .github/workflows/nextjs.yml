@@ -4,6 +4,10 @@
 #
 name: Form Applications
 
+concurrency: 
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 on:
   # Runs on pushes targeting the default branch
   push:
