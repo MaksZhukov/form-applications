@@ -26,7 +26,9 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: node_modules
+          path: | 
+              **/node_modules
+          enableCrossOsArchive: true
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -55,7 +57,7 @@ jobs:
       - name: Move to public folder
         run: move .next C:\test\
       - name: Start
-        run: start cmd.exe /c npm run start
+        run: start cmd.exe /c cd C:\test\ npm run start
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
