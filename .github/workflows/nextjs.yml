@@ -62,9 +62,10 @@ jobs:
       - name: Start
         working-directory: C:\test
         shell: cmd
-        run: export RUNNER_TRACKING_ID="" && npm i pm2 -g && npx pm2 restart server.js
+        run: npm i pm2 -g && npx pm2 restart server.js
         env:
           PORT: 3000
+          RUNNER_TRACKING_ID: ""
       # - name: Policy
       #   shell: cmd
       #   run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" && cd C:\test\ && npm i && npm run build && npm start
