@@ -21,7 +21,7 @@ on:
 
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: my-concurrency-group
   cancel-in-progress: true
 
 
