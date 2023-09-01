@@ -2,7 +2,7 @@
 #
 # To get started with Next.js see: https://nextjs.org/docs/getting-started
 #
-name: Form Applications
+name: Start
 
 env:
   WORKING_FOLDER: C:\test\
