@@ -4,6 +4,9 @@
 #
 name: Form Applications
 
+env:
+  WORKING_FOLDER: C:\test\
+
 on:
   # Runs on pushes targeting the default branch
   push:
@@ -58,9 +61,9 @@ jobs:
           run: npx kill-port 3000
         - name: Clean
           continue-on-error: true
-          run: rmdir C:\test\.next
+          run: IF EXIST %WORKING_DIRECTORY% RMDIR /S /Q %WORKING_DIRECTORY%.next
         - name: Move to public folder
-          run: move .next C:\test\
+          run: move .next %WORKING_DIRECTORY%
         - name: Start
-          working-directory: C:\test
+          working-directory: $WORKING_DIRECTORY
           run: npm start
