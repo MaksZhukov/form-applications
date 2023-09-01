@@ -20,12 +20,6 @@ on:
         required: true
 
 
-concurrency:
-  group: my-concurrency-group
-  cancel-in-progress: true
-
-
-
 jobs:
   prepare:
     runs-on: asus-mz
