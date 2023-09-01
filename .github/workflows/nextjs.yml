@@ -62,8 +62,8 @@ jobs:
       # - name: Clean
       #   continue-on-error: true
       #   run: rmdir C:\test\.next
-      # - name: Move to public folder
-      #   run: move .next C:\test\
+        - name: Move to public folder
+          run: move .next C:\test\
         - name: Start
           working-directory: C:\test
           run: npm start
