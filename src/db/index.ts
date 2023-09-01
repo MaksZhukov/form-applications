@@ -46,6 +46,5 @@ export const initialize = async () => {
 	// await ApplicationModel.update({ deadline: '12.12.2012' }, { where: { id: 22 } });
 	FileModel.belongsTo(ApplicationModel);
 	// await sequelize.sync({ alter: true });
-
 	return { OrganizationModel, ApplicationModel, FileModel };
 };
