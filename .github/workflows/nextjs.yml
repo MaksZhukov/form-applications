@@ -20,9 +20,9 @@ on:
         required: true
 
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 
 
@@ -62,4 +62,4 @@ jobs:
           run: move .next %WORKING_DIRECTORY%
         - name: Start
           working-directory: ${{ env.WORKING_FOLDER }}
-          run: npm start
+          run: SET RUNNER_TRACKING_ID="" && start cmd \B npm start
