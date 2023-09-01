@@ -1,0 +1,46 @@
+# Sample workflow for building and deploying a Next.js site to GitHub Pages
+#
+# To get started with Next.js see: https://nextjs.org/docs/getting-started
+#
+name: Form Applications
+
+env:
+  WORKING_FOLDER: C:\test\
+
+on:
+  # Runs on pushes targeting the default branch
+  pull_request:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      run_number:
+        description: 'Run number'
+        required: true
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+
+jobs:
+  prepare:
+    runs-on: asus-mz
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+      - name: Install
+        run: npm i
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
