@@ -54,8 +54,6 @@ jobs:
         - uses: actions/download-artifact@v3
           with:
             name: build
-        - name: Install npm
-          run: npm install npm -g
         - name: Stop
           run: npx kill-port 3000
         - name: Clean
