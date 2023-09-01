@@ -66,7 +66,4 @@ jobs:
       #   run: move .next C:\test\
         - name: Start
           working-directory: C:\test
-          shell: cmd
-          run: Set RUNNER_TRACKING_ID="" && start cmd /B node server.js
-          env:
-            PORT: 3000
+          run: npm start
