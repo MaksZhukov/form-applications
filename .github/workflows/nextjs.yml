@@ -65,5 +65,5 @@ jobs:
         - name: Move to public folder
           run: move .next %WORKING_DIRECTORY%
         - name: Start
-          working-directory: $WORKING_DIRECTORY
+          working-directory: ${{ env.WORKING_FOLDER }}
           run: npm start
