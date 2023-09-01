@@ -22,46 +22,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build job
-  # prepare:
-  #   runs-on: asus-mz
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install
-  #       run: npm i
-  #     - name: Cache node modules
-  #       id: cache-npm
-  #       uses: actions/cache@v3
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         path: '**/node_modules'
-  #         enableCrossOsArchive: true
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
-  #     - name: Build
-  #       run: npm run build
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: build
-  #         path: .next
+  prepare:
+    runs-on: asus-mz
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install
+        run: npm i
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          enableCrossOsArchive: true
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Build
+        run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .next
   start:
     runs-on: asus-mz
-    # needs: prepare
+    needs: prepare
     steps:
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: build
-      # - name: Install npm
-      #   run: npm install npm -g
-      # - name: Stop
-      #   run: npx kill-port 3000
-      # - name: Clean
-      #   continue-on-error: true
-      #   run: rmdir C:\test\.next
+        - uses: actions/download-artifact@v3
+          with:
+            name: build
+        - name: Install npm
+          run: npm install npm -g
+        - name: Stop
+          run: npx kill-port 3000
+        - name: Clean
+          continue-on-error: true
+          run: rmdir C:\test\.next
         - name: Move to public folder
           run: move .next C:\test\
         - name: Start
