@@ -50,7 +50,6 @@ jobs:
         - name: Stop
           run: npx kill-port 3000
         - name: Clean
-          continue-on-error: true
           run: IF EXIST %WORKING_DIRECTORY% RMDIR /S /Q %WORKING_DIRECTORY%.next
         - name: Move to public folder
           run: move .next %WORKING_DIRECTORY%
