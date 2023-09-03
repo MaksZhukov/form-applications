@@ -56,6 +56,4 @@ jobs:
         #   run: move .next %WORKING_DIRECTORY%
         - name: Start
           working-directory: ${{ env.WORKING_FOLDER }}
-          run: |
-                $env:RUNNER_TRACKING_ID=""
-                npm run start
+          run: ./start.sh
