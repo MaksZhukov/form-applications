@@ -62,6 +62,7 @@ jobs:
         #   with:
         #     name: build
         - name: Stop
+          continue-on-error: true
           run: |
                 cd ${{ env.WORKING_FOLDER }} 
                 npx pm2 stop server.js
