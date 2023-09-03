@@ -21,28 +21,28 @@ on:
 
 
 jobs:
-  prepare:
-    runs-on: asus-mz
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-      - name: Install
-        run: npm i
-      - name: Build
-        run: npm run build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: .next
+  # prepare:
+  #   runs-on: asus-mz
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: node_modules
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-modules-
+  #     - name: Install
+  #       run: npm i
+  #     - name: Build
+  #       run: npm run build
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: build
+  #         path: .next
   start:
     runs-on: asus-mz
-    needs: prepare
+    # needs: prepare
     steps:
         - uses: actions/download-artifact@v3
           with:
@@ -50,7 +50,7 @@ jobs:
         - name: Stop
           run: npx kill-port 3000
         - name: Clean
-          run: IF (EXIST %WORKING_DIRECTORY%) RMDIR /S /Q %WORKING_DIRECTORY%.next
+          run: Get-ChildItem -Path C:\Teest -Include *.* -File -Recurse | foreach { $_.Delete()}
         - name: Move to public folder
           run: move .next %WORKING_DIRECTORY%
         - name: Start
