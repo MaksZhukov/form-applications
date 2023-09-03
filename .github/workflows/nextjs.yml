@@ -21,25 +21,30 @@ on:
 
 
 jobs:
-  # prepare:
-  #   runs-on: asus-mz
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Cache node_modules
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: node_modules
-  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-node-modules-
-  #     - name: Install
-  #       run: npm i
-  #     - name: Build
-  #       run: npm run build
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: build
-  #         path: .next
+  prepare:
+    runs-on: asus-mz
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+      - name: Install
+        run: npm i
+      - name: Build
+        run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: |
+                .next
+                .env
+                package.json
+                public
+                uploads
   start:
     runs-on: asus-mz
     # needs: prepare
