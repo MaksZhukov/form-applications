@@ -51,6 +51,7 @@ jobs:
     steps:
         - name: Set working dir
           working-directory: ${{ env.WORKING_FOLDER }}
+          run: ls
         - uses: actions/download-artifact@v3
           with:
             name: build
