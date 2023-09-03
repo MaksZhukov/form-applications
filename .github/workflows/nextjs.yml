@@ -65,8 +65,6 @@ jobs:
             name: build
         - name: Clean
           run: Get-ChildItem -Path C:\Test -Include *.* -File -Recurse | foreach { $_.Delete()}
-        - name: Move to public folder
-          run: move .next %WORKING_DIRECTORY%
         - name: Start
           run: |
                 SET RUNNER_TRACKING_ID=""
