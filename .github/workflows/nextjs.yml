@@ -44,9 +44,9 @@ jobs:
     runs-on: asus-mz
     # needs: prepare
     steps:
-        - uses: actions/download-artifact@v3
-          with:
-            name: build
+        # - uses: actions/download-artifact@v3
+        #   with:
+        #     name: build
         - name: Stop
           run: npx kill-port 3000
         - name: Clean
