@@ -64,7 +64,7 @@ jobs:
         - name: Clean
           run: Get-ChildItem -Path C:\test\ -Include *.* -File -Recurse | foreach { $_.Delete()}
         - name: Copy files
-          run: for %I in (.next .env server.js package.json public uploads) do copy %I %WORKING_FOLDER%
+          run: copy.next .env server.js package.json public/* uploads/* %WORKING_FOLDER%
               
         # - name: Start
         #   run: |
