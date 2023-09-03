@@ -20,26 +20,26 @@ on:
         required: true
 
 
-jobs:
-  prepare:
-    runs-on: asus-mz
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-      - name: Install
-        run: npm i
-      - name: Build
-        run: npm run build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: .next
+# jobs:
+#   prepare:
+#     runs-on: asus-mz
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Cache node_modules
+#         uses: actions/cache@v2
+#         with:
+#           path: node_modules
+#           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-node-modules-
+#       - name: Install
+#         run: npm i
+#       - name: Build
+#         run: npm run build
+#       - uses: actions/upload-artifact@v3
+#         with:
+#           name: build
+#           path: .next
   start:
     runs-on: asus-mz
     needs: prepare
@@ -56,4 +56,6 @@ jobs:
           run: move .next %WORKING_DIRECTORY%
         - name: Start
           working-directory: ${{ env.WORKING_FOLDER }}
-          run: npm start
+          run: |
+                $env:RUNNER_TRACKING_ID=""
+                ./start.sh
