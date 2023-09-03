@@ -57,5 +57,5 @@ jobs:
         - name: Start
           working-directory: ${{ env.WORKING_FOLDER }}
           run: |
-                SET RUNNER_TRACKING_ID=""
+                SET RUNNER_TRACKING_ID="" -f
                 npx pm2 start server.js
