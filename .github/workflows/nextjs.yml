@@ -49,25 +49,22 @@ jobs:
   start:
     runs-on: asus-mz
     # needs: prepare
-    defaults:
-      run:
-        working-directory: C:\test\
     steps:
-        - name: Restore Node_modules
-          uses: actions/cache@v2
-          with:
-              path: node_modules
-              key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: |
-                ${{ runner.os }}-node-modules-
-              post-clean: ''
-        - uses: actions/download-artifact@v3
-          with:
-            name: build
+        # - name: Restore Node_modules
+        #   uses: actions/cache@v2
+        #   with:
+        #       path: node_modules
+        #       key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        #       restore-keys: |
+        #         ${{ runner.os }}-node-modules-
+        #       post-clean: ''
+        # - uses: actions/download-artifact@v3
+        #   with:
+        #     name: build
         - name: Clean
           run: Get-ChildItem -Path C:\test\ -Include *.* -File -Recurse | foreach { $_.Delete()}
         - name: Copy files
-          run: Copy-Item "./.next" -Destination "C:/test"
+          run: Copy-Item ./.next,./.env,./server.js,./package.json,./public,./uploads -Destination %WORKING_FOLDER%
               
         # - name: Start
         #   run: |
