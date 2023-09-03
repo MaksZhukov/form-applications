@@ -47,8 +47,8 @@ jobs:
         # - uses: actions/download-artifact@v3
         #   with:
         #     name: build
-        # - name: Stop
-        #   run: npx kill-port 3000
+        - name: Stop
+          run: npx kill-port 3000
         # - name: Clean
         #   continue-on-error: true
         #   run: IF EXIST %WORKING_DIRECTORY% RMDIR /S /Q %WORKING_DIRECTORY%.next
@@ -58,4 +58,4 @@ jobs:
           working-directory: ${{ env.WORKING_FOLDER }}
           run: |
                 $env:RUNNER_TRACKING_ID=""
-                ./start.sh
+                npm run start
