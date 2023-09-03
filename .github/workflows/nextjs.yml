@@ -67,7 +67,7 @@ jobs:
         - name: Clean
           run: Get-ChildItem -Path C:\test\ -Include *.* -File -Recurse | foreach { $_.Delete()}
         - name: Copy files
-          run: Copy-Item "./.next" -Destination "C:\test"
+          run: Copy-Item "./.next" -Destination "C:/test"
               
         # - name: Start
         #   run: |
