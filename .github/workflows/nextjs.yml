@@ -60,4 +60,4 @@ jobs:
           working-directory: ${{ env.WORKING_FOLDER }}
           run: |
                 $env:RUNNER_TRACKING_ID=""
-                pm2 start server.js
+                npx pm2 start server.js
