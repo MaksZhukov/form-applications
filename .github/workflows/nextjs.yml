@@ -20,7 +20,7 @@ on:
         required: true
 
 
-# jobs:
+jobs:
 #   prepare:
 #     runs-on: asus-mz
 #     steps:
