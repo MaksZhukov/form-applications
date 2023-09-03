@@ -67,10 +67,7 @@ jobs:
                 cd ${{ env.WORKING_FOLDER }} 
                 npx pm2 stop server.js
         - name: Clean
-          run: |
-              cd ${{ env.WORKING_FOLDER }}
-              ls
-              rm -Path ".next"
+          run: Remove-Item -Path C:\test\.next -Force
         - name: Copy files
           run: Copy-Item -Path "./.next", "./public", "./server.js", "./uploads", "./package.json", "./node_modules" -Destination ${{ env.WORKING_FOLDER }} -Recurse              
         - name: Start
