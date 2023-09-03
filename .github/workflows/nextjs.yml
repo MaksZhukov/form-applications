@@ -21,10 +21,10 @@ on:
 
 
 jobs:
-  prepare:
-    runs-on: asus-mz
-    steps:
-      - uses: actions/checkout@v3
+  # prepare:
+  #   runs-on: asus-mz
+  #   steps:
+  #     - uses: actions/checkout@v3
       # - name: Cache node_modules
       #   uses: actions/cache@v2
       #   with:
@@ -32,10 +32,10 @@ jobs:
       #     key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
       #     restore-keys: |
       #       ${{ runner.os }}-node-modules-
-      - name: Install
-        run: npm i
-      - name: Build
-        run: npm run build
+      # - name: Install
+      #   run: npm i
+      # - name: Build
+      #   run: npm run build
       # - uses: actions/upload-artifact@v3
       #   with:
       #     name: build
@@ -48,7 +48,7 @@ jobs:
       #           uploads
   start:
     runs-on: asus-mz
-    needs: prepare
+    # needs: prepare
     defaults:
       run:
         working-directory: C:\test\
