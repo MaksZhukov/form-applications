@@ -48,10 +48,10 @@ jobs:
   start:
     runs-on: asus-mz
     needs: prepare
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_FOLDER }}
     steps:
-        - name: Set working dir
-          working-directory: ${{ env.WORKING_FOLDER }}
-          run: ls
         - name: Restore Node_modules
           uses: actions/cache@v2
           with:
