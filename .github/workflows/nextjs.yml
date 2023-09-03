@@ -42,7 +42,7 @@ jobs:
 #           path: .next
   start:
     runs-on: asus-mz
-    needs: prepare
+    # needs: prepare
     steps:
         - uses: actions/download-artifact@v3
           with:
