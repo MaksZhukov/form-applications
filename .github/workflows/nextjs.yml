@@ -54,7 +54,6 @@ jobs:
         working-directory: ${{ env.WORKING_FOLDER }}
     steps:
         - name: Ser working dir
-          # working-directory: ${{ env.WORKING_FOLDER }}
           run: ls
         # - name: Restore Node_modules
         #   uses: actions/cache@v2
