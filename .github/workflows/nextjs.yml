@@ -50,7 +50,7 @@ jobs:
         - name: Stop
           run: npx kill-port 3000
         - name: Clean
-          run: Get-ChildItem -Path C:\Teest -Include *.* -File -Recurse | foreach { $_.Delete()}
+          run: Get-ChildItem -Path C:\Test -Include *.* -File -Recurse | foreach { $_.Delete()}
         - name: Move to public folder
           run: move .next %WORKING_DIRECTORY%
         - name: Start
