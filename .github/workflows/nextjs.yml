@@ -47,19 +47,18 @@ jobs:
                 uploads
   start:
     runs-on: asus-mz
-    # needs: prepare
+    needs: prepare
     steps:
-        # - uses: actions/download-artifact@v3
-        #   with:
-        #     name: build
-        - name: Stop
-          run: npx kill-port 3000
+        - name: Set working dir
+          working-directory: ${{ env.WORKING_FOLDER }}
+        - uses: actions/download-artifact@v3
+          with:
+            name: build
         - name: Clean
           run: Get-ChildItem -Path C:\Test -Include *.* -File -Recurse | foreach { $_.Delete()}
         - name: Move to public folder
           run: move .next %WORKING_DIRECTORY%
         - name: Start
-          working-directory: ${{ env.WORKING_FOLDER }}
           run: |
                 SET RUNNER_TRACKING_ID=""
                 npx pm2 restart server.js
