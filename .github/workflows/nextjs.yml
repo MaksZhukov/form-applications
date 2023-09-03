@@ -42,6 +42,7 @@ jobs:
           path: |
                 .next
                 .env
+                server.js
                 package.json
                 public
                 uploads
