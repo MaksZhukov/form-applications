@@ -64,7 +64,7 @@ jobs:
         - name: Clean
           run: Remove-Item -Path ${{ env.WORKING_FOLDER }}* -Force
         - name: Copy files
-          run: Copy-Item -Path "./.env", "./.next", "./public", "./server.js", "./uploads", "./package.json" -Destination ${{ env.WORKING_FOLDER }}
+          run: Copy-Item -Path "./.env", "./.next", "./public", "./server.js", "./uploads", "./package.json", "./node_modules" -Destination ${{ env.WORKING_FOLDER }}
               
         # - name: Start
         #   run: |
