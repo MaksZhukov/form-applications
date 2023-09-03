@@ -49,9 +49,9 @@ jobs:
   start:
     runs-on: asus-mz
     # needs: prepare
-    # defaults:
-    #   run:
-    #     working-directory: ${{ env.WORKING_FOLDER }}
+    defaults:
+      run:
+        working-directory: C:\test\
     steps:
         - name: Ser working dir
           working-directory: ${{ env.WORKING_FOLDER }}
