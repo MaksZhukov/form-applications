@@ -83,7 +83,7 @@ const Table: FC<Props> = ({
 					<option value='none'>Не выбрано</option>
 					<option value='В обработке'>В обработке</option>
 					<option value='В работе'>В работе</option>
-					<option value='Выполнена'>Выполнена</option>
+					<option value='Выполнено'>Выполнено</option>
 				</select>
 			)
 		},
