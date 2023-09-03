@@ -54,6 +54,10 @@ jobs:
         #   run: IF EXIST %WORKING_DIRECTORY% RMDIR /S /Q %WORKING_DIRECTORY%.next
         # - name: Move to public folder
         #   run: move .next %WORKING_DIRECTORY%
+        - name: PM2
+          run: npm i pm2 -g
         - name: Start
           working-directory: ${{ env.WORKING_FOLDER }}
-          run: ./start.sh
+          run: |
+                $env:RUNNER_TRACKING_ID=""
+                pm2 start server.js
