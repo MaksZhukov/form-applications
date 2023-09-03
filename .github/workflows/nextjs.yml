@@ -21,55 +21,55 @@ on:
 
 
 jobs:
-  prepare:
-    runs-on: asus-mz
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-      - name: Install
-        run: npm i
-      - name: Build
-        run: npm run build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: |
-                .next
-                .env
-                server.js
-                package.json
-                public
-                uploads
+  # prepare:
+  #   runs-on: asus-mz
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: node_modules
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-modules-
+  #     - name: Install
+  #       run: npm i
+  #     - name: Build
+  #       run: npm run build
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: build
+  #         path: |
+  #               .next
+  #               .env
+  #               server.js
+  #               package.json
+  #               public
+  #               uploads
   start:
     runs-on: asus-mz
-    needs: prepare
+    # needs: prepare
     defaults:
       run:
         working-directory: ${{ env.WORKING_FOLDER }}
     steps:
         - name: Ser working dir
-          working-directory: ${{ env.WORKING_FOLDER }}
+          # working-directory: ${{ env.WORKING_FOLDER }}
           run: ls
-        - name: Restore Node_modules
-          uses: actions/cache@v2
-          with:
-              path: node_modules
-              key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: |
-                ${{ runner.os }}-node-modules-
-              post-clean: ''
-        - uses: actions/download-artifact@v3
-          with:
-            name: build
-        - name: Clean
-          run: Get-ChildItem -Path C:\Test -Include *.* -File -Recurse | foreach { $_.Delete()}
-        - name: Start
-          run: |
-                SET RUNNER_TRACKING_ID=""
-                npx pm2 restart server.js
+        # - name: Restore Node_modules
+        #   uses: actions/cache@v2
+        #   with:
+        #       path: node_modules
+        #       key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        #       restore-keys: |
+        #         ${{ runner.os }}-node-modules-
+        #       post-clean: ''
+        # - uses: actions/download-artifact@v3
+        #   with:
+        #     name: build
+        # - name: Clean
+        #   run: Get-ChildItem -Path C:\Test -Include *.* -File -Recurse | foreach { $_.Delete()}
+        # - name: Start
+        #   run: |
+        #         SET RUNNER_TRACKING_ID=""
+        #         npx pm2 restart server.js
