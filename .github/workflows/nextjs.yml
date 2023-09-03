@@ -61,12 +61,15 @@ jobs:
         # - uses: actions/download-artifact@v3
         #   with:
         #     name: build
+        - name: Stop
+          run: |
+                cd ${{ env.WORKING_FOLDER }} 
+                npx pm2 stop server.js
         - name: Clean
           run: Remove-Item -Path ${{ env.WORKING_FOLDER }}* -Force -Exclude "./.env"
         - name: Copy files
-          run: Copy-Item -Path "./.env", "./.next", "./public", "./server.js", "./uploads", "./package.json", "./node_modules" -Destination ${{ env.WORKING_FOLDER }} -Recurse
-              
-        # - name: Start
-        #   run: |
-        #         SET RUNNER_TRACKING_ID=""
-        #         npx pm2 restart server.js
+          run: Copy-Item -Path "./.env", "./.next", "./public", "./server.js", "./uploads", "./package.json", "./node_modules" -Destination ${{ env.WORKING_FOLDER }} -Recurse              
+        - name: Start
+          run: |
+                SET RUNNER_TRACKING_ID=""
+                npx pm2 start server.js
