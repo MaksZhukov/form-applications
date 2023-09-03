@@ -69,7 +69,7 @@ jobs:
         - name: Clean
           run: |
               cd ${{ env.WORKING_FOLDER }}
-              rm .next, ./public
+              rm .next
         - name: Copy files
           run: Copy-Item -Path "./.next", "./public", "./server.js", "./uploads", "./package.json", "./node_modules" -Destination ${{ env.WORKING_FOLDER }} -Recurse              
         - name: Start
