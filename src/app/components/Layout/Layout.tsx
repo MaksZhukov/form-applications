@@ -12,9 +12,10 @@ import { FC, FormEventHandler, ReactNode, useEffect, useState } from 'react';
 
 interface Props {
 	children: ReactNode;
+	onClickLogo?: () => void;
 }
 
-const Layout: FC<Props> = ({ children }) => {
+const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const { data, error, isError, isLoading } = useQuery({
@@ -35,6 +36,8 @@ const Layout: FC<Props> = ({ children }) => {
 
 	const handleClickLogo = () => {
 		router.push('/');
+		saveSelectedOrganizationId('none');
+		onClickLogo();
 	};
 
 	const handleLogout = async () => {

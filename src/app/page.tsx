@@ -71,8 +71,13 @@ export default function Home() {
 		router.push(`/new`);
 	};
 
+	const handleClickLogo = () => {
+		setSelectedOrganizationId('none');
+		setSelectedStatus('none');
+	};
+
 	return (
-		<Layout>
+		<Layout onClickLogo={handleClickLogo}>
 			{isLoading ? (
 				<div>
 					<Spinner className='h-12 w-12 mx-auto'></Spinner>
