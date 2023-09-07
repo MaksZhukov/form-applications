@@ -38,6 +38,7 @@ export async function PUT(request: NextRequest) {
 	const description = formData.get('description') as string;
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
+	const organizationId = formData.get('organizationId') as string;
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const email = formData.get('email') as string;
@@ -70,7 +71,8 @@ export async function PUT(request: NextRequest) {
 					isArchived: Boolean(isArchived),
 					name,
 					isUrgent: Boolean(isUrgent),
-					email
+					email,
+					organizationId
 				},
 				isNil
 			),

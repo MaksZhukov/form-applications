@@ -184,7 +184,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							defaultValue={
 								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
 							}
-							name='organizationUserId'
+							name='organizationId'
 							className='mt-1 border h-full border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
