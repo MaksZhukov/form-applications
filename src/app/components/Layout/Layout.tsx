@@ -84,7 +84,7 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 						height={29}
 						alt='Logo'></Image>
 					<span className='flex items-center'>
-						Добро пожаловать
+						Добро пожаловать {data?.data.role === 'admin' && 'админ'}
 						<span className='text-accent font-bold pl-2'>{data?.data.email}</span>
 						<Menu placement='bottom-end'>
 							<MenuHandler>
