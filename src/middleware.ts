@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 		if (token) {
 			if (token !== process.env.ADMIN_TOKEN) {
 				const {
-					payload: { role },
+					payload: { role }
 				} = await verify(token);
 				if (role !== 'admin') {
 					return new NextResponse('wrong token', { status: 401 });
@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
 	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'GET' && token) {
 		try {
 			const {
-				payload: { role },
+				payload: { role }
 			} = await verify(token);
 			if (role === 'admin') {
 				return NextResponse.next();
@@ -50,6 +50,13 @@ export async function middleware(request: NextRequest) {
 			const res = new NextResponse('no permissions', { status: 401 });
 			res.cookies.delete('token');
 			return res;
+		}
+	}
+	if (request.nextUrl.pathname.startsWith('/api/organizations/') && request.method === 'PUT') {
+		if (token === process.env.ADMIN_TOKEN) {
+			return NextResponse.next();
+		} else {
+			return new NextResponse('no permissions', { status: 401 });
 		}
 	}
 }

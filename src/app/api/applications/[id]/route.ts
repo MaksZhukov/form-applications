@@ -29,9 +29,9 @@ export async function GET(request: NextRequest) {
 	}
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+	const { id } = params;
 	const token = request.cookies.get('token')?.value as string;
-	const id = parseInt(request.nextUrl.pathname.split('/')[3]);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
 	const status = formData.get('status') as ApplicationStatus;
