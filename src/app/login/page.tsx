@@ -7,19 +7,29 @@ import { useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 import { login } from '../api/login';
 import { saveLoginTime } from '../localStorage';
+import { AxiosError } from 'axios';
 
 export default function Login() {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
+	const [isInvalid, setIsInvalid] = useState<boolean>(false);
 	const router = useRouter();
 	const { mutateAsync } = useMutation<any, any, { email: string; password: string }>({
 		mutationFn: (data) => login(data.email, data.password)
 	});
 
 	const handleSignIn = async () => {
-		await mutateAsync({ email, password });
-		saveLoginTime(new Date().getTime().toString());
-		router.push('/');
+		try {
+			await mutateAsync({ email, password });
+			saveLoginTime(new Date().getTime().toString());
+			router.push('/');
+		} catch (err) {
+			if (err instanceof AxiosError) {
+				if (err.response?.status === 400) {
+					setIsInvalid(true);
+				}
+			}
+		}
 	};
 	const handleChangePassword = (e: ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value);
@@ -67,6 +77,7 @@ export default function Login() {
 							placeholder='John'
 							required
 						/>
+						{isInvalid && <p className='mt-2 text-sm text-red-600 dark:text-red-500'>Неверный пароль</p>}
 					</div>
 					<Button className='bg-accent p-5' onClick={handleSignIn} fullWidth>
 						Войти
