@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	const {
-		payload: { id }
+		payload: { id, role }
 	} = await verify(request.cookies.get('token')?.value as string);
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 	const isUrgent = formData.get('isUrgent') as string;
 	const isArchived = formData.get('isArchived') as string;
 	const email = formData.get('email') as string;
-	const organizationUserId = formData.get('organizationUserId') as string;
+	const organizationId = formData.get('organizationId') as string;
 
 	if (!title || !description || !phone || !name) {
 		return new NextResponse('required fields', { status: 400 });
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 			status: 'в обработке',
 			email,
 			isUrgent: Boolean(isUrgent),
-			organizationId: organizationUserId ? +organizationUserId : (id as number)
+			organizationId: role === 'admin' ? +organizationId : (id as number)
 		});
 
 		return NextResponse.json({ data: application });
