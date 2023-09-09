@@ -9,7 +9,9 @@ import { OrganizationAttributes } from '@/db/organization/types';
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
+
+const MAX_PART_PAGINATION = 10;
 
 interface Props {
 	data: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name' | 'uid'> })[];
@@ -44,8 +46,13 @@ const Table: FC<Props> = ({
 	const handleClickMore = (item: ApplicationAttributes) => () => {
 		router.push(`/${item.id}`);
 	};
-
+	const [partPagination, setPartPagination] = useState<number>(1);
 	const countPages = Math.ceil(total / API_LIMIT_ITEMS);
+	const countPagesByPart =
+		MAX_PART_PAGINATION * partPagination > countPages
+			? countPages - MAX_PART_PAGINATION * (partPagination - 1)
+			: MAX_PART_PAGINATION;
+	const maxPartPaginationCount = Math.ceil(countPages / MAX_PART_PAGINATION);
 
 	const TABLE_HEAD = [
 		{ name: '№' },
@@ -90,6 +97,9 @@ const Table: FC<Props> = ({
 		{ name: 'Срочность' },
 		{ name: '' }
 	];
+	const handleChangePart = (value: number) => () => {
+		setPartPagination(value);
+	};
 
 	return (
 		<>
@@ -167,14 +177,30 @@ const Table: FC<Props> = ({
 			<div className='w-full flex'>
 				{countPages > 1 && (
 					<ButtonGroup variant='outlined' className='mx-auto'>
-						{new Array(countPages).fill(null).map((item, index) => (
-							<IconButton
-								key={index + 1}
-								className={page === index + 1 ? 'bg-blue-100 text-blue-gray-900' : ''}
-								onClick={onChangePage(index + 1)}>
-								{index + 1}
-							</IconButton>
-						))}
+						{partPagination > 1 && (
+							<IconButton onClick={handleChangePart(partPagination - 1)}>...</IconButton>
+						)}
+						{new Array(countPagesByPart).fill(null).map((item, index) => {
+							const currentPage = index + MAX_PART_PAGINATION * (partPagination - 1) + 1;
+							return (
+								<IconButton
+									key={currentPage}
+									className={
+										page === currentPage
+											? 'bg-blue-100 text-blue-gray-900'
+											: index + 1 === countPagesByPart &&
+											  partPagination === maxPartPaginationCount
+											? 'border-r-1'
+											: ''
+									}
+									onClick={onChangePage(currentPage)}>
+									{currentPage}
+								</IconButton>
+							);
+						})}
+						{partPagination !== maxPartPaginationCount && (
+							<IconButton onClick={handleChangePart(partPagination + 1)}>...</IconButton>
+						)}
 					</ButtonGroup>
 				)}
 			</div>
