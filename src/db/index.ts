@@ -7,15 +7,18 @@ import { fileSchema } from './files/schema';
 import { FileAttributes, FileAttributesCreation } from './files/types';
 import { organizationSchema } from './organization/schema';
 import { OrganizationAttributes, OrganizationAttributesCreation } from './organization/types';
+import { CommentAttributes, CommentAttributesCreation } from './comments/types';
+import { commentSchema } from './comments/schema';
 
 let OrganizationModel: ModelStatic<Model<OrganizationAttributes, OrganizationAttributesCreation>>;
 let ApplicationModel: ModelStatic<Model<ApplicationAttributes, ApplicationAttributesCreation>>;
 let FileModel: ModelStatic<Model<FileAttributes, FileAttributesCreation>>;
+let CommentModel: ModelStatic<Model<CommentAttributes, CommentAttributesCreation>>;
 
 let sequelize: Sequelize;
 export const initialize = async () => {
 	if (sequelize) {
-		return { OrganizationModel, ApplicationModel, FileModel };
+		return { OrganizationModel, ApplicationModel, FileModel, CommentModel };
 	}
 	const connection = await mysqlPromise.createConnection({
 		host: process.env.DATABASE_HOST,
@@ -45,6 +48,12 @@ export const initialize = async () => {
 	FileModel = sequelize.define<Model<FileAttributes, FileAttributesCreation>>('file', fileSchema);
 	// await ApplicationModel.update({ deadline: '12.12.2012' }, { where: { id: 22 } });
 	FileModel.belongsTo(ApplicationModel);
-	// await sequelize.sync({ alter: true });
+
+	CommentModel = sequelize.define<Model<CommentAttributes, CommentAttributesCreation>>('comment', commentSchema);
+
+	CommentModel.belongsTo(OrganizationModel);
+	CommentModel.belongsTo(ApplicationModel);
+
+	await CommentModel.sync({ alter: true });
 	return { OrganizationModel, ApplicationModel, FileModel };
 };
