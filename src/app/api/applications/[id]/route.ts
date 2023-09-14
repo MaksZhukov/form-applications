@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 		const { ApplicationModel, OrganizationModel } = await initialize();
 		const data = await ApplicationModel.findOne({
 			where: role === 'admin' ? { id } : { id, organizationId: orgId as number },
-			include: { model: OrganizationModel, attributes: ['id', 'name', 'email'] }
+			include: { model: OrganizationModel, attributes: ['id', 'name'] }
 		});
 		if (data) {
 			const result = { data };
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 			{ where: role === 'admin' ? { id } : { id, organizationId: orgId as number } }
 		);
 		const data = await ApplicationModel.findByPk(id, {
-			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name', 'email'] }
+			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name'] }
 		});
 
 		return NextResponse.json({ data });

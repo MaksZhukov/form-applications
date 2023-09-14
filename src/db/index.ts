@@ -12,11 +12,13 @@ import { OrganizationModel } from './organization/model';
 import { FileModel } from './file/model';
 import { ApplicationCommentModel } from './applicationComment/model';
 import { applicationCommentSchema } from './applicationComment/schema';
+import { UserModel } from './users/model';
+import { userSchema } from './users/schema';
 
 let sequelize: Sequelize;
 export const initialize = async () => {
 	if (sequelize) {
-		return { OrganizationModel, ApplicationModel, FileModel, CommentModel };
+		return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel };
 	}
 	const connection = await mysqlPromise.createConnection({
 		host: process.env.DATABASE_HOST,
@@ -32,25 +34,46 @@ export const initialize = async () => {
 		omitNull: true
 	});
 
-	ApplicationCommentModel.init(applicationCommentSchema, { sequelize, modelName: 'application_comments', timestamps: false })
-
 	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
-	if (process.env.NODE_ENV === 'development') {
 
-		await OrganizationModel.findOrCreate({ where: { email: 'admin@mail.ru' }, defaults: { email: 'admin@mail.ru', name: 'admin', uid: 'uidadmin', password: await bcrypt.hash('admin', +process.env.BCRYPT_SALT), role: 'admin' } })
-	}
+	UserModel.init(userSchema, { sequelize, modelName: 'user' });
+	UserModel.belongsTo(OrganizationModel);
+
+	ApplicationCommentModel.init(applicationCommentSchema, {
+		sequelize,
+		modelName: 'application_comments',
+		timestamps: false
+	});
+
 	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
 	ApplicationModel.belongsTo(OrganizationModel);
 
-
-	FileModel.init(fileSchema, { sequelize, modelName: 'file' })
+	FileModel.init(fileSchema, { sequelize, modelName: 'file' });
 	FileModel.belongsTo(ApplicationModel);
 
-	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' })
+	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
 	CommentModel.belongsTo(OrganizationModel);
 	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
 	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
 
 	// await sequelize.sync({ alter: true });
-	return { OrganizationModel, ApplicationModel, FileModel, CommentModel };
+
+	if (process.env.NODE_ENV === 'development') {
+		const [organization] = await OrganizationModel.findOrCreate({
+			where: { name: 'admin' },
+			defaults: { name: 'Admin', uid: 'uidadmin' }
+		});
+		await UserModel.findOrCreate({
+			where: { email: 'admin@mail.ru' },
+			defaults: {
+				email: 'admin@mail.ru',
+				name: 'admin',
+				organizationId: organization.dataValues.id,
+				password: await bcrypt.hash('admin', +process.env.BCRYPT_SALT),
+				role: 'admin'
+			}
+		});
+	}
+
+	return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel };
 };

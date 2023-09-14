@@ -1,6 +1,6 @@
 'user client';
 
-import { fetchOrganization } from '@/app/api/organization';
+import { fetchUser } from '@/app/api/user';
 import { getLoginTime } from '@/app/localStorage';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { ApplicationAttributes, ApplicationStatus } from '@/db/application/types';
@@ -14,7 +14,7 @@ import { ChangeEvent, FC, useState } from 'react';
 const MAX_PART_PAGINATION = 10;
 
 interface Props {
-	data: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name' | 'uid'> })[];
+	data: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name' | 'uid'> })[];
 	organizations?: Pick<OrganizationAttributes, 'id' | 'name'>[];
 	total?: number;
 	page: number;
@@ -36,12 +36,12 @@ const Table: FC<Props> = ({
 	onChangeOrganization,
 	onChangeStatus
 }) => {
-	const { data: organizationData } = useQuery(['user', getLoginTime()], {
+	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchOrganization
+		queryFn: fetchUser
 	});
-	const isAdmin = organizationData?.data.role === 'admin';
+	const isAdmin = userData?.data.role === 'admin';
 	const router = useRouter();
 	const handleClickMore = (item: ApplicationAttributes) => () => {
 		router.push(`/${item.id}`);

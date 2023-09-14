@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 		const { rows, count } = await ApplicationModel.findAndCountAll({
 			where: omitBy({ isArchived: false, status, organizationId: role === 'admin' ? organizationId : id }, isNil),
 			order: [['createdAt', 'DESC']],
-			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name', 'email'] },
+			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name'] },
 			limit,
 			offset
 		});

@@ -3,7 +3,6 @@ import { Role } from '@/db/organization/types';
 import { verify } from '@/services/jwt';
 import { NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
-import { io } from '../../../../server';
 
 export async function GET(request: NextRequest) {
 	const res = new NextResponse();
