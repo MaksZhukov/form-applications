@@ -8,7 +8,7 @@ import { fetchOrganizations } from '@/app/api/organizations';
 import { ApiResponse } from '@/app/api/types';
 import { getLoginTime } from '@/app/localStorage';
 import { ApplicationAttributes } from '@/db/application/types';
-import { FileAttributes } from '@/db/files/types';
+import { FileAttributes } from '@/db/file/types';
 import { OrganizationAttributes } from '@/db/organization/types';
 import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';

@@ -1,5 +1,5 @@
 import { initialize } from '@/db';
-import { FileAttributesCreation } from '@/db/files/types';
+import { FileAttributesCreation } from '@/db/file/types';
 import { Role } from '@/db/organization/types';
 import { verify } from '@/services/jwt';
 import fs from 'fs';

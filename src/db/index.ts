@@ -1,19 +1,17 @@
 import mysql from 'mysql2';
 import mysqlPromise from 'mysql2/promise';
-import { Model, ModelStatic, Sequelize } from 'sequelize';
+import { BelongsToManyAddAssociationMixin, DataTypes, Model, ModelStatic, Sequelize } from 'sequelize';
 import { applicationSchema } from './application/schema';
-import { ApplicationAttributes, ApplicationAttributesCreation } from './application/types';
-import { fileSchema } from './files/schema';
-import { FileAttributes, FileAttributesCreation } from './files/types';
+import { fileSchema } from './file/schema';
 import { organizationSchema } from './organization/schema';
-import { OrganizationAttributes, OrganizationAttributesCreation } from './organization/types';
-import { CommentAttributes, CommentAttributesCreation } from './comments/types';
-import { commentSchema } from './comments/schema';
-
-let OrganizationModel: ModelStatic<Model<OrganizationAttributes, OrganizationAttributesCreation>>;
-let ApplicationModel: ModelStatic<Model<ApplicationAttributes, ApplicationAttributesCreation>>;
-let FileModel: ModelStatic<Model<FileAttributes, FileAttributesCreation>>;
-let CommentModel: ModelStatic<Model<CommentAttributes, CommentAttributesCreation>>;
+import bcrypt from 'bcrypt';
+import { ApplicationModel } from './application/model';
+import { CommentModel } from './comment/model';
+import { commentSchema } from './comment/schema';
+import { OrganizationModel } from './organization/model';
+import { FileModel } from './file/model';
+import { ApplicationCommentModel } from './applicationComment/model';
+import { applicationCommentSchema } from './applicationComment/schema';
 
 let sequelize: Sequelize;
 export const initialize = async () => {
@@ -34,26 +32,25 @@ export const initialize = async () => {
 		omitNull: true
 	});
 
-	OrganizationModel = sequelize.define<Model<OrganizationAttributes, OrganizationAttributesCreation>>(
-		'organization',
-		organizationSchema
-	);
+	ApplicationCommentModel.init(applicationCommentSchema, { sequelize, modelName: 'application_comments', timestamps: false })
 
-	ApplicationModel = sequelize.define<Model<ApplicationAttributes, ApplicationAttributesCreation>>(
-		'application',
-		applicationSchema
-	);
+	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
+	if (process.env.NODE_ENV === 'development') {
+
+		await OrganizationModel.findOrCreate({ where: { email: 'admin@mail.ru' }, defaults: { email: 'admin@mail.ru', name: 'admin', uid: 'uidadmin', password: await bcrypt.hash('admin', +process.env.BCRYPT_SALT), role: 'admin' } })
+	}
+	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
 	ApplicationModel.belongsTo(OrganizationModel);
 
-	FileModel = sequelize.define<Model<FileAttributes, FileAttributesCreation>>('file', fileSchema);
-	// await ApplicationModel.update({ deadline: '12.12.2012' }, { where: { id: 22 } });
+
+	FileModel.init(fileSchema, { sequelize, modelName: 'file' })
 	FileModel.belongsTo(ApplicationModel);
 
-	CommentModel = sequelize.define<Model<CommentAttributes, CommentAttributesCreation>>('comment', commentSchema);
-
+	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' })
 	CommentModel.belongsTo(OrganizationModel);
-	CommentModel.belongsTo(ApplicationModel);
+	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
+	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
 
-	await CommentModel.sync({ alter: true });
-	return { OrganizationModel, ApplicationModel, FileModel };
+	// await sequelize.sync({ alter: true });
+	return { OrganizationModel, ApplicationModel, FileModel, CommentModel };
 };

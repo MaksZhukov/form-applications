@@ -3,7 +3,7 @@ import { verify } from './services/jwt';
 
 export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value;
-	if (request.nextUrl.pathname === '/api/applications' || request.nextUrl.pathname === '/api/organization') {
+	if (request.nextUrl.pathname === '/api/applications' || request.nextUrl.pathname === '/api/organization' || request.nextUrl.pathname === '/api/socket') {
 		if (!token) {
 			const res = new NextResponse('no token', { status: 401 });
 			res.cookies.delete('token');

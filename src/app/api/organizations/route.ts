@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 	const uid = formData.get('uid') as string;
 	try {
 		const { OrganizationModel } = await initialize();
-		await OrganizationModel.create({ email, password: await bcrypt.hash(password, 10), role, name, uid });
+		await OrganizationModel.create({ email, password: await bcrypt.hash(password, +process.env.BCRYPT_SALT), role, name, uid });
 	} catch (err) {
 		if (err instanceof Error) {
 			return new NextResponse(err.message, { status: 500 });

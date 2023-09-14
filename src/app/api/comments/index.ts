@@ -1,7 +1,7 @@
-import { FileAttributes } from '@/db/files/types';
+import { FileAttributes } from '@/db/file/types';
 import client from '../client';
 import { ApiResponse } from '../types';
-import { CommentAttributes } from '@/db/comments/types';
+import { CommentAttributes } from '@/db/comment/types';
 
 export const getComments = (applicationId: number) =>
 	client

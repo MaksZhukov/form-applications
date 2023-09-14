@@ -1,4 +1,4 @@
-import { FileAttributes } from '@/db/files/types';
+import { FileAttributes } from '@/db/file/types';
 import client from '../client';
 import { ApiResponse } from '../types';
 
