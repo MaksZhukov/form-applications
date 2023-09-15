@@ -10,11 +10,11 @@ export async function GET(request: NextRequest) {
 	const token = request.cookies.get('token')?.value as string;
 	try {
 		const {
-			payload: { id: orgId, role }
+			payload: { organizationId, role }
 		} = await verify(token);
 		const { ApplicationModel, OrganizationModel } = await initialize();
 		const data = await ApplicationModel.findOne({
-			where: role === 'admin' ? { id } : { id, organizationId: orgId as number },
+			where: role === 'admin' ? { id } : { id, organizationId: organizationId as number },
 			include: { model: OrganizationModel, attributes: ['id', 'name'] }
 		});
 		if (data) {
@@ -38,7 +38,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const description = formData.get('description') as string;
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
-	const organizationId = formData.get('organizationId') as string;
+	const organizationIdForm = formData.get('organizationId') as string;
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const email = formData.get('email') as string;
@@ -54,7 +54,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	}
 
 	const {
-		payload: { id: orgId, role }
+		payload: { organizationId, role }
 	} = await verify(token);
 
 	const { ApplicationModel, OrganizationModel } = await initialize();
@@ -72,11 +72,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 					name,
 					isUrgent: Boolean(isUrgent),
 					email,
-					organizationId
+					organizationId: organizationIdForm
 				},
 				isNil
 			),
-			{ where: role === 'admin' ? { id } : { id, organizationId: orgId as number } }
+			{ where: role === 'admin' ? { id } : { id, organizationId: organizationId as number } }
 		);
 		const data = await ApplicationModel.findByPk(id, {
 			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name'] }

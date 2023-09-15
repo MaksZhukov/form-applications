@@ -13,18 +13,18 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('no applicationId', { status: 400 });
 	}
 	const { FileModel, ApplicationModel } = await initialize();
-	let id: number;
+	let organizationId: number;
 	let role: Role;
 	try {
 		const res = await verify(token);
-		id = res.payload.id as number;
 		role = res.payload.role as Role;
+		organizationId = res.payload.organizationId as number;
 	} catch (err) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	try {
 		const data = await FileModel.findAll({
-			where: { applicationId, '$application.organizationId$': id },
+			where: { applicationId, '$application.organizationId$': organizationId },
 			attributes: { exclude: ['applicationId'] },
 			include: { model: ApplicationModel, attributes: [] }
 		});
