@@ -6,9 +6,7 @@ import { ApiResponse } from '../types';
 
 export const fetchApplications = (offset: number = 1, status?: string, organizationId?: string) =>
 	client.get<
-		ApiResponse<
-			(ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name' | 'uid'> })[]
-		>
+		ApiResponse<(ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name' | 'uid'> })[]>
 	>(`/api/applications?${qs.stringify({ offset, status, organizationId })}`);
 
 export const createApplication = (data: FormData) =>
