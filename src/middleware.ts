@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verify } from './services/jwt';
 
+const privatePaths = ['/api/applications', '/api/organization', '/api/user', '/api/users', '/api/socket'];
+
 export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value;
-	if (request.nextUrl.pathname === '/api/applications' || request.nextUrl.pathname === '/api/organization' || request.nextUrl.pathname === '/api/socket') {
+	if (privatePaths.includes(request.nextUrl.pathname)) {
 		if (!token) {
 			const res = new NextResponse('no token', { status: 401 });
 			res.cookies.delete('token');
@@ -52,7 +54,7 @@ export async function middleware(request: NextRequest) {
 			return res;
 		}
 	}
-	if (request.nextUrl.pathname.startsWith('/api/organizations/') && request.method === 'PUT') {
+	if (request.nextUrl.pathname.startsWith('/api/users/') && request.method === 'PUT') {
 		if (token === process.env.ADMIN_TOKEN) {
 			return NextResponse.next();
 		} else {
