@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 	let role: string;
 	try {
 		const res = await verify(token);
-		orgId = res.payload.id as number;
+		orgId = res.payload.organizationId as number;
 		role = res.payload.role as Role;
 	} catch (err) {
 		return new NextResponse('wrong token', { status: 401 });
