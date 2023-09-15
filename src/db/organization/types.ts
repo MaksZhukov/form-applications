@@ -6,13 +6,9 @@ export type OrganizationAttributes = {
 	id: number;
 	name: string;
 	uid: string;
-	email: string;
-	password: string;
-	token: string;
-	role: Role;
 	createdAt: string;
 	updatedAt: string;
 };
 
 export interface OrganizationAttributesCreation
-	extends Optional<OrganizationAttributes, 'id' | 'createdAt' | 'updatedAt' | 'token'> {}
+	extends Optional<OrganizationAttributes, 'id' | 'createdAt' | 'updatedAt'> {}

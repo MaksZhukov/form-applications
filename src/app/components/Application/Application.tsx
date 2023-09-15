@@ -3,12 +3,12 @@
 import { createApplication } from '@/app/api/applications';
 import { updateApplication } from '@/app/api/applications/[id]';
 import { getFiles, uploadFiles } from '@/app/api/files';
-import { fetchOrganization } from '@/app/api/organization';
+import { fetchUser } from '@/app/api/user';
 import { fetchOrganizations } from '@/app/api/organizations';
 import { ApiResponse } from '@/app/api/types';
 import { getLoginTime } from '@/app/localStorage';
 import { ApplicationAttributes } from '@/db/application/types';
-import { FileAttributes } from '@/db/files/types';
+import { FileAttributes } from '@/db/file/types';
 import { OrganizationAttributes } from '@/db/organization/types';
 import BlankIcon from '@/icons/BlankIcon';
 import { Button, Typography } from '@material-tailwind/react';
@@ -19,24 +19,24 @@ import { FC, FormEventHandler, LegacyRef, useRef, useState } from 'react';
 import MaskedInput from 'react-text-mask';
 
 interface Props {
-	data?: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'email' | 'name'> }) | null;
+	data?: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name'> }) | null;
 	newApplicationId?: number;
 	onCancel: () => void;
 	onUpdated?: (data: ApplicationAttributes) => void;
 }
 
 const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
-	const { data: organizationData, isSuccess } = useQuery(['user', getLoginTime()], {
+	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchOrganization
+		queryFn: fetchUser
 	});
 
 	const [deadline, setDeadline] = useState<null | DateType>(data?.deadline || null);
 
-	const isAdmin = organizationData?.data.role === 'admin';
+	const isAdmin = userData?.data.role === 'admin';
 	const { data: organizations } = useQuery({
-		queryKey: ['users', getLoginTime()],
+		queryKey: ['organizations', getLoginTime()],
 		staleTime: Infinity,
 		enabled: isAdmin,
 		retry: 0,

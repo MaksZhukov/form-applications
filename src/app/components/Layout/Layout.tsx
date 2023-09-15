@@ -1,7 +1,7 @@
 'use client';
 
 import { logout } from '@/app/api/logout';
-import { fetchOrganization } from '@/app/api/organization';
+import { fetchUser } from '@/app/api/user';
 import { createOrganization } from '@/app/api/organizations';
 import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
 import { Button, Menu, MenuHandler, MenuItem, MenuList, Spinner, Typography } from '@material-tailwind/react';
@@ -9,6 +9,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FC, FormEventHandler, ReactNode, useEffect, useState } from 'react';
+import ModalCreateOrganization from '../modals/ModalCreateOrganization';
+import { createUser } from '@/app/api/users';
+import ModalCreateUser from '../modals/ModalCreateUser';
 
 interface Props {
 	children: ReactNode;
@@ -17,15 +20,16 @@ interface Props {
 
 const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 	const router = useRouter();
-	const [showModal, setShowModal] = useState<boolean>(false);
+	const [showModal, setShowModal] = useState<'createOrganization' | 'createUser' | null>(null);
 	const { data, error, isError, isLoading } = useQuery({
 		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchOrganization
+		queryFn: fetchUser
 	});
 	const { mutateAsync } = useMutation({ mutationFn: () => logout() });
 	const createOrganizationMutation = useMutation(createOrganization);
+	const createUserMutation = useMutation(createUser);
 
 	useEffect(() => {
 		//@ts-expect-error error
@@ -48,20 +52,32 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 		router.push('/login');
 	};
 
-	const handleClickAdd = () => {
-		setShowModal(true);
+	const handleClickAddOrganization = () => {
+		setShowModal('createOrganization');
+	};
+
+	const handleClickAddUser = () => {
+		setShowModal('createUser');
 	};
 
 	const handleCancel = () => {
-		setShowModal(false);
+		setShowModal(null);
 	};
 
-	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+	const handleSubmitCreateOrganization: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		const formData = new FormData(e.target as HTMLFormElement);
 		await createOrganizationMutation.mutateAsync(formData);
 		alert('Организация добавлена');
-		setShowModal(false);
+		setShowModal(null);
+	};
+
+	const handleSubmitCreateUser: FormEventHandler<HTMLFormElement> = async (e) => {
+		e.preventDefault();
+		const formData = new FormData(e.target as HTMLFormElement);
+		await createUserMutation.mutateAsync(formData);
+		alert('Пользователь добавлен');
+		setShowModal(null);
 	};
 
 	if (isLoading || isError) {
@@ -94,7 +110,10 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 							</MenuHandler>
 							<MenuList>
 								{data.data.role === 'admin' && (
-									<MenuItem onClick={handleClickAdd}>Добавить организацию</MenuItem>
+									<MenuItem onClick={handleClickAddOrganization}>Добавить организацию</MenuItem>
+								)}
+								{data.data.role === 'admin' && (
+									<MenuItem onClick={handleClickAddUser}>Добавить пользователя</MenuItem>
 								)}
 								<MenuItem onClick={handleLogout}>Выход</MenuItem>
 							</MenuList>
@@ -104,79 +123,13 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 			</header>
 			<div className='container mx-auto pt-20 pb-10'>{children}</div>
 			<footer className='p-10 border-t-accent border-t'></footer>
-			{showModal && (
-				<>
-					<div className='justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none'>
-						<div className='relative w-auto my-6 mx-auto max-w-3xl'>
-							{/*content*/}
-							<form
-								onSubmit={handleSubmit}
-								className='border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none'>
-								{/*header*/}
-								<div className='flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t'>
-									<h3 className='text-3xl font-semibold'>Добавление организации</h3>
-								</div>
-								{/*body*/}
-								<div className='relative p-6 flex-auto'>
-									<div>
-										<Typography>Email</Typography>
-										<input
-											type='text'
-											className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-											name='email'
-											required
-										/>
-									</div>
-									<div>
-										<Typography>Пароль</Typography>
-										<input
-											type='text'
-											className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-											name='password'
-											required
-										/>
-									</div>
-									<div>
-										<Typography>Название организации</Typography>
-										<input
-											type='text'
-											className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-											name='name'
-											required
-										/>
-									</div>
-									<div>
-										<Typography>УНП</Typography>
-										<input
-											type='text'
-											className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-											name='uid'
-											required
-										/>
-									</div>
-								</div>
-								{/*footer*/}
-								<div className='flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b'>
-									<Button
-										onClick={handleCancel}
-										size='sm'
-										className='ml-1 p-2 border-accent text-accent'
-										variant='outlined'>
-										Отмена
-									</Button>
-									<Button
-										type='submit'
-										size='sm'
-										className='ml-1 p-2 border-accent text-accent'
-										variant='outlined'>
-										Добавить
-									</Button>
-								</div>
-							</form>
-						</div>
-					</div>
-					<div className='opacity-25 fixed inset-0 z-40 bg-black'></div>
-				</>
+			{showModal === 'createOrganization' && (
+				<ModalCreateOrganization
+					onCancel={handleCancel}
+					onSubmit={handleSubmitCreateOrganization}></ModalCreateOrganization>
+			)}
+			{showModal === 'createUser' && (
+				<ModalCreateUser onCancel={handleCancel} onSubmit={handleSubmitCreateUser}></ModalCreateUser>
 			)}
 		</>
 	);

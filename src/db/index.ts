@@ -1,21 +1,24 @@
 import mysql from 'mysql2';
 import mysqlPromise from 'mysql2/promise';
-import { Model, ModelStatic, Sequelize } from 'sequelize';
+import { BelongsToManyAddAssociationMixin, DataTypes, Model, ModelStatic, Sequelize } from 'sequelize';
 import { applicationSchema } from './application/schema';
-import { ApplicationAttributes, ApplicationAttributesCreation } from './application/types';
-import { fileSchema } from './files/schema';
-import { FileAttributes, FileAttributesCreation } from './files/types';
+import { fileSchema } from './file/schema';
 import { organizationSchema } from './organization/schema';
-import { OrganizationAttributes, OrganizationAttributesCreation } from './organization/types';
-
-let OrganizationModel: ModelStatic<Model<OrganizationAttributes, OrganizationAttributesCreation>>;
-let ApplicationModel: ModelStatic<Model<ApplicationAttributes, ApplicationAttributesCreation>>;
-let FileModel: ModelStatic<Model<FileAttributes, FileAttributesCreation>>;
+import bcrypt from 'bcrypt';
+import { ApplicationModel } from './application/model';
+import { CommentModel } from './comment/model';
+import { commentSchema } from './comment/schema';
+import { OrganizationModel } from './organization/model';
+import { FileModel } from './file/model';
+import { ApplicationCommentModel } from './applicationComment/model';
+import { applicationCommentSchema } from './applicationComment/schema';
+import { UserModel } from './users/model';
+import { userSchema } from './users/schema';
 
 let sequelize: Sequelize;
 export const initialize = async () => {
 	if (sequelize) {
-		return { OrganizationModel, ApplicationModel, FileModel };
+		return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel };
 	}
 	const connection = await mysqlPromise.createConnection({
 		host: process.env.DATABASE_HOST,
@@ -31,20 +34,46 @@ export const initialize = async () => {
 		omitNull: true
 	});
 
-	OrganizationModel = sequelize.define<Model<OrganizationAttributes, OrganizationAttributesCreation>>(
-		'organization',
-		organizationSchema
-	);
+	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
 
-	ApplicationModel = sequelize.define<Model<ApplicationAttributes, ApplicationAttributesCreation>>(
-		'application',
-		applicationSchema
-	);
+	UserModel.init(userSchema, { sequelize, modelName: 'user' });
+	UserModel.belongsTo(OrganizationModel);
+
+	ApplicationCommentModel.init(applicationCommentSchema, {
+		sequelize,
+		modelName: 'application_comments',
+		timestamps: false
+	});
+
+	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
 	ApplicationModel.belongsTo(OrganizationModel);
 
-	FileModel = sequelize.define<Model<FileAttributes, FileAttributesCreation>>('file', fileSchema);
-	// await ApplicationModel.update({ deadline: '12.12.2012' }, { where: { id: 22 } });
+	FileModel.init(fileSchema, { sequelize, modelName: 'file' });
 	FileModel.belongsTo(ApplicationModel);
+
+	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
+	CommentModel.belongsTo(OrganizationModel);
+	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
+	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
+
 	// await sequelize.sync({ alter: true });
-	return { OrganizationModel, ApplicationModel, FileModel };
+
+	if (process.env.NODE_ENV === 'development') {
+		const [organization] = await OrganizationModel.findOrCreate({
+			where: { name: 'admin' },
+			defaults: { name: 'Admin', uid: 'uidadmin' }
+		});
+		await UserModel.findOrCreate({
+			where: { email: 'admin@mail.ru' },
+			defaults: {
+				email: 'admin@mail.ru',
+				name: 'admin',
+				organizationId: organization.dataValues.id,
+				password: await bcrypt.hash('admin', +process.env.BCRYPT_SALT),
+				role: 'admin'
+			}
+		});
+	}
+
+	return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel };
 };

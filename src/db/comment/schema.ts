@@ -1,6 +1,6 @@
 import { DataTypes, ModelAttributes } from 'sequelize';
 
-export const organizationSchema: ModelAttributes = {
+export const commentSchema: ModelAttributes = {
 	id: {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
@@ -8,6 +8,5 @@ export const organizationSchema: ModelAttributes = {
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
-	name: { type: DataTypes.STRING, allowNull: false, unique: true },
-	uid: { type: DataTypes.STRING, allowNull: false, unique: true },
+	text: { type: DataTypes.STRING, allowNull: false }
 };
