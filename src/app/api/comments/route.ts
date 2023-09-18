@@ -5,8 +5,6 @@ import { NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-	const res = new NextResponse();
-	console.log(res);
 	const token = request.cookies.get('token')?.value as string;
 	const applicationId = request.nextUrl.searchParams.get('applicationId');
 	if (!applicationId) {

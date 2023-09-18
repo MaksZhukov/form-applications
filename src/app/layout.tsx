@@ -1,28 +1,31 @@
+'use client';
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from './query';
 import { saveSelectedOrganizationId } from './localStorage';
 import { useEffect } from 'react';
-import { fetchSocket } from './api/socket';
 import { io } from 'socket.io-client';
+import { fetchSocket } from './api/socket';
 const inter = Inter({ subsets: ['latin'] });
 
 typeof window !== 'undefined' && saveSelectedOrganizationId('none');
 
 export const metadata: Metadata = {
 	title: 'Modern solutions tasks',
-	description: 'Modern solutions tasks',
+	description: 'Modern solutions tasks'
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
-		const socket = io('http:/localhost:3001');
+		const socket = io('http://127.0.0.1:3001', { transports: ['websocket'] });
 		socket.on('connection', () => {
 			console.log('socket connected');
 		});
-		socket.on('connect_error', () => {
+		socket.on('connect_error', (err) => {
 			fetchSocket();
+			console.log(err);
 		});
 	}, []);
 	return (
