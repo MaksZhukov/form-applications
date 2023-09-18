@@ -38,8 +38,4 @@ app.prepare().then(() => {
 		.listen(port, () => {
 			console.log(`> Ready on http://${hostname}:${port}`);
 		});
-	const io = new Server(httpServer);
-	io.on('connection', () => {
-		console.log('hello');
-	});
 });
