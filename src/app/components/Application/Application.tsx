@@ -157,14 +157,14 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			</div>
 
 			<div className='flex mb-5 gap-10'>
-				<div className='flex flex-1 justify-between'>
+				<div className='flex justify-between'>
 					<div className='flex items-center'>
-						<Typography className='w-56'>Статус</Typography>{' '}
+						<Typography className='w-20'>Статус</Typography>{' '}
 						{isAdmin ? (
 							<select
 								defaultValue={data?.status}
 								name='status'
-								className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								className='min-w-max flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 								<option value='в обработке' selected>
 									В обработке
 								</option>
@@ -177,7 +177,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					</div>
 				</div>
 				{isAdmin && organizations && (
-					<div className='flex flex-1 items-center'>
+					<div className='flex items-center'>
 						<Typography className='w-56'>Организация</Typography>
 						<select
 							required

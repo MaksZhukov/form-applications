@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	try {
-		const data = await CommentModel?.findAll({
+		const data = await CommentModel.findAll({
 			where: { applicationId }
 		});
 		return NextResponse.json({ data });

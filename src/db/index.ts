@@ -52,10 +52,9 @@ export const initialize = async () => {
 	FileModel.belongsTo(ApplicationModel);
 
 	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
-	CommentModel.belongsTo(OrganizationModel);
+	CommentModel.belongsTo(UserModel);
 	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
 	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
-
 	// await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
