@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 	if (!applicationId) {
 		return new NextResponse('no applicationId', { status: 400 });
 	}
-	const { CommentModel } = await initialize();
+	const { CommentModel, ApplicationModel } = await initialize();
 	let id: number;
 	let role: Role;
 	try {
@@ -21,10 +21,16 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	try {
-		const data = await CommentModel.findAll({
-			where: { applicationId }
+		const application = await ApplicationModel.findByPk(applicationId, {
+			include: [CommentModel]
 		});
-		return NextResponse.json({ data });
+		return NextResponse.json({
+			data: application
+				? application.comments
+						?.map((item) => item.toJSON())
+						.map(({ id, text, createdAt, userId }) => ({ id, text, createdAt, userId }))
+				: []
+		});
 	} catch (err) {
 		console.log(err);
 		return new NextResponse('Error getting comments', { status: 500 });

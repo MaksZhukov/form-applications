@@ -2,13 +2,14 @@
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
 import { QueryProvider } from './query';
 import { saveSelectedOrganizationId } from './localStorage';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { fetchSocket } from './api/socket';
 const inter = Inter({ subsets: ['latin'] });
+import './globals.css';
+import { socketService } from './socket';
 
 typeof window !== 'undefined' && saveSelectedOrganizationId('none');
 
@@ -19,14 +20,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
-		const socket = io('http://127.0.0.1:3001', { transports: ['websocket'] });
-		socket.on('connection', () => {
-			console.log('socket connected');
-		});
-		socket.on('connect_error', (err) => {
-			fetchSocket();
-			console.log(err);
-		});
+		socketService.init();
 	}, []);
 	return (
 		<html lang='en'>

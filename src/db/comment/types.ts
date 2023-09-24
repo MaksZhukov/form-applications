@@ -5,8 +5,7 @@ export type CommentAttributes = {
 	createdAt: string;
 	updatedAt: string;
 	text: string;
-	applicationId: number;
-	organizationId: number;
+	userId: number;
 };
 
 export interface CommentAttributesCreation extends Optional<CommentAttributes, 'id' | 'createdAt' | 'updatedAt'> {}

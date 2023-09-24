@@ -6,7 +6,7 @@ const nextConfig = {
 		config.externals['bufferutil'] = 'bufferutil';
 		// Important: return the modified config
 		return config;
-	},
+	}
 };
 
 module.exports = nextConfig;

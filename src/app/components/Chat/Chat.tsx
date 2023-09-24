@@ -1,10 +1,11 @@
 import { fetchComments } from '@/app/api/comments';
 import { fetchUser } from '@/app/api/user';
 import { getLoginTime } from '@/app/localStorage';
+import { socketService } from '@/app/socket';
 import ArrowUpIcon from '@/icons/ArrowUpIcon';
 import { IconButton } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 
 interface Props {
 	applicationId: number;
@@ -25,24 +26,26 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		retry: 0,
 		queryFn: () => fetchComments(applicationId)
 	});
-
 	console.log(dataComments);
+	useEffect(() => {
+		socketService.socket?.emit('join-application-comments', applicationId);
+		socketService.socket?.on('join-application-comments', () => {
+			console.log('Joined to application comments');
+		});
+		socketService.socket?.on('comment', (comment) => {
+			console.log(comment);
+		});
+	}, []);
 
 	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setValue(e.target.value);
 	};
 
-	const handleClick = () => {};
-	const messages = [
-		{ text: 'textwqf fwqqwf qwf fwq  wf', userName: 'Admin' },
-		{ text: 'text1', userName: 'another' },
-		{ text: 'text2 wqwffqwfqw fqw q wf', userName: 'Admin' },
-		{ text: 'text3qwffqw ', userName: 'another' },
-		{ text: 'text3qwf fwqfwq f', userName: 'another' },
-		{ text: 'text3qwf fq ', userName: 'another' },
-		{ text: 'text3wqf f wqqwf', userName: 'another' }
-	];
-	console.log(data?.data);
+	const handleClick = () => {
+		socketService.socket?.emit('comment', { text: value, applicationId, userId: data?.data.id });
+	};
+	const messages = dataComments?.data.map((item) => ({ text: item.text, userName: item.userId })) || [];
+
 	return (
 		<div className='fixed top-20 right-0  h-[calc(100%-170px)] 2xl:w-[20%] xl:w-[20%] lg:w-[15%] z-10 flex flex-col'>
 			<div className='flex flex-col p-2 border text-center border-gray-300'>
