@@ -8,5 +8,6 @@ namespace NodeJS {
 		BCRYPT_SALT: string;
 		WS_PORT: number;
 		NEXT_PUBLIC_WS_HOST: string;
+		NEXT_PUBLIC_FF_COMMENTS: string;
 	}
 }

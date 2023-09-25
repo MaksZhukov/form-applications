@@ -31,7 +31,8 @@ export const initialize = async () => {
 	sequelize = new Sequelize(process.env.DATABASE, process.env.DATABASE_USER, process.env.DATABASE_USER_PASSWORD, {
 		dialect: 'mysql',
 		dialectModule: mysql,
-		omitNull: true
+		omitNull: true,
+		logging: false
 	});
 
 	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });

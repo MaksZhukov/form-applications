@@ -39,7 +39,7 @@ const ApplicationPage = () => {
 	return (
 		<Layout>
 			<Application data={data?.data || null} onCancel={handleCancel} onUpdated={handleUpdated}></Application>
-			{data && <Chat applicationId={data.data.id}></Chat>}
+			{process.env.NEXT_PUBLIC_FF_COMMENTS === 'true' && data && <Chat applicationId={data.data.id}></Chat>}
 		</Layout>
 	);
 };

@@ -41,10 +41,15 @@ class SocketService {
 		socket.on(
 			'comment',
 			async ({ text, applicationId, userId }: { text: string; userId: number; applicationId: number }) => {
-				const { CommentModel, ApplicationModel } = await initialize();
-				const comment = await CommentModel.create({ text, userId });
-				await comment.addApplication(applicationId);
-				socket.to(applicationId.toString()).emit('comment', comment);
+				if (text) {
+					const { CommentModel, UserModel } = await initialize();
+					const comment = await CommentModel.create({ text, userId }, { include: [UserModel] });
+					await comment.addApplication(applicationId);
+					const result = await CommentModel.findByPk(comment.dataValues.id, {
+						include: [{ model: UserModel, attributes: ['id', 'name'] }]
+					});
+					this.io?.to(applicationId.toString()).emit('comment', result);
+				}
 			}
 		);
 	}

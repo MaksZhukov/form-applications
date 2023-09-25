@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 	if (!applicationId) {
 		return new NextResponse('no applicationId', { status: 400 });
 	}
-	const { CommentModel, ApplicationModel } = await initialize();
+	const { CommentModel, ApplicationModel, UserModel } = await initialize();
 	let id: number;
 	let role: Role;
 	try {
@@ -22,13 +22,20 @@ export async function GET(request: NextRequest) {
 	}
 	try {
 		const application = await ApplicationModel.findByPk(applicationId, {
-			include: [CommentModel]
+			include: { model: CommentModel, include: [{ model: UserModel, attributes: ['id', 'name'] }] }
 		});
 		return NextResponse.json({
 			data: application
 				? application.comments
 						?.map((item) => item.toJSON())
-						.map(({ id, text, createdAt, userId }) => ({ id, text, createdAt, userId }))
+						.map(({ id, text, createdAt, updatedAt, user, userId }) => ({
+							id,
+							text,
+							createdAt,
+							updatedAt,
+							user,
+							userId
+						}))
 				: []
 		});
 	} catch (err) {
