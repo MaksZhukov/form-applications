@@ -8,7 +8,7 @@ class SocketService {
 	io?: SocketServer;
 	init(httpServer: Server) {
 		this.io = new SocketServer(httpServer);
-		this.io.use(this.auth);
+		// this.io.use(this.auth);
 		this.io.on('connection', (socket) => {
 			console.log('CONNECTED', socket.id);
 			this.joinApplicationComments(socket);
