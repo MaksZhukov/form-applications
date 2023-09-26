@@ -56,7 +56,7 @@ export const initialize = async () => {
 	CommentModel.belongsTo(UserModel);
 	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
 	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
-	// await sequelize.sync({ alter: true });
+	await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
