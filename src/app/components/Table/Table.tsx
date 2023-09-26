@@ -8,6 +8,7 @@ import { OrganizationAttributes } from '@/db/organization/types';
 
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
+import getConfig from 'next/config';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FC, useState } from 'react';
 
@@ -24,6 +25,8 @@ interface Props {
 	onChangeOrganization: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangePage: (page: number) => () => void;
 }
+
+const config = getConfig();
 
 const Table: FC<Props> = ({
 	data,

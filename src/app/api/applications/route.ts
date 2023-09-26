@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
 	const status = request.nextUrl.searchParams.get('status') as ApplicationStatus | undefined;
-	const organizationId = request.nextUrl.searchParams.get('organizationId');
+	const organizationIdParam = request.nextUrl.searchParams.get('organizationId');
 
 	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
@@ -19,10 +19,13 @@ export async function GET(request: NextRequest) {
 	const { ApplicationModel, OrganizationModel } = await initialize();
 	try {
 		const {
-			payload: { role, id }
+			payload: { role, organizationId }
 		} = await verify(token);
 		const { rows, count } = await ApplicationModel.findAndCountAll({
-			where: omitBy({ isArchived: false, status, organizationId: role === 'admin' ? organizationId : id }, isNil),
+			where: omitBy(
+				{ isArchived: false, status, organizationId: role === 'admin' ? organizationIdParam : organizationId },
+				isNil
+			),
 			order: [['createdAt', 'DESC']],
 			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name'] },
 			limit,

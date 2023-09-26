@@ -5,14 +5,12 @@ import { NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-	const res = new NextResponse();
-	console.log(res);
 	const token = request.cookies.get('token')?.value as string;
 	const applicationId = request.nextUrl.searchParams.get('applicationId');
 	if (!applicationId) {
 		return new NextResponse('no applicationId', { status: 400 });
 	}
-	const { CommentModel } = await initialize();
+	const { CommentModel, ApplicationModel, UserModel } = await initialize();
 	let id: number;
 	let role: Role;
 	try {
@@ -23,10 +21,23 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	try {
-		const data = await CommentModel?.findAll({
-			where: { applicationId }
+		const application = await ApplicationModel.findByPk(applicationId, {
+			include: { model: CommentModel, include: [{ model: UserModel, attributes: ['id', 'name'] }] }
 		});
-		return NextResponse.json({ data });
+		return NextResponse.json({
+			data: application
+				? application.comments
+						?.map((item) => item.toJSON())
+						.map(({ id, text, createdAt, updatedAt, user, userId }) => ({
+							id,
+							text,
+							createdAt,
+							updatedAt,
+							user,
+							userId
+						}))
+				: []
+		});
 	} catch (err) {
 		console.log(err);
 		return new NextResponse('Error getting comments', { status: 500 });

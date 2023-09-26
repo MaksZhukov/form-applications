@@ -31,7 +31,8 @@ export const initialize = async () => {
 	sequelize = new Sequelize(process.env.DATABASE, process.env.DATABASE_USER, process.env.DATABASE_USER_PASSWORD, {
 		dialect: 'mysql',
 		dialectModule: mysql,
-		omitNull: true
+		omitNull: true,
+		logging: false
 	});
 
 	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
@@ -52,11 +53,10 @@ export const initialize = async () => {
 	FileModel.belongsTo(ApplicationModel);
 
 	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
-	CommentModel.belongsTo(OrganizationModel);
-	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
-	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
-
-	// await sequelize.sync({ alter: true });
+	CommentModel.belongsTo(UserModel);
+	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
+	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
+	await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
