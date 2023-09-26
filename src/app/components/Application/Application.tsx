@@ -136,7 +136,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	);
 
 	return (
-		<form ref={ref} onSubmit={handleSubmit}>
+		<form className='2xl:w-[90%] xl:w-[80%] lg:w-[70%]' ref={ref} onSubmit={handleSubmit}>
 			<div className='flex mb-5'>
 				<div className='flex mr-20'>
 					<Typography className='mr-10'>№</Typography>{' '}

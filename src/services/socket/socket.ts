@@ -31,7 +31,7 @@ class SocketService {
 
 	joinApplicationComments(socket: Socket) {
 		socket.on('join-application-comments', (applicationId: number) => {
-			console.log(`JOINED TO APPLICATION(${applicationId}) COMMENTS`);
+			console.log(`JOINED TO COMMENTS FOR APPLICATION ${applicationId}`);
 			socket.join(applicationId.toString());
 			socket.emit('join-application-comments');
 		});

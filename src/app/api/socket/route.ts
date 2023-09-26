@@ -1,8 +1,12 @@
 import socketService from '@/services/socket/socket';
 import http from 'http';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+	const token = request.cookies.get('token')?.value;
+	if (!token) {
+		return new NextResponse('no token', { status: 401 });
+	}
 	if (!socketService.io) {
 		const httpServer = http.createServer();
 		socketService.init(httpServer);
