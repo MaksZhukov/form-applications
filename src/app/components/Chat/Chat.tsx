@@ -7,7 +7,7 @@ import { CommentAttributes } from '@/db/comment/types';
 import ArrowUpIcon from '@/icons/ArrowUpIcon';
 import { IconButton, Spinner } from '@material-tailwind/react';
 import { InfiniteData, useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChangeEvent, FC, UIEventHandler, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, UIEventHandler, useCallback, useEffect, useRef, useState } from 'react';
 
 interface Props {
 	applicationId: number;
@@ -44,25 +44,34 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		}
 	}, [isFetched]);
 
+	const handleComment = useCallback((comment: CommentAttributes) => {
+		client.setQueryData<InfiniteData<CommentAttributes[]>>(['comments', getLoginTime()], (currData) =>
+			currData
+				? {
+						...currData,
+						pages: currData.pages.map((item, index) => (index === 0 ? [...item, comment] : item))
+				  }
+				: undefined
+		);
+		setTimeout(() => {
+			listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
+		}, 0);
+		setValue('');
+	}, []);
+
+	const handleJoinApplicationComments = useCallback(() => {
+		console.log('Joined to application comments');
+	}, []);
+
 	useEffect(() => {
 		socketService.socket?.emit('join-application-comments', applicationId);
-		socketService.socket?.on('join-application-comments', () => {
-			console.log('Joined to application comments');
-		});
-		socketService.socket?.on('comment', (comment: CommentAttributes) => {
-			client.setQueryData<InfiniteData<CommentAttributes[]>>(['comments', getLoginTime()], (currData) =>
-				currData
-					? {
-							...currData,
-							pages: currData.pages.map((item, index) => (index === 0 ? [...item, comment] : item))
-					  }
-					: undefined
-			);
-			setTimeout(() => {
-				listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-			}, 0);
-			setValue('');
-		});
+		socketService.socket?.on('join-application-comments', handleJoinApplicationComments);
+		socketService.socket?.on('comment', handleComment);
+
+		return () => {
+			socketService.socket?.off('comment', handleComment);
+			socketService.socket?.off('join-application-comments', handleJoinApplicationComments);
+		};
 	}, []);
 
 	const handleScroll: UIEventHandler<HTMLDivElement> = (event) => {
