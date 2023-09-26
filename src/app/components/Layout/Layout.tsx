@@ -121,7 +121,7 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 					</span>
 				</div>
 			</header>
-			<div className='container mx-auto pt-20 pb-10'>{children}</div>
+			<div className='container min-h-[calc(100vh-81px)] mx-auto pt-20 pb-10'>{children}</div>
 			<footer className='p-10 border-t-accent border-t'></footer>
 			{showModal === 'createOrganization' && (
 				<ModalCreateOrganization

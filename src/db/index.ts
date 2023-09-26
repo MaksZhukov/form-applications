@@ -18,7 +18,7 @@ import { userSchema } from './users/schema';
 let sequelize: Sequelize;
 export const initialize = async () => {
 	if (sequelize) {
-		return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel };
+		return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel, ApplicationCommentModel };
 	}
 	const connection = await mysqlPromise.createConnection({
 		host: process.env.DATABASE_HOST,
@@ -56,7 +56,7 @@ export const initialize = async () => {
 	CommentModel.belongsTo(UserModel);
 	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
 	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
-	await sequelize.sync({ alter: true });
+	// await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
