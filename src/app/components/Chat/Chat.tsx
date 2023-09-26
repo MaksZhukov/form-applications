@@ -5,9 +5,9 @@ import { getLoginTime } from '@/app/localStorage';
 import { socketService } from '@/app/socket';
 import { CommentAttributes } from '@/db/comment/types';
 import ArrowUpIcon from '@/icons/ArrowUpIcon';
-import { IconButton } from '@material-tailwind/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChangeEvent, FC, useEffect, useRef, useState } from 'react';
+import { IconButton, Spinner } from '@material-tailwind/react';
+import { InfiniteData, useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ChangeEvent, FC, UIEventHandler, useEffect, useRef, useState } from 'react';
 
 interface Props {
 	applicationId: number;
@@ -17,25 +17,32 @@ const Chat: FC<Props> = ({ applicationId }) => {
 	const [value, setValue] = useState<string>('');
 	const client = useQueryClient();
 	const listRef = useRef<HTMLDivElement>(null);
-	const { data, error, isError, isLoading } = useQuery({
+	const { data, error, isError } = useQuery({
 		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: fetchUser
 	});
 
-	const { data: dataComments } = useQuery({
+	const {
+		data: dataComments,
+		isFetched,
+		isFetching,
+		fetchNextPage
+	} = useInfiniteQuery({
 		queryKey: ['comments', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchComments(applicationId)
+		queryFn: ({ pageParam = 0 }) => fetchComments(applicationId, pageParam),
+		getNextPageParam: (lastPage, allPages) => (lastPage.length ? allPages.length : undefined)
 	});
+	const comments = [...(dataComments?.pages ?? [])].reverse().flat() || [];
 
 	useEffect(() => {
 		if (listRef.current) {
 			listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
 		}
-	}, [dataComments?.data.length]);
+	}, [isFetched]);
 
 	useEffect(() => {
 		socketService.socket?.emit('join-application-comments', applicationId);
@@ -43,13 +50,26 @@ const Chat: FC<Props> = ({ applicationId }) => {
 			console.log('Joined to application comments');
 		});
 		socketService.socket?.on('comment', (comment: CommentAttributes) => {
-			client.setQueryData<ApiResponse<CommentAttributes[]>>(['comments', getLoginTime()], (currData) => ({
-				...currData,
-				data: [...(currData?.data || []), comment]
-			}));
+			client.setQueryData<InfiniteData<CommentAttributes[]>>(['comments', getLoginTime()], (currData) =>
+				currData
+					? {
+							...currData,
+							pages: currData.pages.map((item, index) => (index === 0 ? [...item, comment] : item))
+					  }
+					: undefined
+			);
+			setTimeout(() => {
+				listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
+			}, 0);
 			setValue('');
 		});
 	}, []);
+
+	const handleScroll: UIEventHandler<HTMLDivElement> = (event) => {
+		if ((event.target as HTMLElement).scrollTop < 100 && !isFetching) {
+			fetchNextPage();
+		}
+	};
 
 	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setValue(e.target.value);
@@ -65,9 +85,13 @@ const Chat: FC<Props> = ({ applicationId }) => {
 				<span className='leading-4'>{data?.data?.organization.name}</span>
 				<span className='text-xs text-accent'>online</span>
 			</div>
-			<div ref={listRef} className='px-3 py-1 overflow-auto flex-1 border-l border-gray-300'>
-				{dataComments?.data.map((item, index) => {
-					const prevItem = dataComments?.data[index - 1];
+			<div
+				ref={listRef}
+				className='px-3 py-1 overflow-auto flex-1 border-l border-gray-300'
+				onScroll={handleScroll}>
+				{isFetching && <Spinner className='h-6 w-6 mx-auto'></Spinner>}
+				{comments.map((item, index) => {
+					const prevItem = comments[index - 1];
 					return (
 						<div
 							key={index}
