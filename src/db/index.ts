@@ -54,8 +54,8 @@ export const initialize = async () => {
 
 	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
 	CommentModel.belongsTo(UserModel);
-	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel });
-	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel });
+	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
+	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
 	await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
