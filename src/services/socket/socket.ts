@@ -35,6 +35,10 @@ class SocketService {
 			socket.join(applicationId.toString());
 			socket.emit('join-application-comments');
 		});
+		socket.off('join-application-comments', (applicationId: number) => {
+			console.log(`LEAVED COMMENTS FOR APPLICATION ${applicationId}`);
+			socket.leave(applicationId.toString());
+		});
 	}
 
 	comment(socket: Socket) {
