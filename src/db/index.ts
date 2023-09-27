@@ -60,8 +60,8 @@ export const initialize = async () => {
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
-			where: { name: 'admin' },
-			defaults: { name: 'Admin', uid: 'uidadmin' }
+			where: { name: 'Default' },
+			defaults: { name: 'Default', uid: '000000000' }
 		});
 		await UserModel.findOrCreate({
 			where: { email: 'admin@mail.ru' },
