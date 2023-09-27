@@ -17,6 +17,7 @@ const Chat: FC<Props> = ({ applicationId }) => {
 	const [value, setValue] = useState<string>('');
 	const client = useQueryClient();
 	const listRef = useRef<HTMLDivElement>(null);
+	const [isScrolledOnFirstFetch, setIsScrolledOnFirstFetch] = useState<boolean>(false);
 	const { data, error, isError } = useQuery({
 		queryKey: ['user', getLoginTime()],
 		staleTime: Infinity,
@@ -28,7 +29,6 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		data: dataComments,
 		isFetched,
 		isFetching,
-
 		fetchNextPage
 	} = useInfiniteQuery({
 		queryKey: ['comments', getLoginTime()],
@@ -40,10 +40,11 @@ const Chat: FC<Props> = ({ applicationId }) => {
 	const comments = [...(dataComments?.pages ?? [])].reverse().flat() || [];
 
 	useEffect(() => {
-		if (listRef.current) {
+		if (listRef.current && isFetched && !isFetching && !isScrolledOnFirstFetch) {
 			listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
+			setIsScrolledOnFirstFetch(true);
 		}
-	}, [isFetched]);
+	}, [isFetched, isFetching]);
 
 	const handleComment = useCallback((comment: CommentAttributes) => {
 		client.setQueryData<InfiniteData<CommentAttributes[]>>(['comments', getLoginTime()], (currData) =>
@@ -72,11 +73,11 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		return () => {
 			socketService.socket?.off('comment', handleComment);
 			socketService.socket?.off('join-application-comments', handleJoinApplicationComments);
-			client.invalidateQueries({ queryKey: ['comments', getLoginTime()] });
 			client.setQueryData<InfiniteData<CommentAttributes[]>>(['comments', getLoginTime()], () => ({
 				pageParams: [],
-				pages: []
+				pages: [[]]
 			}));
+			client.invalidateQueries({ queryKey: ['comments', getLoginTime()] });
 		};
 	}, []);
 
