@@ -28,6 +28,7 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		data: dataComments,
 		isFetched,
 		isFetching,
+
 		fetchNextPage
 	} = useInfiniteQuery({
 		queryKey: ['comments', getLoginTime()],
@@ -72,6 +73,10 @@ const Chat: FC<Props> = ({ applicationId }) => {
 			socketService.socket?.off('comment', handleComment);
 			socketService.socket?.off('join-application-comments', handleJoinApplicationComments);
 			client.invalidateQueries({ queryKey: ['comments', getLoginTime()] });
+			client.setQueryData<InfiniteData<CommentAttributes[]>>(['comments', getLoginTime()], () => ({
+				pageParams: [],
+				pages: []
+			}));
 		};
 	}, []);
 
