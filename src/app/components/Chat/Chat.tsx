@@ -71,6 +71,7 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		return () => {
 			socketService.socket?.off('comment', handleComment);
 			socketService.socket?.off('join-application-comments', handleJoinApplicationComments);
+			client.invalidateQueries({ queryKey: ['comments', getLoginTime()] });
 		};
 	}, []);
 

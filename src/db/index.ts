@@ -60,8 +60,8 @@ export const initialize = async () => {
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
-			where: { name: 'admin' },
-			defaults: { name: 'Admin', uid: 'uidadmin' }
+			where: { name: 'Default' },
+			defaults: { name: 'Default', uid: '000000000' }
 		});
 		await UserModel.findOrCreate({
 			where: { email: 'admin@mail.ru' },
@@ -69,7 +69,7 @@ export const initialize = async () => {
 				email: 'admin@mail.ru',
 				name: 'admin',
 				organizationId: organization.dataValues.id,
-				password: await bcrypt.hash('admin', +process.env.BCRYPT_SALT),
+				password: await bcrypt.hash(process.env.DEFAULT_USER_ADMIN_PASS, +process.env.BCRYPT_SALT),
 				role: 'admin'
 			}
 		});
