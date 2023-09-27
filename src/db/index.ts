@@ -69,7 +69,7 @@ export const initialize = async () => {
 				email: 'admin@mail.ru',
 				name: 'admin',
 				organizationId: organization.dataValues.id,
-				password: await bcrypt.hash('admin', +process.env.BCRYPT_SALT),
+				password: await bcrypt.hash(process.env.DEFAULT_USER_ADMIN_PASS, +process.env.BCRYPT_SALT),
 				role: 'admin'
 			}
 		});
