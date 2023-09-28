@@ -90,21 +90,22 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 
 	return (
 		<>
-			<header className='fixed w-full bg-white py-4 z-10'>
+			<header className='fixed w-full border-b border-gray-300 bg-white py-4 z-10'>
 				<div className='container flex justify-between mx-auto'>
 					<Image
 						onClick={handleClickLogo}
 						className='cursor-pointer'
 						src={'/logo.png'}
-						width={300}
-						height={29}
+						width={250}
+						height={24.5}
 						alt='Logo'></Image>
 					<span className='flex items-center'>
-						Добро пожаловать {data?.data.role === 'admin' && 'админ'}
+						Добро пожаловать
 						<span className='text-accent font-bold pl-2'>{data?.data.email}</span>
+						{data?.data.role === 'admin' && '(админ)'}
 						<Menu placement='bottom-end'>
 							<MenuHandler>
-								<Button size='sm' className='ml-1 p-2 border-accent text-accent' variant='outlined'>
+								<Button size='sm' className='ml-3 p-2 border-accent text-accent' variant='outlined'>
 									меню
 								</Button>
 							</MenuHandler>

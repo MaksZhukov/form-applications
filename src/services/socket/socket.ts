@@ -8,7 +8,7 @@ class SocketService {
 	io?: SocketServer;
 	init(httpServer: Server) {
 		this.io = new SocketServer(httpServer);
-		// this.io.use(this.auth);
+		this.io.use(this.auth);
 		this.io.on('connection', (socket) => {
 			console.log('CONNECTED', socket.id);
 			this.joinApplicationComments(socket);
@@ -17,16 +17,18 @@ class SocketService {
 	}
 
 	async auth(socket: Socket, next: (err?: Error) => void) {
+		console.log(socket.handshake);
 		const { token } = parseCookie(socket.handshake.headers.cookie);
-		if (!token) {
-			next(new Error('no token'));
-		}
-		try {
-			await verify(token);
-			next();
-		} catch (err) {
-			next(new Error('wrong token'));
-		}
+		next();
+		// if (!token) {
+		// 	next(new Error('no token'));
+		// }
+		// try {
+		// 	await verify(token);
+		// 	next();
+		// } catch (err) {
+		// 	next(new Error('wrong token'));
+		// }
 	}
 
 	joinApplicationComments(socket: Socket) {

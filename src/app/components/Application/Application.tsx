@@ -121,7 +121,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 
 	const renderPinnedFiles = (
 		<div>
-			<Typography>Прикрепленные файлы:</Typography>
+			<Typography className='leading-3 mb-1'>Прикрепленные файлы:</Typography>
 			<div>
 				{files?.data.map((item, index) => (
 					<Link
@@ -136,7 +136,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	);
 
 	return (
-		<form className='2xl:w-[90%] xl:w-[80%] lg:w-[70%]' ref={ref} onSubmit={handleSubmit}>
+		<form className='2xl:w-[90%] xl:w-[80%] lg:w-[80%]' ref={ref} onSubmit={handleSubmit}>
 			<div className='flex mb-5'>
 				<div className='flex mr-20'>
 					<Typography className='mr-10'>№</Typography>{' '}
@@ -156,7 +156,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 				</div>
 			</div>
 
-			<div className='flex mb-5 gap-10'>
+			<div className='flex mb-5 2xl:justify-normal lg:justify-between lg:gap-1 2xl:gap-10'>
 				<div className='flex justify-between'>
 					<div className='flex items-center'>
 						<Typography className='w-20'>Статус</Typography>{' '}
@@ -164,7 +164,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							<select
 								defaultValue={data?.status}
 								name='status'
-								className='min-w-max flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								className='min-w-max h-8 flex-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 								<option value='в обработке' selected>
 									В обработке
 								</option>
@@ -185,7 +185,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
 							}
 							name='organizationId'
-							className='mt-1 border h-full border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+							className='mt-1 border h-8 border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
 									{item.name}
@@ -194,13 +194,17 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						</select>
 					</div>
 				)}
-				<div className='flex items-center'>
-					<Typography className='mr-2'>Срочная задача</Typography>
+				<div className='flex items-center text-xs'>
+					<Typography variant='small' className='mr-2'>
+						Срочная задача
+					</Typography>
 					<input type='checkbox' name='isUrgent' defaultChecked={data?.isUrgent}></input>
 				</div>
 				{isAdmin && (
 					<div className='flex items-center'>
-						<Typography className='mr-2'>Добавить в архив</Typography>
+						<Typography variant='small' className='mr-2'>
+							Добавить в архив
+						</Typography>
 						<input type='checkbox' name='isArchived' defaultChecked={data?.isArchived}></input>
 					</div>
 				)}
@@ -298,19 +302,19 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			</div>
 
 			<div className='flex justify-end items-center mt-4'>
-				{files?.data && data?.status !== 'в обработке' ? (
+				{files?.data.length && data?.status !== 'в обработке' ? (
 					renderPinnedFiles
 				) : (
 					<>
 						<div>
 							<div className='flex items-center'>
-								<Typography className='mr-4'>
+								<Typography className='mr-3'>
 									Прикрепить файлы(до {10 - (files?.data.length || 0)})
 								</Typography>{' '}
 								<div
 									onClick={handleClickFile}
-									className='inline-block p-1 rounded-full border-gray-500 border'>
-									<BlankIcon className='text-gray-500' fontSize={25}></BlankIcon>
+									className='inline-block cursor-pointer p-1 rounded-full border-gray-500 border'>
+									<BlankIcon className='text-gray-500' fontSize={20}></BlankIcon>
 									<input
 										ref={inputFileRef}
 										className='hidden'
@@ -320,7 +324,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 										multiple></input>
 								</div>
 							</div>
-							{files?.data && renderPinnedFiles}
+							{!!files?.data.length && renderPinnedFiles}
 						</div>
 					</>
 				)}

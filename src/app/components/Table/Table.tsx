@@ -47,7 +47,7 @@ const Table: FC<Props> = ({
 	const isAdmin = userData?.data.role === 'admin';
 	const router = useRouter();
 	const handleClickMore = (item: ApplicationAttributes) => () => {
-		router.push(`/${item.id}`);
+		router.push(`/applications/${item.id}`);
 	};
 	const [partPagination, setPartPagination] = useState<number>(1);
 	const countPages = Math.ceil(total / API_LIMIT_ITEMS);
@@ -69,7 +69,7 @@ const Table: FC<Props> = ({
 							<select
 								value={selectedOrganizationId}
 								onChange={onChangeOrganization}
-								className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								className='mt-1 border font-normal border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 								<option value='none'>Не выбрано</option>
 								{organizations.map((item) => (
 									<option key={item.id} value={item.id}>
@@ -89,7 +89,7 @@ const Table: FC<Props> = ({
 				<select
 					value={selectedStatus}
 					onChange={onChangeStatus}
-					className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+					className='mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 font-normal dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 					<option value='none'>Не выбрано</option>
 					<option value='В обработке'>В обработке</option>
 					<option value='В работе'>В работе</option>
@@ -161,8 +161,8 @@ const Table: FC<Props> = ({
 										{item.status}
 									</Typography>
 								</td>
-								<td className={classes}>
-									{item.isUrgent ? <div className='w-6 h-6 bg-accent rounded-full'></div> : ''}
+								<td className={classes + ' text-center'}>
+									{item.isUrgent ? <div className='w-6 h-6 ml-6 bg-accent rounded-full'></div> : ''}
 								</td>
 								<td className={classes}>
 									<Button

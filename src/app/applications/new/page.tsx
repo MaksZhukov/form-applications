@@ -3,9 +3,9 @@
 import { Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { fetchNewApplicationId } from '../api/applications/new';
-import Application from '../components/Application';
-import Layout from '../components/Layout';
+import { fetchNewApplicationId } from '../../api/applications/new';
+import Application from '../../components/Application';
+import Layout from '../../components/Layout';
 
 const ApplicationPage = () => {
 	const router = useRouter();
@@ -14,9 +14,6 @@ const ApplicationPage = () => {
 		router.push('/');
 	};
 
-	const handleLogout = () => {
-
-	}
 	if (isLoading) {
 		return (
 			<div className='container flex items-center h-screen mx-auto py-4'>

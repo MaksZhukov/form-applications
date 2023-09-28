@@ -23,12 +23,11 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	try {
-		const data = await FileModel.findAll({
-			where: { applicationId, '$application.organizationId$': organizationId },
-			attributes: { exclude: ['applicationId'] },
-			include: { model: ApplicationModel, attributes: [] }
+		const application = await ApplicationModel.findOne({
+			where: { id: applicationId, organizationId: organizationId }
 		});
-		return NextResponse.json({ data });
+		const files = (await application?.getFiles()) || [];
+		return NextResponse.json({ data: files });
 	} catch (err) {}
 }
 
@@ -53,15 +52,17 @@ export async function POST(request: NextRequest) {
 				files.map(async (item) => {
 					const fileName = slugify(Date.now().toString(36) + '-' + item.name, { lower: true, strict: true });
 					await fs.promises.writeFile(`uploads/${fileName}`, Buffer.from(await item.arrayBuffer()));
-					return { type: item.type, name: fileName, applicationId: +applicationId };
+					return { type: item.type, name: fileName };
 				})
 			);
 		} catch (err) {
 			//@ts-expect-error error
 			return new NextResponse(`Error with uploading: ${err.message}`, { status: 500 });
 		}
-		const { FileModel } = await initialize();
-		const data = await FileModel.bulkCreate(filesData);
-		return NextResponse.json({ data });
+		const { FileModel, ApplicationModel } = await initialize();
+		const application = await ApplicationModel.findByPk(applicationId);
+		const createdFiles = await FileModel.bulkCreate(filesData);
+		await application?.addFiles(createdFiles);
+		return NextResponse.json({ data: createdFiles });
 	}
 }
