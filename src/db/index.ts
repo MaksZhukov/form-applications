@@ -14,11 +14,24 @@ import { ApplicationCommentModel } from './applicationComment/model';
 import { applicationCommentSchema } from './applicationComment/schema';
 import { UserModel } from './users/model';
 import { userSchema } from './users/schema';
+import { ApplicationFileModel } from './applicationFiles/model';
+import { applicationFileSchema } from './applicationFiles/schema';
 
 let sequelize: Sequelize;
+
+const models = {
+	OrganizationModel,
+	ApplicationModel,
+	FileModel,
+	CommentModel,
+	UserModel,
+	ApplicationCommentModel,
+	ApplicationFileModel
+};
+
 export const initialize = async () => {
 	if (sequelize) {
-		return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel, ApplicationCommentModel };
+		return models;
 	}
 	const connection = await mysqlPromise.createConnection({
 		host: process.env.DATABASE_HOST,
@@ -46,11 +59,17 @@ export const initialize = async () => {
 		timestamps: false
 	});
 
+	ApplicationFileModel.init(applicationFileSchema, { sequelize, modelName: 'application_files', timestamps: false });
+
 	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
 	ApplicationModel.belongsTo(OrganizationModel);
 
 	FileModel.init(fileSchema, { sequelize, modelName: 'file' });
-	FileModel.belongsTo(ApplicationModel);
+	FileModel.belongsToMany(ApplicationModel, { through: ApplicationFileModel, onDelete: 'CASCADE' });
+	ApplicationModel.belongsToMany(FileModel, { through: ApplicationFileModel, onDelete: 'CASCADE' });
+	// await ApplicationFileModel.sync({ alter: true });
+	// await FileModel.sync({ alter: true });
+	// await ApplicationModel.sync({ alter: true });
 
 	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
 	CommentModel.belongsTo(UserModel);
@@ -75,5 +94,5 @@ export const initialize = async () => {
 		});
 	}
 
-	return { OrganizationModel, ApplicationModel, FileModel, CommentModel, UserModel };
+	return models;
 };

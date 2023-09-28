@@ -16,11 +16,10 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	if (orgId && role !== 'admin') {
-		const { FileModel, ApplicationModel, OrganizationModel } = await initialize();
+		const { FileModel } = await initialize();
 		try {
 			const data = await FileModel.findOne({
-				where: { name: fileName },
-				include: { model: ApplicationModel, include: [OrganizationModel] }
+				where: { name: fileName }
 			});
 			if (!data) {
 				throw new Error('no file');

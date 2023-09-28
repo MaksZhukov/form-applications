@@ -6,7 +6,6 @@ export type FileAttributes = {
 	updatedAt: string;
 	name: string;
 	type: string;
-	applicationId: number;
 };
 
 export interface FileAttributesCreation extends Optional<FileAttributes, 'id' | 'createdAt' | 'updatedAt'> {}

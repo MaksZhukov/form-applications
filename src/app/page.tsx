@@ -68,7 +68,7 @@ export default function Home() {
 	};
 
 	const handleClickNew = () => {
-		router.push(`/new`);
+		router.push(`/applications/new`);
 	};
 
 	const handleClickLogo = () => {

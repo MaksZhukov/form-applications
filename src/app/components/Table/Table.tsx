@@ -47,7 +47,7 @@ const Table: FC<Props> = ({
 	const isAdmin = userData?.data.role === 'admin';
 	const router = useRouter();
 	const handleClickMore = (item: ApplicationAttributes) => () => {
-		router.push(`/${item.id}`);
+		router.push(`/applications/${item.id}`);
 	};
 	const [partPagination, setPartPagination] = useState<number>(1);
 	const countPages = Math.ceil(total / API_LIMIT_ITEMS);
