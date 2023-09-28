@@ -178,14 +178,14 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 				</div>
 				{isAdmin && organizations && (
 					<div className='flex items-center'>
-						<Typography className='w-56'>Организация</Typography>
+						<Typography className='w-32'>Организация</Typography>
 						<select
 							required
 							defaultValue={
 								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
 							}
 							name='organizationId'
-							className='mt-1 border h-8 border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+							className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
 									{item.name}
