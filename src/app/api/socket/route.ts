@@ -14,5 +14,6 @@ export async function GET(request: NextRequest) {
 			console.log(`WS LISTEN ON PORT:${process.env.WS_PORT}`);
 		});
 	}
-	return new NextResponse('', { status: 200 });
+
+	return NextResponse.json({ data: { accessKey: token + process.env.SOCKET_HASH_SALT } });
 }

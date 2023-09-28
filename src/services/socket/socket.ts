@@ -1,6 +1,5 @@
 import { Server } from 'http';
 import { Server as SocketServer, Socket } from 'socket.io';
-import { parseCookie } from '../string/String';
 import { verify } from '../jwt';
 import { initialize } from '@/db';
 
@@ -17,18 +16,17 @@ class SocketService {
 	}
 
 	async auth(socket: Socket, next: (err?: Error) => void) {
-		console.log(socket.handshake);
-		const { token } = parseCookie(socket.handshake.headers.cookie);
-		next();
-		// if (!token) {
-		// 	next(new Error('no token'));
-		// }
-		// try {
-		// 	await verify(token);
-		// 	next();
-		// } catch (err) {
-		// 	next(new Error('wrong token'));
-		// }
+		const { accessKey } = socket.handshake.auth;
+		if (!accessKey) {
+			next(new Error('no accessKey'));
+		}
+		const token = accessKey.replace(process.env.SOCKET_HASH_SALT, '');
+		try {
+			await verify(token);
+			next();
+		} catch (err) {
+			next(new Error('wrong token'));
+		}
 	}
 
 	joinApplicationComments(socket: Socket) {
