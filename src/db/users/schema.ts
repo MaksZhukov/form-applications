@@ -5,13 +5,13 @@ export const userSchema: ModelAttributes = {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true,
-		unique: 'id',
+		unique: true
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
-	name: { type: DataTypes.STRING, allowNull: false, unique: 'name' },
-	email: { type: DataTypes.STRING, allowNull: false, unique: 'email' },
+	name: { type: DataTypes.STRING, allowNull: false, unique: true },
+	email: { type: DataTypes.STRING, allowNull: false, unique: true },
 	password: { type: DataTypes.STRING, allowNull: false },
 	token: { type: DataTypes.STRING, defaultValue: '' },
-	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false },
+	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false }
 };

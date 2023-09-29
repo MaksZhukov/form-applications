@@ -16,6 +16,11 @@ import { UserModel } from './users/model';
 import { userSchema } from './users/schema';
 import { ApplicationFileModel } from './applicationFiles/model';
 import { applicationFileSchema } from './applicationFiles/schema';
+import { ApplicationInternalModel } from './applicationInternal/model';
+import { applicationInternalSchema } from './applicationInternal/schema';
+import { ApplicationInternalFileModel } from './applicationInternalFiles/model';
+import { ApplicationInternalCommentModel } from './applicationInternalComments/model';
+import { applicationInternalCommentSchema } from './applicationInternalComments/schema';
 
 let sequelize: Sequelize;
 
@@ -27,6 +32,9 @@ const models = {
 	UserModel,
 	ApplicationCommentModel,
 	ApplicationFileModel,
+	ApplicationInternalModel,
+	ApplicationInternalCommentModel,
+	ApplicationInternalFileModel
 };
 
 export const initialize = async () => {
@@ -37,7 +45,7 @@ export const initialize = async () => {
 		host: process.env.DATABASE_HOST,
 		port: process.env.DATABASE_PORT,
 		user: process.env.DATABASE_USER,
-		password: process.env.DATABASE_USER_PASSWORD,
+		password: process.env.DATABASE_USER_PASSWORD
 	});
 	await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DATABASE}\`;`);
 
@@ -45,7 +53,7 @@ export const initialize = async () => {
 		dialect: 'mysql',
 		dialectModule: mysql,
 		omitNull: true,
-		logging: false,
+		logging: false
 	});
 
 	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
@@ -56,31 +64,54 @@ export const initialize = async () => {
 	ApplicationCommentModel.init(applicationCommentSchema, {
 		sequelize,
 		modelName: 'application_comments',
-		timestamps: false,
+		timestamps: false
+	});
+
+	ApplicationInternalCommentModel.init(applicationInternalCommentSchema, {
+		sequelize,
+		modelName: 'application_internal_comments',
+		timestamps: false
 	});
 
 	ApplicationFileModel.init(applicationFileSchema, { sequelize, modelName: 'application_files', timestamps: false });
+	ApplicationInternalFileModel.init(applicationInternalSchema, {
+		sequelize,
+		modelName: 'application_internal_files',
+		timestamps: false
+	});
 
 	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
 	ApplicationModel.belongsTo(OrganizationModel);
 
+	ApplicationInternalModel.init(applicationInternalSchema, { sequelize, modelName: 'application_internal' });
+
 	FileModel.init(fileSchema, { sequelize, modelName: 'file' });
 	FileModel.belongsToMany(ApplicationModel, { through: ApplicationFileModel, onDelete: 'CASCADE' });
 	ApplicationModel.belongsToMany(FileModel, { through: ApplicationFileModel, onDelete: 'CASCADE' });
-	// await ApplicationFileModel.sync({ alter: true });
-	// await FileModel.sync({ alter: true });
-	// await ApplicationModel.sync({ alter: true });
+
+	FileModel.belongsToMany(ApplicationInternalModel, { through: ApplicationInternalFileModel, onDelete: 'CASCADE' });
+	ApplicationInternalModel.belongsToMany(FileModel, { through: ApplicationInternalFileModel, onDelete: 'CASCADE' });
 
 	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
 	CommentModel.belongsTo(UserModel);
 	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
 	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
+
+	CommentModel.belongsToMany(ApplicationInternalModel, {
+		through: ApplicationInternalCommentModel,
+		onDelete: 'CASCADE'
+	});
+	ApplicationInternalModel.belongsToMany(CommentModel, {
+		through: ApplicationInternalCommentModel,
+		onDelete: 'CASCADE'
+	});
+
 	await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
 			where: { name: 'Default' },
-			defaults: { name: 'Default', uid: '000000000' },
+			defaults: { name: 'Default', uid: '000000000' }
 		});
 		await UserModel.findOrCreate({
 			where: { email: 'admin@mail.ru' },
@@ -89,8 +120,8 @@ export const initialize = async () => {
 				name: 'admin',
 				organizationId: organization.dataValues.id,
 				password: await bcrypt.hash(process.env.DEFAULT_USER_ADMIN_PASS, +process.env.BCRYPT_SALT),
-				role: 'admin',
-			},
+				role: 'admin'
+			}
 		});
 	}
 

@@ -5,6 +5,6 @@ export const applicationFileSchema: ModelAttributes = {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true,
-		unique: 'id',
-	},
+		unique: true
+	}
 };
