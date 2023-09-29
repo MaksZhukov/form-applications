@@ -4,7 +4,8 @@ export const applicationSchema: ModelAttributes = {
 	id: {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
-		primaryKey: true
+		primaryKey: true,
+		unique: true,
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,

@@ -26,7 +26,7 @@ const models = {
 	CommentModel,
 	UserModel,
 	ApplicationCommentModel,
-	ApplicationFileModel
+	ApplicationFileModel,
 };
 
 export const initialize = async () => {
@@ -37,7 +37,7 @@ export const initialize = async () => {
 		host: process.env.DATABASE_HOST,
 		port: process.env.DATABASE_PORT,
 		user: process.env.DATABASE_USER,
-		password: process.env.DATABASE_USER_PASSWORD
+		password: process.env.DATABASE_USER_PASSWORD,
 	});
 	await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DATABASE}\`;`);
 
@@ -45,7 +45,7 @@ export const initialize = async () => {
 		dialect: 'mysql',
 		dialectModule: mysql,
 		omitNull: true,
-		logging: false
+		logging: false,
 	});
 
 	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
@@ -56,7 +56,7 @@ export const initialize = async () => {
 	ApplicationCommentModel.init(applicationCommentSchema, {
 		sequelize,
 		modelName: 'application_comments',
-		timestamps: false
+		timestamps: false,
 	});
 
 	ApplicationFileModel.init(applicationFileSchema, { sequelize, modelName: 'application_files', timestamps: false });
@@ -75,12 +75,12 @@ export const initialize = async () => {
 	CommentModel.belongsTo(UserModel);
 	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
 	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
-	// await sequelize.sync({ alter: true });
+	await sequelize.sync({ alter: true });
 
 	if (process.env.NODE_ENV === 'development') {
 		const [organization] = await OrganizationModel.findOrCreate({
 			where: { name: 'Default' },
-			defaults: { name: 'Default', uid: '000000000' }
+			defaults: { name: 'Default', uid: '000000000' },
 		});
 		await UserModel.findOrCreate({
 			where: { email: 'admin@mail.ru' },
@@ -89,8 +89,8 @@ export const initialize = async () => {
 				name: 'admin',
 				organizationId: organization.dataValues.id,
 				password: await bcrypt.hash(process.env.DEFAULT_USER_ADMIN_PASS, +process.env.BCRYPT_SALT),
-				role: 'admin'
-			}
+				role: 'admin',
+			},
 		});
 	}
 

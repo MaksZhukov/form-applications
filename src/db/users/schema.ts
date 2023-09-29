@@ -4,7 +4,8 @@ export const userSchema: ModelAttributes = {
 	id: {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
-		primaryKey: true
+		primaryKey: true,
+		unique: true,
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
@@ -12,5 +13,5 @@ export const userSchema: ModelAttributes = {
 	email: { type: DataTypes.STRING, allowNull: false, unique: true },
 	password: { type: DataTypes.STRING, allowNull: false },
 	token: { type: DataTypes.STRING, defaultValue: '' },
-	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false }
+	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false },
 };
