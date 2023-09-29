@@ -5,6 +5,6 @@ export const applicationCommentSchema: ModelAttributes = {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true,
-		unique: true,
+		unique: 'id',
 	},
 };

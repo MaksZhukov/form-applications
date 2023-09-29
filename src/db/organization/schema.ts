@@ -5,10 +5,10 @@ export const organizationSchema: ModelAttributes = {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true,
-		unique: true,
+		unique: 'id',
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
-	name: { type: DataTypes.STRING, allowNull: false, unique: true },
-	uid: { type: DataTypes.STRING, allowNull: false, unique: true },
+	name: { type: DataTypes.STRING, allowNull: false, unique: 'name' },
+	uid: { type: DataTypes.STRING, allowNull: false, unique: 'uid' },
 };
