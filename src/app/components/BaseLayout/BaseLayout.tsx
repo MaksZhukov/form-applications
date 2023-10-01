@@ -4,21 +4,32 @@ import { logout } from '@/app/api/logout';
 import { fetchUser } from '@/app/api/user';
 import { createOrganization } from '@/app/api/organizations';
 import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
-import { Button, Menu, MenuHandler, MenuItem, MenuList, Spinner, Typography } from '@material-tailwind/react';
+import {
+	Button,
+	IconButton,
+	Menu,
+	MenuHandler,
+	MenuItem,
+	MenuList,
+	Spinner,
+	Typography
+} from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FC, FormEventHandler, ReactNode, useEffect, useState } from 'react';
+import React, { FC, FormEventHandler, ReactNode, useEffect, useState } from 'react';
 import ModalCreateOrganization from '../modals/ModalCreateOrganization';
 import { createUser } from '@/app/api/users';
 import ModalCreateUser from '../modals/ModalCreateUser';
+import TaskIcon from '@/icons/TaskIcon';
+import Link from 'next/link';
 
 interface Props {
 	children: ReactNode;
-	onClickLogo?: () => void;
+	onClickLogo: () => void;
 }
 
-const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
+const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState<'createOrganization' | 'createUser' | null>(null);
 	const { data, error, isError, isLoading } = useQuery({
@@ -39,8 +50,6 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 	}, [error]);
 
 	const handleClickLogo = () => {
-		router.push('/');
-		saveSelectedOrganizationId('none');
 		onClickLogo();
 	};
 
@@ -90,40 +99,50 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 
 	return (
 		<>
-			<header className='fixed w-full border-b border-gray-300 bg-white py-4 z-10'>
-				<div className='container flex justify-between mx-auto'>
-					<Image
-						onClick={handleClickLogo}
-						className='cursor-pointer'
-						src={'/logo.png'}
-						width={250}
-						height={24.5}
-						alt='Logo'></Image>
-					<span className='flex items-center'>
-						Добро пожаловать
-						<span className='text-accent font-bold pl-2'>{data?.data.email}</span>
-						{data?.data.role === 'admin' && '(админ)'}
-						<Menu placement='bottom-end'>
-							<MenuHandler>
-								<Button size='sm' className='ml-3 p-2 border-accent text-accent' variant='outlined'>
-									меню
-								</Button>
-							</MenuHandler>
-							<MenuList>
-								{data.data.role === 'admin' && (
-									<MenuItem onClick={handleClickAddOrganization}>Добавить организацию</MenuItem>
-								)}
-								{data.data.role === 'admin' && (
-									<MenuItem onClick={handleClickAddUser}>Добавить пользователя</MenuItem>
-								)}
-								<MenuItem onClick={handleLogout}>Выход</MenuItem>
-							</MenuList>
-						</Menu>{' '}
-					</span>
-				</div>
+			<header className='px-4 flex fixed justify-between w-full border-b border-gray-300 bg-white py-4 z-10'>
+				<Image
+					onClick={handleClickLogo}
+					className='cursor-pointer'
+					src={'/logo.png'}
+					width={250}
+					height={24.5}
+					alt='Logo'></Image>
+				<span className='flex items-center'>
+					Добро пожаловать
+					<span className='text-accent font-bold pl-2'>{data?.data.email}</span>
+					{data?.data.role === 'admin' && '(админ)'}
+					<Menu placement='bottom-end'>
+						<MenuHandler>
+							<Button size='sm' className='ml-3 p-2 border-accent text-accent' variant='outlined'>
+								меню
+							</Button>
+						</MenuHandler>
+						<MenuList>
+							{data.data.role === 'admin' && (
+								<MenuItem onClick={handleClickAddOrganization}>Добавить организацию</MenuItem>
+							)}
+							{data.data.role === 'admin' && (
+								<MenuItem onClick={handleClickAddUser}>Добавить пользователя</MenuItem>
+							)}
+							<MenuItem onClick={handleLogout}>Выход</MenuItem>
+						</MenuList>
+					</Menu>{' '}
+				</span>
 			</header>
-			<div className='container min-h-[calc(100vh-81px)] mx-auto pt-20 pb-10'>{children}</div>
-			<footer className='p-10 border-t-accent border-t'></footer>
+			<div className='min-h-[calc(100vh-81px)] pt-16 flex'>
+				<div className='fixed h-full w-20 px-2 py-5 border-r border-gray-300 flex flex-col'>
+					<Link href={'/applications'}>
+						<Button
+							size='sm'
+							className='p-1 flex flex-col justify-center items-center border-accent text-accent'
+							variant='outlined'>
+							<TaskIcon fontSize={30}></TaskIcon>задачи
+						</Button>
+					</Link>
+				</div>
+				<div className='ml-20 px-4 py-6 flex-1'>{children}</div>
+			</div>
+			<footer className='p-10 relative bg-white z-1 border-t-accent border-t'></footer>
 			{showModal === 'createOrganization' && (
 				<ModalCreateOrganization
 					onCancel={handleCancel}
@@ -136,4 +155,4 @@ const Layout: FC<Props> = ({ children, onClickLogo = () => {} }) => {
 	);
 };
 
-export default Layout;
+export default BaseLayout;

@@ -1,10 +1,10 @@
 import mysql from 'mysql2';
 import mysqlPromise from 'mysql2/promise';
-import { BelongsToManyAddAssociationMixin, DataTypes, Model, ModelStatic, Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { applicationSchema } from './application/schema';
 import { fileSchema } from './file/schema';
 import { organizationSchema } from './organization/schema';
-import bcrypt from 'bcrypt';
+
 import { ApplicationModel } from './application/model';
 import { CommentModel } from './comment/model';
 import { commentSchema } from './comment/schema';
@@ -21,6 +21,18 @@ import { applicationInternalSchema } from './applicationInternal/schema';
 import { ApplicationInternalFileModel } from './applicationInternalFiles/model';
 import { ApplicationInternalCommentModel } from './applicationInternalComments/model';
 import { applicationInternalCommentSchema } from './applicationInternalComments/schema';
+import { initComments } from './comment';
+import { initFileModel } from './file';
+import { createDefaultOrganization } from './organization/default';
+import { createDefaultUser } from './users/default';
+import { initUserModel } from './users';
+import { initOrganizationModel } from './organization';
+import { initApplicationCommentModel } from './applicationComment';
+import { initApplicationInternalCommentModel } from './applicationInternalComments';
+import { initApplicationFileModel } from './applicationFiles';
+import { initApplicationInternalFileModel } from './applicationInternalFiles';
+import { initApplicationModel } from './application';
+import { initApplicationInternalModel } from './applicationInternal';
 
 let sequelize: Sequelize;
 
@@ -56,73 +68,24 @@ export const initialize = async () => {
 		logging: false
 	});
 
-	OrganizationModel.init(organizationSchema, { sequelize, modelName: 'organization' });
+	initOrganizationModel(sequelize);
+	initUserModel(sequelize);
+	initApplicationCommentModel(sequelize);
+	initApplicationInternalCommentModel(sequelize);
+	initApplicationFileModel(sequelize);
+	initApplicationInternalFileModel(sequelize);
+	initApplicationModel(sequelize);
+	initApplicationInternalModel(sequelize);
+	initFileModel(sequelize);
+	initComments(sequelize);
 
-	UserModel.init(userSchema, { sequelize, modelName: 'user' });
-	UserModel.belongsTo(OrganizationModel);
-
-	ApplicationCommentModel.init(applicationCommentSchema, {
-		sequelize,
-		modelName: 'application_comments',
-		timestamps: false
-	});
-
-	ApplicationInternalCommentModel.init(applicationInternalCommentSchema, {
-		sequelize,
-		modelName: 'application_internal_comments',
-		timestamps: false
-	});
-
-	ApplicationFileModel.init(applicationFileSchema, { sequelize, modelName: 'application_files', timestamps: false });
-	ApplicationInternalFileModel.init(applicationInternalSchema, {
-		sequelize,
-		modelName: 'application_internal_files',
-		timestamps: false
-	});
-
-	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
-	ApplicationModel.belongsTo(OrganizationModel);
-
-	ApplicationInternalModel.init(applicationInternalSchema, { sequelize, modelName: 'application_internal' });
-
-	FileModel.init(fileSchema, { sequelize, modelName: 'file' });
-	FileModel.belongsToMany(ApplicationModel, { through: ApplicationFileModel, onDelete: 'CASCADE' });
-	ApplicationModel.belongsToMany(FileModel, { through: ApplicationFileModel, onDelete: 'CASCADE' });
-
-	FileModel.belongsToMany(ApplicationInternalModel, { through: ApplicationInternalFileModel, onDelete: 'CASCADE' });
-	ApplicationInternalModel.belongsToMany(FileModel, { through: ApplicationInternalFileModel, onDelete: 'CASCADE' });
-
-	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
-	CommentModel.belongsTo(UserModel);
-	CommentModel.belongsToMany(ApplicationModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
-	ApplicationModel.belongsToMany(CommentModel, { through: ApplicationCommentModel, onDelete: 'CASCADE' });
-
-	CommentModel.belongsToMany(ApplicationInternalModel, {
-		through: ApplicationInternalCommentModel,
-		onDelete: 'CASCADE'
-	});
-	ApplicationInternalModel.belongsToMany(CommentModel, {
-		through: ApplicationInternalCommentModel,
-		onDelete: 'CASCADE'
-	});
-
-	await sequelize.sync({ alter: true });
+	try {
+		await sequelize.sync({ alter: true });
+	} catch (err) {}
 
 	if (process.env.NODE_ENV === 'development') {
-		const [organization] = await OrganizationModel.findOrCreate({
-			where: { name: 'Default' },
-			defaults: { name: 'Default', uid: '000000000' }
-		});
-		await UserModel.findOrCreate({
-			where: { email: 'admin@mail.ru' },
-			defaults: {
-				email: 'admin@mail.ru',
-				name: 'admin',
-				organizationId: organization.dataValues.id,
-				password: await bcrypt.hash(process.env.DEFAULT_USER_ADMIN_PASS, +process.env.BCRYPT_SALT),
-				role: 'admin'
-			}
-		});
+		const organization = await createDefaultOrganization();
+		await createDefaultUser(organization);
 	}
 
 	return models;

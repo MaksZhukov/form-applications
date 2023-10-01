@@ -10,18 +10,21 @@ export async function GET(request: NextRequest) {
 	const token = request.cookies.get('token')?.value as string;
 	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
+	const applicationType = request.nextUrl.searchParams.get('applicationType') || 'common';
 	const status = request.nextUrl.searchParams.get('status') as ApplicationStatus | undefined;
 	const organizationIdParam = request.nextUrl.searchParams.get('organizationId');
 
 	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
-	const { ApplicationModel, OrganizationModel } = await initialize();
+	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
 	try {
 		const {
 			payload: { role, organizationId }
 		} = await verify(token);
-		const { rows, count } = await ApplicationModel.findAndCountAll({
+		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
+		//@ts-expect-error error
+		const { rows, count } = await Model.findAndCountAll({
 			where: omitBy(
 				{ isArchived: false, status, organizationId: role === 'admin' ? organizationIdParam : organizationId },
 				isNil
@@ -43,19 +46,26 @@ export async function POST(request: NextRequest) {
 	const {
 		payload: { organizationId, role }
 	} = await verify(request.cookies.get('token')?.value as string);
+	const applicationType = request.nextUrl.searchParams.get('applicationType') || 'common';
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
 	const description = formData.get('description') as string;
-	const deadline = formData.get('deadline') as string;
-	const phone = formData.get('phone') as string;
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const isUrgent = formData.get('isUrgent') as string;
 	const isArchived = formData.get('isArchived') as string;
+
 	const email = formData.get('email') as string;
+	const deadline = formData.get('deadline') as string;
+	const phone = formData.get('phone') as string;
+
+	const forWhom = formData.get('forWhom') as string;
+	const redirection = formData.get('redirection') as string;
+	const departmentName = formData.get('departmentName') as string;
+
 	const organizationIdForm = formData.get('organizationId') as string;
 
-	if (!title || !description || !phone || !name) {
+	if (!title || !description || applicationType === 'common' ? !phone : false || !name) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
@@ -63,21 +73,32 @@ export async function POST(request: NextRequest) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
 
-	const { ApplicationModel } = await initialize();
+	let values: { [key: string]: string | number | boolean } = {
+		title,
+		description,
+		comment,
+		deadline: deadline ?? '',
+		isArchived: Boolean(isArchived),
+		name,
+		status: 'в обработке',
+		isUrgent: Boolean(isUrgent),
+		organizationId: role === 'admin' ? +organizationIdForm : (organizationId as number)
+	};
+
+	if (applicationType === 'common') {
+		values.email = email;
+		values.phone = phone;
+	} else {
+		values.forWhom = forWhom;
+		values.redirection = redirection;
+		values.departmentName = departmentName;
+	}
+
+	const { ApplicationModel, ApplicationInternalModel } = await initialize();
+	const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 	try {
-		const application = await ApplicationModel.create({
-			title,
-			description,
-			deadline: deadline ?? '',
-			phone,
-			comment,
-			isArchived: Boolean(isArchived),
-			name,
-			status: 'в обработке',
-			email,
-			isUrgent: Boolean(isUrgent),
-			organizationId: role === 'admin' ? +organizationIdForm : (organizationId as number)
-		});
+		//@ts-expect-error error
+		const application = await Model.create(values);
 
 		return NextResponse.json({ data: application });
 	} catch (err) {
