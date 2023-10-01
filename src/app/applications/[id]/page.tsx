@@ -10,7 +10,7 @@ import Layout from '../../components/BaseLayout';
 import { ApplicationAttributes } from '@/db/application/types';
 import Chat from '../../components/Chat';
 
-const ApplicationPage = () => {
+export default function ApplicationPage() {
 	const { id } = useParams();
 	const router = useRouter();
 	const client = useQueryClient();
@@ -42,6 +42,4 @@ const ApplicationPage = () => {
 			{process.env.NEXT_PUBLIC_FF_COMMENTS === 'true' && data && <Chat applicationId={data.data.id}></Chat>}
 		</>
 	);
-};
-
-export default ApplicationPage;
+}
