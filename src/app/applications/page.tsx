@@ -22,7 +22,7 @@ export default function Applications() {
 	// IT NEEDS FOR CSR
 	useEffect(() => {}, []);
 	const { data, isLoading } = useQuery({
-		queryKey: ['application', getLoginTime(), page, searchParams.get('selectedStatus'), selectedOrganizationId],
+		queryKey: ['application', getLoginTime(), page, selectedStatus, selectedOrganizationId],
 		staleTime: Infinity,
 		retry: 0,
 		keepPreviousData: true,
