@@ -1,5 +1,4 @@
 import { fetchComments } from '@/app/api/comments';
-import { ApiResponse } from '@/app/api/types';
 import { fetchUser } from '@/app/api/user';
 import { getLoginTime } from '@/app/localStorage';
 import { socketService } from '@/app/socket';
@@ -34,7 +33,7 @@ const Chat: FC<Props> = ({ applicationId }) => {
 		queryKey: ['comments', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: ({ pageParam = 0 }) => fetchComments(applicationId, pageParam),
+		queryFn: ({ pageParam = 0 }) => fetchComments(applicationId, 'common', pageParam),
 		getNextPageParam: (lastPage, allPages) => (lastPage.length ? allPages.length : undefined)
 	});
 	const comments = [...(dataComments?.pages ?? [])].reverse().flat() || [];

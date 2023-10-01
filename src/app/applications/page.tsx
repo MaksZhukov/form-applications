@@ -29,6 +29,7 @@ export const Applications = ({}) => {
 		queryFn: () =>
 			fetchApplications(
 				(page - 1) * API_LIMIT_ITEMS,
+				'common',
 				selectedStatus === 'none' ? undefined : selectedStatus,
 				selectedOrganizationId === 'none' ? undefined : selectedOrganizationId
 			)

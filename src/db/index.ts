@@ -1,26 +1,16 @@
 import mysql from 'mysql2';
 import mysqlPromise from 'mysql2/promise';
 import { Sequelize } from 'sequelize';
-import { applicationSchema } from './application/schema';
-import { fileSchema } from './file/schema';
-import { organizationSchema } from './organization/schema';
-
 import { ApplicationModel } from './application/model';
 import { CommentModel } from './comment/model';
-import { commentSchema } from './comment/schema';
 import { OrganizationModel } from './organization/model';
 import { FileModel } from './file/model';
 import { ApplicationCommentModel } from './applicationComment/model';
-import { applicationCommentSchema } from './applicationComment/schema';
 import { UserModel } from './users/model';
-import { userSchema } from './users/schema';
 import { ApplicationFileModel } from './applicationFiles/model';
-import { applicationFileSchema } from './applicationFiles/schema';
 import { ApplicationInternalModel } from './applicationInternal/model';
-import { applicationInternalSchema } from './applicationInternal/schema';
 import { ApplicationInternalFileModel } from './applicationInternalFiles/model';
 import { ApplicationInternalCommentModel } from './applicationInternalComments/model';
-import { applicationInternalCommentSchema } from './applicationInternalComments/schema';
 import { initComments } from './comment';
 import { initFileModel } from './file';
 import { createDefaultOrganization } from './organization/default';

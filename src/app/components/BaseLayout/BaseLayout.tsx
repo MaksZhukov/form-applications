@@ -4,16 +4,7 @@ import { logout } from '@/app/api/logout';
 import { fetchUser } from '@/app/api/user';
 import { createOrganization } from '@/app/api/organizations';
 import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
-import {
-	Button,
-	IconButton,
-	Menu,
-	MenuHandler,
-	MenuItem,
-	MenuList,
-	Spinner,
-	Typography
-} from '@material-tailwind/react';
+import { Button, Menu, MenuHandler, MenuItem, MenuList, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

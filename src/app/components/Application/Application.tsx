@@ -2,7 +2,7 @@
 
 import { createApplication } from '@/app/api/applications';
 import { updateApplication } from '@/app/api/applications/[id]';
-import { getFiles, uploadFiles } from '@/app/api/files';
+import { fetchFiles, uploadFiles } from '@/app/api/files';
 import { fetchUser } from '@/app/api/user';
 import { fetchOrganizations } from '@/app/api/organizations';
 import { ApiResponse } from '@/app/api/types';
@@ -26,13 +26,12 @@ interface Props {
 }
 
 const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
+	const [deadline, setDeadline] = useState<null | DateType>(data?.deadline || null);
 	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: fetchUser
 	});
-
-	const [deadline, setDeadline] = useState<null | DateType>(data?.deadline || null);
 
 	const isAdmin = userData?.data.role === 'admin';
 	const { data: organizations } = useQuery({
@@ -45,7 +44,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 
 	const { data: files } = useQuery({
 		queryKey: ['files', data?.id],
-		queryFn: () => getFiles(data?.id as number),
+		queryFn: () => fetchFiles(data?.id as number, 'common'),
 		staleTime: Infinity,
 		retry: 0,
 		enabled: !!data?.id
