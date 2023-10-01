@@ -4,13 +4,14 @@ import Link from 'next/link';
 import TaskIcon from '@/icons/TaskIcon';
 
 export const SideBar = () => {
+	const handleClickApplications = () => {
+		saveSelectedOrganizationId('none');
+	};
 	return (
 		<div className='fixed h-full w-20 px-2 py-5 border-r border-gray-300 flex flex-col'>
 			<Link href={'/applications'}>
 				<Button
-					onClick={() => {
-						saveSelectedOrganizationId('none');
-					}}
+					onClick={handleClickApplications}
 					size='sm'
 					className='p-1 flex flex-col justify-center items-center border-accent text-accent'
 					variant='outlined'>
