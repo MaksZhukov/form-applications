@@ -15,7 +15,7 @@ export const SideBar = () => {
 					size='sm'
 					className='p-1 flex flex-col justify-center items-center border-accent text-accent'
 					variant='outlined'>
-					<TaskIcon fontSize={30}></TaskIcon>задачи
+					<TaskIcon className='text-accent' fontSize={30}></TaskIcon>задачи
 				</Button>
 			</Link>
 		</div>

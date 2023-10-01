@@ -2,13 +2,14 @@ import { FC, SVGProps } from 'react';
 
 const TaskIcon: FC<SVGProps<any>> = (props) => (
 	<svg
+		className={props.className}
 		version='1.1'
 		id='Layer_1'
 		xmlns='http://www.w3.org/2000/svg'
 		xmlnsXlink='http://www.w3.org/1999/xlink'
 		x='0px'
 		y='0px'
-		style={{ fontSize: props.fontSize, width: '1em', height: '1em' }}
+		style={{ fontSize: props.fontSize, width: '1em', height: '1em', fill: 'currentcolor' }}
 		viewBox='0 0 100.353 100.353'
 		xmlSpace='preserve'>
 		<g>
