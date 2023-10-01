@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { fetchNewApplicationId } from '../../api/applications/new';
 import Application from '../../components/Application';
-import Layout from '../../components/Layout';
+import Layout from '../../components/BaseLayout';
 
 const ApplicationPage = () => {
 	const router = useRouter();
@@ -22,11 +22,7 @@ const ApplicationPage = () => {
 		);
 	}
 
-	return (
-		<Layout>
-			<Application newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></Application>
-		</Layout>
-	);
+	return <Application newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></Application>;
 };
 
 export default ApplicationPage;

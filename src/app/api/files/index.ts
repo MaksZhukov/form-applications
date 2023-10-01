@@ -2,8 +2,10 @@ import { FileAttributes } from '@/db/file/types';
 import client from '../client';
 import { ApiResponse } from '../types';
 
-export const getFiles = (applicationId: number) =>
-	client.get<ApiResponse<FileAttributes[]>>(`/api/files`, { params: { applicationId } }).then((res) => res.data);
+export const fetchFiles = (applicationId: number, applicationType: 'common' | 'internal') =>
+	client
+		.get<ApiResponse<FileAttributes[]>>(`/api/files`, { params: { applicationId, applicationType } })
+		.then((res) => res.data);
 
 export const uploadFiles = (params: { applicationId: number; data: FormData }) =>
 	client

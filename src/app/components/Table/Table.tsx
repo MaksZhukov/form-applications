@@ -137,7 +137,10 @@ const Table: FC<Props> = ({
 										{item.title}
 									</Typography>
 									<Typography className='font-normal text-xs'>
-										Описание. {item.description}
+										Описание.{' '}
+										{item.description.length > 300
+											? `${item.description.slice(0, 300)}...`
+											: item.description}
 									</Typography>
 								</td>
 								{isAdmin && (

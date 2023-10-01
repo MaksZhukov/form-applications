@@ -44,11 +44,25 @@ class SocketService {
 	comment(socket: Socket) {
 		socket.on(
 			'comment',
-			async ({ text, applicationId, userId }: { text: string; userId: number; applicationId: number }) => {
+			async ({
+				text,
+				applicationId,
+				applicationType,
+				userId
+			}: {
+				text: string;
+				userId: number;
+				applicationId: number;
+				applicationType: 'common' | 'internal';
+			}) => {
 				if (text) {
 					const { CommentModel, UserModel } = await initialize();
 					const comment = await CommentModel.create({ text, userId }, { include: [UserModel] });
-					await comment.addApplication(applicationId);
+
+					await (applicationType === 'common'
+						? comment.addApplication(applicationId)
+						: comment.addInternalApplication(applicationId));
+
 					const result = await CommentModel.findByPk(comment.dataValues.id, {
 						include: [{ model: UserModel, attributes: ['id', 'name'] }]
 					});

@@ -9,10 +9,11 @@ import slugify from 'slugify';
 export async function GET(request: NextRequest) {
 	const token = request.cookies.get('token')?.value as string;
 	const applicationId = request.nextUrl.searchParams.get('applicationId');
+	const applicationType = request.nextUrl.searchParams.get('applicationType') || 'common';
 	if (!applicationId) {
 		return new NextResponse('no applicationId', { status: 400 });
 	}
-	const { FileModel, ApplicationModel } = await initialize();
+	const { ApplicationModel, ApplicationInternalModel } = await initialize();
 	let organizationId: number;
 	let role: Role;
 	try {
@@ -23,7 +24,9 @@ export async function GET(request: NextRequest) {
 		return new NextResponse('wrong token', { status: 401 });
 	}
 	try {
-		const application = await ApplicationModel.findOne({
+		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
+		//@ts-expect-error error
+		const application = await Model.findOne({
 			where: { id: applicationId, organizationId: organizationId }
 		});
 		const files = (await application?.getFiles()) || [];
@@ -33,6 +36,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	const applicationId = request.nextUrl.searchParams.get('applicationId');
+	const applicationType = request.nextUrl.searchParams.get('applicationType') || 'common';
 	if (!applicationId) {
 		return new NextResponse(`no applicationId`, { status: 500 });
 	}
@@ -59,8 +63,10 @@ export async function POST(request: NextRequest) {
 			//@ts-expect-error error
 			return new NextResponse(`Error with uploading: ${err.message}`, { status: 500 });
 		}
-		const { FileModel, ApplicationModel } = await initialize();
-		const application = await ApplicationModel.findByPk(applicationId);
+		const { FileModel, ApplicationModel, ApplicationInternalModel } = await initialize();
+		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
+		//@ts-expect-error error
+		const application = await Model.findByPk(applicationId);
 		const createdFiles = await FileModel.bulkCreate(filesData);
 		await application?.addFiles(createdFiles);
 		return NextResponse.json({ data: createdFiles });

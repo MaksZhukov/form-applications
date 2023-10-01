@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../../api/applications/[id]';
 import { ApiResponse } from '../../api/types';
 import Application from '../../components/Application';
-import Layout from '../../components/Layout';
+import Layout from '../../components/BaseLayout';
 import { ApplicationAttributes } from '@/db/application/types';
 import Chat from '../../components/Chat';
 
@@ -37,10 +37,10 @@ const ApplicationPage = () => {
 		);
 	}
 	return (
-		<Layout>
+		<>
 			<Application data={data?.data || null} onCancel={handleCancel} onUpdated={handleUpdated}></Application>
 			{process.env.NEXT_PUBLIC_FF_COMMENTS === 'true' && data && <Chat applicationId={data.data.id}></Chat>}
-		</Layout>
+		</>
 	);
 };
 
