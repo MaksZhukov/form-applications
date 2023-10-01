@@ -14,7 +14,7 @@ import { createUser } from '@/app/api/users';
 import ModalCreateUser from '../modals/ModalCreateUser';
 
 import Link from 'next/link';
-import { SideBar } from './Sidebar';
+import { SideBar } from './SideBar';
 import { Header } from './Header';
 
 interface Props {
