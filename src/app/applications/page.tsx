@@ -12,7 +12,7 @@ import { fetchOrganizations } from '../api/organizations';
 import Table from '../components/Table';
 import { getLoginTime, getSelectedOrganizationId, saveSelectedOrganizationId } from '../localStorage';
 
-export const Applications = ({}) => {
+export const Applications = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [page, setPage] = useState(1);
