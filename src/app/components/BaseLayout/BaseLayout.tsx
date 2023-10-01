@@ -95,6 +95,7 @@ const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 					onClick={handleClickLogo}
 					className='cursor-pointer'
 					src={'/logo.png'}
+					priority
 					width={250}
 					height={24.5}
 					alt='Logo'></Image>

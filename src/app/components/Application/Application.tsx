@@ -26,7 +26,10 @@ interface Props {
 }
 
 const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
-	const [deadline, setDeadline] = useState<null | DateType>(data?.deadline || null);
+	const deadlineParts = data?.deadline ? data?.deadline.split('.') : null;
+	const [deadline, setDeadline] = useState<null | DateType>(
+		deadlineParts ? `${deadlineParts[1]}.${deadlineParts[0]}.${deadlineParts[2]}` : null
+	);
 	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
@@ -161,12 +164,10 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						<Typography className='w-20'>Статус</Typography>{' '}
 						{isAdmin ? (
 							<select
-								defaultValue={data?.status}
+								defaultValue={data?.status || 'в обработке'}
 								name='status'
 								className='min-w-max h-8 flex-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-								<option value='в обработке' selected>
-									В обработке
-								</option>
+								<option value='в обработке'>В обработке</option>
 								<option value='в работе'>В работе</option>
 								<option value='выполнено'>Выполнено</option>
 							</select>
@@ -284,7 +285,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						placeholder='24.12.2012'
 						inputName='deadline'
 						inputClassName={(cl) =>
-							`${cl} border-b border-black rounded-none focus:outline-none focus:shadow-none focus:transition-none`
+							`${cl} border-b border-black rounded-none focus:outline-none focus:shadow-none focus:transition-none text-black`
 						}
 						containerClassName={(cl) => `${cl} flex-0.25`}
 					/>
