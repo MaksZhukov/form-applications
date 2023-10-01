@@ -5,14 +5,14 @@ import { ApplicationStatus } from '@/db/application/types';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { ChangeEvent, FC, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { fetchApplications } from '../api/applications';
 import { fetchUser } from '../api/user';
 import { fetchOrganizations } from '../api/organizations';
 import Table from '../components/Table';
 import { getLoginTime, getSelectedOrganizationId, saveSelectedOrganizationId } from '../localStorage';
 
-export const Applications = () => {
+export default function Applications() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [page, setPage] = useState(1);
@@ -98,6 +98,4 @@ export const Applications = () => {
 			</>
 		)
 	);
-};
-
-export default Applications;
+}
