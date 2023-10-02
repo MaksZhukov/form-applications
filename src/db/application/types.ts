@@ -17,6 +17,7 @@ export type ApplicationAttributes = {
 	organizationId: number;
 	isUrgent: boolean;
 	isArchived: boolean;
+	responsibleUserId: number;
 };
 
 export interface ApplicationAttributesCreation
