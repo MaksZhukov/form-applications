@@ -42,6 +42,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const comment = formData.get('comment') as string;
 	const name = formData.get('name') as string;
 	const isUrgent = formData.get('isUrgent') as string;
+	const status = (formData.get('status') as string) || 'в обработке';
 	const isArchived = formData.get('isArchived') as string;
 
 	const email = formData.get('email') as string;
@@ -73,7 +74,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		deadline: deadline ?? '',
 		isArchived: Boolean(isArchived),
 		name,
-		status: 'в обработке',
+		status,
 		isUrgent: Boolean(isUrgent),
 		organizationId: role === 'admin' ? +organizationIdForm : (organizationId as number)
 	};
