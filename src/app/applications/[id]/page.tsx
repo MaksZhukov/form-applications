@@ -6,7 +6,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../../api/applications/[id]';
 import { ApiResponse } from '../../api/types';
 import Application from '../../components/Application';
-import Layout from '../../components/BaseLayout';
 import { ApplicationAttributes } from '@/db/application/types';
 import Chat from '../../components/Chat';
 
