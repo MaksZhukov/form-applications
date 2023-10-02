@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ResponsibleUserSelect: FC<Props> = ({ value, className = '', onChange }) => {
-	const { data } = useQuery({
+	const { data, isFetched } = useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
@@ -21,6 +21,7 @@ const ResponsibleUserSelect: FC<Props> = ({ value, className = '', onChange }) =
 	return (
 		<select
 			defaultValue={value}
+			key={+isFetched}
 			name='responsibleUserId'
 			onChange={onChange}
 			className={`font-normal border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none ${className}`}>

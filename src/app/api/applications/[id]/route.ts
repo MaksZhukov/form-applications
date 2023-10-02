@@ -2,7 +2,7 @@ import { DATE_PATTERN } from '@/app/constants';
 import { initialize } from '@/db';
 import { ApplicationStatus } from '@/db/application/types';
 import { verify } from '@/services/jwt';
-import { isNil, omitBy } from 'lodash';
+import { isUndefined, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -94,7 +94,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	try {
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 		//@ts-expect-error error
-		await Model.update(omitBy(values, isNil), {
+		await Model.update(omitBy(values, isUndefined), {
 			where: role === 'admin' ? { id } : { id, organizationId: organizationId as number }
 		});
 		//@ts-expect-error error
