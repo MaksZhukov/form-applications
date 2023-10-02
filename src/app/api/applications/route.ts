@@ -3,7 +3,7 @@ import { API_LIMIT_ITEMS } from '@/constants';
 import { initialize } from '@/db';
 import { ApplicationStatus } from '@/db/application/types';
 import { verify } from '@/services/jwt';
-import { isNil, omitBy } from 'lodash';
+import { isNil, isUndefined, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
 	const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 	try {
 		//@ts-expect-error error
-		const application = await Model.create(values);
+		const application = await Model.create(omitBy(values, isUndefined));
 
 		return NextResponse.json({ data: application });
 	} catch (err) {
