@@ -5,12 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { ChangeEventHandler, FC } from 'react';
 
 interface Props {
-	responsibleUserId?: number;
+	value?: number;
 	className?: string;
 	onChange?: ChangeEventHandler<HTMLSelectElement>;
 }
 
-const ResponsibleUserSelect: FC<Props> = ({ responsibleUserId, className = '', onChange }) => {
+const ResponsibleUserSelect: FC<Props> = ({ value, className = '', onChange }) => {
 	const { data } = useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
@@ -20,12 +20,10 @@ const ResponsibleUserSelect: FC<Props> = ({ responsibleUserId, className = '', o
 
 	return (
 		<select
-			// defaultValue={responsibleUserId}
-
+			defaultValue={value}
 			name='responsibleUserId'
 			onChange={onChange}
-			className={`font-normal border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none ${className}`}
-			{...(responsibleUserId ? { value: responsibleUserId } : {})}>
+			className={`font-normal border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none ${className}`}>
 			<option value='none'>не выбрано</option>
 			{data?.data.data.map((item) => (
 				<option key={item.id} value={item.id}>

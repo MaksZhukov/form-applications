@@ -277,7 +277,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 				<div className='flex mb-5'>
 					<Typography className='w-56'>Ответственный</Typography>
 					<ResponsibleUserSelect
-						responsibleUserId={data?.responsibleUserId}
+						value={data?.responsibleUserId}
 						className='flex-0.5 h-8'></ResponsibleUserSelect>
 				</div>
 			)}

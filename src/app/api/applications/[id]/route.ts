@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const email = formData.get('email') as string;
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
-    const responsibleUserId = formData.get('responsibleUserId') as string;
+	const responsibleUserId = formData.get('responsibleUserId') as string;
 
 	const forWhom = formData.get('forWhom') as string;
 	const redirection = formData.get('redirection') as string;
@@ -67,7 +67,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		payload: { organizationId, role }
 	} = await verify(token);
 
-	let values: { [key: string]: string | number | boolean } = {
+	let values: { [key: string]: string | number | boolean | null } = {
 		title,
 		description,
 		comment,
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	if (applicationType === 'common') {
 		values.email = email;
 		values.phone = phone;
-        values.responsibleUserId = responsibleUserId;
+		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {
 		values.forWhom = forWhom;
 		values.redirection = redirection;

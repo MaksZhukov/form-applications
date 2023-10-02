@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 	const applicationType = request.nextUrl.searchParams.get('applicationType') || 'common';
 	const status = request.nextUrl.searchParams.get('status') as ApplicationStatus | undefined;
 	const organizationIdParam = request.nextUrl.searchParams.get('organizationId');
-	const responsibleUserId = request.nextUrl.searchParams.get('responsibleUserId');
+	const responsibleUserId = request.nextUrl.searchParams.get('responsibleUserId') || null;
 
 	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 		return new NextResponse('validate fields', { status: 400 });
 	}
 
-	let values: { [key: string]: string | number | boolean } = {
+	let values: { [key: string]: string | number | boolean | null } = {
 		title,
 		description,
 		comment,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 	if (applicationType === 'common') {
 		values.email = email;
 		values.phone = phone;
-		values.responsibleUserId = responsibleUserId;
+		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {
 		values.forWhom = forWhom;
 		values.redirection = redirection;
