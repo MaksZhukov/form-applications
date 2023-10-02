@@ -7,5 +7,5 @@ import { UserModel } from '../users/model';
 export const initApplicationModel = async (sequelize: Sequelize) => {
 	ApplicationModel.init(applicationSchema, { sequelize, modelName: 'application' });
 	ApplicationModel.belongsTo(OrganizationModel);
-	ApplicationModel.belongsTo(UserModel, { foreignKey: 'responsibleUserId' });
+	ApplicationModel.belongsTo(UserModel, { foreignKey: 'responsibleUserId', as: 'responsibleUser' });
 };

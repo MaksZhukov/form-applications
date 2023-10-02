@@ -10,7 +10,8 @@ import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/
 import { useQuery } from '@tanstack/react-query';
 import getConfig from 'next/config';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, ChangeEventHandler, FC, useState } from 'react';
+import ResponsibleUserSelect from '../ResponsibleUserSelect/ResponsibleUserSelect';
 
 const MAX_PART_PAGINATION = 10;
 
@@ -24,6 +25,7 @@ interface Props {
 	onChangeStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangeOrganization: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangePage: (page: number) => () => void;
+	onChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement>;
 }
 
 const config = getConfig();
@@ -37,7 +39,8 @@ const Table: FC<Props> = ({
 	selectedStatus,
 	onChangePage,
 	onChangeOrganization,
-	onChangeStatus
+	onChangeStatus,
+	onChangeResponsibleUser
 }) => {
 	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
@@ -95,6 +98,15 @@ const Table: FC<Props> = ({
 					<option value='В работе'>В работе</option>
 					<option value='Выполнено'>Выполнено</option>
 				</select>
+			)
+		},
+		{
+			name: 'Ответственный',
+			width: 135,
+			filter: isAdmin && (
+				<ResponsibleUserSelect
+					className='mt-1 w-full'
+					onChange={onChangeResponsibleUser}></ResponsibleUserSelect>
 			)
 		},
 		{ name: 'Срочность' },
@@ -162,6 +174,11 @@ const Table: FC<Props> = ({
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
 										{item.status}
+									</Typography>
+								</td>
+								<td className={classes}>
+									<Typography variant='small' className='font-normal'>
+										{item.responsibleUser?.name}
 									</Typography>
 								</td>
 								<td className={classes + ' text-center'}>

@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
 	try {
 		const { UserModel } = await initialize();
 		const users = await UserModel.findAll({ attributes: ['id', 'name'], where: { organizationId } });
-		console.log(users);
 		return NextResponse.json({ data: users });
 	} catch (err) {
 		return new NextResponse('error getting users', { status: 500 });
@@ -29,7 +28,7 @@ export async function POST(request: NextRequest) {
 			password: await bcrypt.hash(password, +process.env.BCRYPT_SALT),
 			role,
 			name,
-			organizationId: +organizationId,
+			organizationId: +organizationId
 		});
 	} catch (err) {
 		if (err instanceof Error) {

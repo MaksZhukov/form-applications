@@ -5,7 +5,7 @@ import { ApplicationStatus } from '@/db/application/types';
 import { Button, Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, FC, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { ChangeEvent, ChangeEventHandler, FC, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { fetchApplications } from '../api/applications';
 import { fetchUser } from '../api/user';
 import { fetchOrganizations } from '../api/organizations';
@@ -18,11 +18,19 @@ export default function Applications() {
 	const [page, setPage] = useState(1);
 	const selectedStatus = (searchParams.get('selectedStatus') || 'none') as ApplicationStatus | 'none';
 	const selectedOrganizationId = searchParams.get('selectedOrganizationId') || getSelectedOrganizationId() || 'none';
+	const selectedResponsibleUserId = searchParams.get('selectedResponsibleUserId') || 'none';
 
 	// IT NEEDS FOR CSR
 	useEffect(() => {}, []);
 	const { data, isLoading } = useQuery({
-		queryKey: ['application', getLoginTime(), page, selectedStatus, selectedOrganizationId],
+		queryKey: [
+			'application',
+			getLoginTime(),
+			page,
+			selectedStatus,
+			selectedOrganizationId,
+			selectedResponsibleUserId
+		],
 		staleTime: Infinity,
 		retry: 0,
 		keepPreviousData: true,
@@ -31,7 +39,8 @@ export default function Applications() {
 				(page - 1) * API_LIMIT_ITEMS,
 				'common',
 				selectedStatus === 'none' ? undefined : selectedStatus,
-				selectedOrganizationId === 'none' ? undefined : selectedOrganizationId
+				selectedOrganizationId === 'none' ? undefined : selectedOrganizationId,
+				selectedResponsibleUserId === 'none' ? undefined : selectedResponsibleUserId
 			)
 	});
 
@@ -70,6 +79,12 @@ export default function Applications() {
 		saveSelectedOrganizationId(e.target.value);
 	};
 
+	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (e) => {
+		const params = new URLSearchParams(Array.from(searchParams.entries()));
+		params.set('selectedResponsibleUserId', e.target.value as string | 'none');
+		router.push('/applications?' + params.toString());
+	};
+
 	const handleClickNew = () => {
 		router.push(`/applications/new`);
 	};
@@ -91,6 +106,7 @@ export default function Applications() {
 					selectedStatus={(searchParams.get('selectedStatus') as ApplicationStatus) || 'none'}
 					onChangeStatus={handleChangeStatus}
 					onChangeOrganization={handleChangeOrganization}
+					onChangeResponsibleUser={handleChangeResponsibleUser}
 					data={data.data.data}
 					total={data.data.meta?.total}
 					onChangePage={handleChangePage}

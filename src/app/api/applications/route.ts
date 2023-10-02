@@ -13,11 +13,12 @@ export async function GET(request: NextRequest) {
 	const applicationType = request.nextUrl.searchParams.get('applicationType') || 'common';
 	const status = request.nextUrl.searchParams.get('status') as ApplicationStatus | undefined;
 	const organizationIdParam = request.nextUrl.searchParams.get('organizationId');
+	const responsibleUserId = request.nextUrl.searchParams.get('responsibleUserId');
 
 	if (limit > API_LIMIT_ITEMS) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
-	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
+	const { ApplicationModel, ApplicationInternalModel, OrganizationModel, UserModel } = await initialize();
 	try {
 		const {
 			payload: { role, organizationId }
@@ -26,11 +27,19 @@ export async function GET(request: NextRequest) {
 		//@ts-expect-error error
 		const { rows, count } = await Model.findAndCountAll({
 			where: omitBy(
-				{ isArchived: false, status, organizationId: role === 'admin' ? organizationIdParam : organizationId },
+				{
+					isArchived: false,
+					status,
+					organizationId: role === 'admin' ? organizationIdParam : organizationId,
+					responsibleUserId
+				},
 				isNil
 			),
 			order: [['createdAt', 'DESC']],
-			include: { model: OrganizationModel, attributes: ['id', 'uid', 'name'] },
+			include: [
+				{ model: OrganizationModel, attributes: ['id', 'uid', 'name'] },
+				{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }
+			],
 			limit,
 			offset
 		});
@@ -58,6 +67,7 @@ export async function POST(request: NextRequest) {
 	const email = formData.get('email') as string;
 	const deadline = formData.get('deadline') as string;
 	const phone = formData.get('phone') as string;
+	const responsibleUserId = formData.get('responsibleUserId') as string;
 
 	const forWhom = formData.get('forWhom') as string;
 	const redirection = formData.get('redirection') as string;
@@ -88,6 +98,7 @@ export async function POST(request: NextRequest) {
 	if (applicationType === 'common') {
 		values.email = email;
 		values.phone = phone;
+		values.responsibleUserId = responsibleUserId;
 	} else {
 		values.forWhom = forWhom;
 		values.redirection = redirection;
