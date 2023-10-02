@@ -3,11 +3,12 @@ import { Role } from '@/db/organization/types';
 import bcrypt from 'bcrypt';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+	const organizationId = request.nextUrl.searchParams.get('organizationId') as string;
 	try {
 		const { UserModel } = await initialize();
-		const organizations = await UserModel.findAll({ attributes: ['id', 'name'] });
-		return NextResponse.json({ data: organizations });
+		const users = await UserModel.findAll({ attributes: ['id', 'name'], where: { organizationId } });
+		return NextResponse.json({ data: users });
 	} catch (err) {
 		return new NextResponse('error getting users', { status: 500 });
 	}

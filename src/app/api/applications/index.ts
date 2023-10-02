@@ -8,11 +8,12 @@ export const fetchApplications = (
 	offset: number = 1,
 	applicationType: 'common' | 'internal',
 	status?: string,
-	organizationId?: string
+	organizationId?: string,
+	responsibleUserId?: string
 ) =>
 	client.get<
 		ApiResponse<(ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name' | 'uid'> })[]>
-	>(`/api/applications?${qs.stringify({ offset, status, applicationType, organizationId })}`);
+	>(`/api/applications?${qs.stringify({ offset, status, applicationType, organizationId, responsibleUserId })}`);
 
 export const createApplication = (data: FormData) =>
 	client.post<ApiResponse<ApplicationAttributes>>(`/api/applications`, data);

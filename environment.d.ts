@@ -10,6 +10,7 @@ namespace NodeJS {
 		WS_PORT: number;
 		NEXT_PUBLIC_WS_HOST: string;
 		NEXT_PUBLIC_FF_COMMENTS: string;
-        SOCKET_HASH_SALT: string;
+		SOCKET_HASH_SALT: string;
+		NEXT_PUBLIC_OWNER_ORGANIZATION_ID: string;
 	}
 }

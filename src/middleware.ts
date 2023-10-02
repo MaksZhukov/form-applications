@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
 		if (token) {
 			if (token !== process.env.ADMIN_TOKEN) {
 				const {
-					payload: { role }
+					payload: { role },
 				} = await verify(token);
 				if (role !== 'admin') {
 					return new NextResponse('wrong token', { status: 401 });
@@ -40,10 +40,14 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
-	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'GET' && token) {
+	if (
+		(request.nextUrl.pathname === '/api/organizations' || request.nextUrl.pathname === '/api/users') &&
+		request.method === 'GET' &&
+		token
+	) {
 		try {
 			const {
-				payload: { role }
+				payload: { role },
 			} = await verify(token);
 			if (role === 'admin') {
 				return NextResponse.next();

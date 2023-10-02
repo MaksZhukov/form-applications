@@ -17,6 +17,7 @@ import Link from 'next/link';
 import Datepicker, { DateType, DateValueType } from 'react-tailwindcss-datepicker';
 import { FC, FormEventHandler, LegacyRef, useRef, useState } from 'react';
 import MaskedInput from 'react-text-mask';
+import ResponsibleUserSelect from '../ResponsibleUserSelect';
 
 interface Props {
 	data?: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name'> }) | null;
@@ -260,6 +261,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						/>
 					)}></MaskedInput>
 			</div>
+
 			<div className='flex mb-5'>
 				<Typography className='w-56'>Email</Typography>{' '}
 				<input
@@ -270,6 +272,15 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					defaultValue={data?.email}
 				/>
 			</div>
+
+			{isAdmin && (
+				<div className='flex mb-5'>
+					<Typography className='w-56'>Ответственный</Typography>
+					<ResponsibleUserSelect
+						responsibleUserId={data?.responsibleUserId}
+						className='flex-0.5 h-8'></ResponsibleUserSelect>
+				</div>
+			)}
 
 			{isAdmin && (
 				<div className='flex mb-5'>
