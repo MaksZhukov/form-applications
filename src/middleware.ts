@@ -1,68 +1,68 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import { verify } from './services/jwt';
+import { Role } from './db/users/types';
+import { Method, authPathsByRole, publicPaths, redirectAuthPaths } from './config';
 
-const privatePaths = ['/api/applications', '/api/organization', '/api/user', '/api/users', '/api/socket'];
+const matchPath = (pattern: string, path: string) => {
+	const patternArray = pattern.split('/');
+	const pathArray = path.split('/');
+	return (
+		patternArray.length === pathArray.length &&
+		patternArray.every((item, index) => {
+			return item.startsWith(':') && pathArray[index] ? true : item === pathArray[index];
+		})
+	);
+};
 
 export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value;
-	if (privatePaths.includes(request.nextUrl.pathname)) {
-		if (!token) {
-			const res = new NextResponse('no token', { status: 401 });
-			res.cookies.delete('token');
-			return res;
-		}
-		try {
-			await verify(token);
-			return NextResponse.next();
-		} catch (err) {
-			const res = new NextResponse('no token', { status: 401 });
-			res.cookies.delete('token');
-			return res;
-		}
-	}
-	if (request.nextUrl.pathname.startsWith('/login')) {
+
+	if (redirectAuthPaths.includes(request.nextUrl.pathname)) {
 		if (token) {
 			return NextResponse.redirect(new URL('/', request.url));
-		}
-	}
-	if (request.nextUrl.pathname === '/api/organizations' && request.method === 'POST') {
-		if (token) {
-			if (token !== process.env.ADMIN_TOKEN) {
-				const {
-					payload: { role },
-				} = await verify(token);
-				if (role !== 'admin') {
-					return new NextResponse('wrong token', { status: 401 });
-				}
-			}
 		} else {
-			return new NextResponse('no token', { status: 401 });
+			return;
 		}
 	}
 
-	if (
-		(request.nextUrl.pathname === '/api/organizations' || request.nextUrl.pathname === '/api/users') &&
-		request.method === 'GET' &&
-		token
-	) {
+	if (publicPaths.includes(request.nextUrl.pathname)) {
+		return;
+	}
+
+	if (!token) {
+		const res = new NextResponse('no token', { status: 400 });
+		res.cookies.delete('token');
+		return res;
+	} else {
 		try {
 			const {
-				payload: { role },
+				payload: { role }
 			} = await verify(token);
-			if (role === 'admin') {
-				return NextResponse.next();
+			let foundExactWithNoPermissions = false;
+			if (
+				!authPathsByRole[role as Role].some((item) => {
+					if (foundExactWithNoPermissions) {
+						return false;
+					} else {
+						foundExactWithNoPermissions =
+							item.path === request.nextUrl.pathname && !item.methods.includes(request.method as Method);
+					}
+					return (
+						matchPath(item.path, request.nextUrl.pathname) &&
+						item.methods.includes(request.method as Method)
+					);
+				})
+			) {
+				return new NextResponse('no permissions', { status: 403 });
 			}
 		} catch (err) {
-			const res = new NextResponse('no permissions', { status: 401 });
+			const res = new NextResponse('invalid token', { status: 401 });
 			res.cookies.delete('token');
 			return res;
 		}
 	}
-	if (request.nextUrl.pathname.startsWith('/api/users/') && request.method === 'PUT') {
-		if (token === process.env.ADMIN_TOKEN) {
-			return NextResponse.next();
-		} else {
-			return new NextResponse('no permissions', { status: 401 });
-		}
-	}
 }
+
+export const config = {
+	matcher: ['/login', '/api/:path*']
+};
