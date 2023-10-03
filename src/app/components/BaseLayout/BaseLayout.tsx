@@ -2,20 +2,16 @@
 
 import { logout } from '@/app/api/logout';
 import { fetchUser } from '@/app/api/user';
-import { createOrganization } from '@/app/api/organizations';
 import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
-import { Button, Menu, MenuHandler, MenuItem, MenuList, Spinner, Typography } from '@material-tailwind/react';
+import { Spinner } from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { FC, FormEventHandler, ReactNode, useEffect, useState } from 'react';
-import ModalCreateOrganization from '../modals/ModalCreateOrganization';
-import { createUser } from '@/app/api/users';
-import ModalCreateUser from '../modals/ModalCreateUser';
+import React, { FC, ReactNode, useEffect } from 'react';
 
 import Link from 'next/link';
 import { SideBar } from './SideBar';
 import { Header } from './Header';
+import { socketService } from '@/app/socket';
 
 interface Props {
 	children: ReactNode;
@@ -37,6 +33,10 @@ const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 		//@ts-expect-error error
 		if (error?.response.status === 401) {
 			handleLogout();
+		} else {
+			if (!socketService.loading && !socketService.socket) {
+				socketService.init();
+			}
 		}
 	}, [error]);
 
