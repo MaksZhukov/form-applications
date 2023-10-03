@@ -47,7 +47,7 @@ class SocketService {
 			async ({
 				text,
 				applicationId,
-				applicationType,
+				applicationType = 'common',
 				userId
 			}: {
 				text: string;
