@@ -31,7 +31,7 @@ const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 
 	useEffect(() => {
 		//@ts-expect-error error
-		if (error?.response.status === 401) {
+		if (error?.response.status === 401 || error?.response.status === 400) {
 			handleLogout();
 		} else {
 			if (!socketService.loading && !socketService.socket) {
