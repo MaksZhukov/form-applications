@@ -65,7 +65,7 @@ const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 			<Header onClickLogo={handleClickLogo} onLogout={handleLogout}></Header>
 			<div className='min-h-[calc(100vh-81px)] pt-16 flex'>
 				<SideBar></SideBar>
-				<div className='ml-20 px-4 py-6 flex-1'>{children}</div>
+				<div className='ml-24 px-4 py-6 flex-1'>{children}</div>
 			</div>
 			<footer className='p-10 relative bg-white z-1 border-t-accent border-t'></footer>
 		</>
