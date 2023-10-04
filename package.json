@@ -40,6 +40,7 @@
     "sass": "^1.64.2",
     "sequelize": "^6.32.1",
     "serverless-mysql": "^1.5.5",
+    "sharp": "^0.32.6",
     "slugify": "^1.6.6",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
