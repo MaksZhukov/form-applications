@@ -38,7 +38,9 @@ export async function GET(request: NextRequest) {
 			order: [['createdAt', 'DESC']],
 			include: [
 				{ model: OrganizationModel, attributes: ['id', 'uid', 'name'] },
-				{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }
+				...(applicationType === 'common'
+					? [{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }]
+					: [])
 			],
 			limit,
 			offset

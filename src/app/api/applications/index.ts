@@ -1,8 +1,8 @@
 import { ApplicationAttributes } from '@/db/application/types';
-import { OrganizationAttributes } from '@/db/organization/types';
 import qs from 'query-string';
 import client from '../client';
 import { ApiResponse } from '../types';
+import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 
 export const fetchApplications = (
 	offset: number = 1,
@@ -11,9 +11,9 @@ export const fetchApplications = (
 	organizationId?: string,
 	responsibleUserId?: string
 ) =>
-	client.get<
-		ApiResponse<(ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name' | 'uid'> })[]>
-	>(`/api/applications?${qs.stringify({ offset, status, applicationType, organizationId, responsibleUserId })}`);
+	client.get<ApiResponse<(ApplicationAttributes | ApplicationInternalAttributes)[]>>(
+		`/api/applications?${qs.stringify({ offset, status, applicationType, organizationId, responsibleUserId })}`
+	);
 
 export const createApplication = (data: FormData) =>
 	client.post<ApiResponse<ApplicationAttributes>>(`/api/applications`, data);

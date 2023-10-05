@@ -101,6 +101,7 @@ export default function Applications() {
 					Новая задача
 				</Button>
 				<Table
+					applicationType='common'
 					organizations={organizations?.data.data}
 					selectedOrganizationId={selectedOrganizationId}
 					selectedStatus={(searchParams.get('selectedStatus') as ApplicationStatus) || 'none'}

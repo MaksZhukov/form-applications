@@ -5,9 +5,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../../api/applications/[id]';
 import { ApiResponse } from '../../api/types';
-import Application from '../../components/Application';
 import { ApplicationAttributes } from '@/db/application/types';
 import Chat from '../../components/Chat';
+import ApplicationInternal from '@/app/components/ApplicationInternal';
+import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 
 export default function ApplicationPage() {
 	const { id } = useParams();
@@ -15,7 +16,7 @@ export default function ApplicationPage() {
 	const client = useQueryClient();
 	const { data, isLoading } = useQuery({
 		queryKey: [id],
-		queryFn: () => fetchApplication(+id),
+		queryFn: () => fetchApplication<'internal'>(+id, 'internal'),
 		retry: 0,
 		staleTime: Infinity
 	});
@@ -23,8 +24,8 @@ export default function ApplicationPage() {
 	const handleCancel = () => {
 		router.push('/');
 	};
-	const handleUpdated = (updatedData: ApplicationAttributes) => {
-		client.setQueryData<ApiResponse<ApplicationAttributes>>([id], (currData) =>
+	const handleUpdated = (updatedData: ApplicationInternalAttributes) => {
+		client.setQueryData<ApiResponse<ApplicationInternalAttributes>>([id], (currData) =>
 			currData ? { ...currData, data: updatedData } : currData
 		);
 	};
@@ -37,7 +38,10 @@ export default function ApplicationPage() {
 	}
 	return (
 		<>
-			<Application data={data?.data || null} onCancel={handleCancel} onUpdated={handleUpdated}></Application>
+			<ApplicationInternal
+				data={data?.data || null}
+				onCancel={handleCancel}
+				onUpdated={handleUpdated}></ApplicationInternal>
 			{process.env.NEXT_PUBLIC_FF_COMMENTS === 'true' && data && <Chat applicationId={data.data.id}></Chat>}
 		</>
 	);

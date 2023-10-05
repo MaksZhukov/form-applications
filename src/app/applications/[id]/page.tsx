@@ -15,7 +15,7 @@ export default function ApplicationPage() {
 	const client = useQueryClient();
 	const { data, isLoading } = useQuery({
 		queryKey: [id],
-		queryFn: () => fetchApplication(+id),
+		queryFn: () => fetchApplication<'common'>(+id, 'common'),
 		retry: 0,
 		staleTime: Infinity
 	});
