@@ -9,15 +9,24 @@ export const fetchApplication = <T extends 'common' | 'internal'>(id: number, ap
 		.get<{ data: T extends 'common' ? ApplicationAttributes : ApplicationInternalAttributes }>(
 			`/api/applications/${id}`,
 			{
-				params: { applicationType }
+				params: { applicationType },
 			}
 		)
 		.then((res) => res.data);
 
-export const updateApplication = (params: { id: number; data: FormData }) =>
+export const updateApplication = <T extends 'common' | 'internal'>({
+	applicationType,
+	data,
+	id,
+}: {
+	id: number;
+	applicationType: T;
+	data: FormData;
+}) =>
 	client
 		.put<ApiResponse<ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name'> }>>(
-			`/api/applications/${params.id}`,
-			params.data
+			`/api/applications/${id}`,
+			data,
+			{ params: { applicationType } }
 		)
 		.then((res) => res.data);

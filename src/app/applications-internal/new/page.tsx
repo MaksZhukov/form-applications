@@ -10,7 +10,7 @@ const ApplicationPage = () => {
 	const router = useRouter();
 	const { data, isLoading } = useQuery({ queryKey: [], queryFn: () => fetchNewApplicationId('internal') });
 	const handleCancel = () => {
-		router.push('/');
+		router.push('/applications-internal');
 	};
 
 	if (isLoading) {
@@ -22,10 +22,7 @@ const ApplicationPage = () => {
 	}
 
 	return (
-		<ApplicationInternal
-			newApplicationId={data?.data.data}
-			onCancel={handleCancel}
-			data={null}></ApplicationInternal>
+		<ApplicationInternal newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></ApplicationInternal>
 	);
 };
 
