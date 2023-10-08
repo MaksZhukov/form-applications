@@ -97,8 +97,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		values.departmentName = departmentName;
 	}
 
-	console.log(values);
-
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
 	try {
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;

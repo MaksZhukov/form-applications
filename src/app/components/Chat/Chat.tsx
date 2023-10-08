@@ -93,7 +93,7 @@ const Chat: FC<Props> = ({ applicationId }) => {
 	const handleClick = () => {
 		socketService.socket?.emit('comment', { text: value, applicationId, userId: data?.data.id });
 	};
-	console.log(data?.data?.organization);
+
 	return (
 		<div className='fixed top-20 right-0  h-[calc(100%-170px)] 2xl:w-[20%] xl:w-[20%] lg:w-[15%] z-10 flex flex-col'>
 			<div className='flex flex-col p-2 border text-center border-gray-300'>

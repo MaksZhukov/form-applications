@@ -59,6 +59,7 @@
     "@types/lodash": "^4.14.197",
     "@types/react-text-mask": "^5.4.11",
     "@types/request-ip": "^0.0.38",
+    "sequelize-cli": "^6.6.1",
     "utf-8-validate": "^5.0.10"
   }
 }
