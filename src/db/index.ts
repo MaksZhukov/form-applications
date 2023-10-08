@@ -69,13 +69,12 @@ export const initialize = async () => {
 	initFileModel(sequelize);
 	initComments(sequelize);
 
-	try {
-		await sequelize.sync({ alter: true });
-	} catch (err) {
-		console.log(err);
-	}
-
 	if (process.env.NODE_ENV === 'development') {
+        try {
+            await sequelize.sync({ alter: true });
+        } catch (err) {
+            console.log(err);
+        }
 		const organization = await createDefaultOrganization();
 		await createDefaultUser(organization);
 	}

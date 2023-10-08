@@ -12,23 +12,18 @@ export const initComments = async (sequelize: Sequelize) => {
 	CommentModel.belongsTo(UserModel, { constraints: false, foreignKey: 'userId' });
 	CommentModel.belongsToMany(ApplicationModel, {
 		through: ApplicationCommentModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 	ApplicationModel.belongsToMany(CommentModel, {
 		through: ApplicationCommentModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 	CommentModel.belongsToMany(ApplicationInternalModel, {
 		through: ApplicationInternalCommentModel,
-		onDelete: 'CASCADE',
-		constraints: false
-		// MAX LENGTH SHOULD ME 64 chars
+		onDelete: 'CASCADE'
 	});
 	ApplicationInternalModel.belongsToMany(CommentModel, {
 		through: ApplicationInternalCommentModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 };

@@ -10,23 +10,19 @@ export const initFileModel = async (sequelize: Sequelize) => {
 	FileModel.init(fileSchema, { sequelize, modelName: 'file' });
 	FileModel.belongsToMany(ApplicationModel, {
 		through: ApplicationFileModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 	ApplicationModel.belongsToMany(FileModel, {
 		through: ApplicationFileModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 
 	FileModel.belongsToMany(ApplicationInternalModel, {
 		through: ApplicationInternalFileModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 	ApplicationInternalModel.belongsToMany(FileModel, {
 		through: ApplicationInternalFileModel,
-		onDelete: 'CASCADE',
-		constraints: false
+		onDelete: 'CASCADE'
 	});
 };
