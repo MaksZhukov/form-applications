@@ -4,14 +4,13 @@ import { Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { fetchNewApplicationId } from '../../api/applications/new';
-import Application from '../../components/Application';
-import Layout from '../../components/BaseLayout';
+import ApplicationInternal from '@/app/components/ApplicationInternal';
 
 const ApplicationPage = () => {
 	const router = useRouter();
-	const { data, isLoading } = useQuery({ queryKey: [], queryFn: () => fetchNewApplicationId('common') });
+	const { data, isLoading } = useQuery({ queryKey: [], queryFn: () => fetchNewApplicationId('internal') });
 	const handleCancel = () => {
-		router.push('/');
+		router.push('/applications-internal');
 	};
 
 	if (isLoading) {
@@ -22,7 +21,9 @@ const ApplicationPage = () => {
 		);
 	}
 
-	return <Application newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></Application>;
+	return (
+		<ApplicationInternal newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></ApplicationInternal>
+	);
 };
 
 export default ApplicationPage;

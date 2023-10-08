@@ -2,17 +2,7 @@ import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import { verify } from './services/jwt';
 import { Role } from './db/users/types';
 import { Method, authPathsByRole, publicPaths, redirectAuthPaths } from './config';
-
-const matchPath = (pattern: string, path: string) => {
-	const patternArray = pattern.split('/');
-	const pathArray = path.split('/');
-	return (
-		patternArray.length === pathArray.length &&
-		patternArray.every((item, index) => {
-			return item.startsWith(':') && pathArray[index] ? true : item === pathArray[index];
-		})
-	);
-};
+import { matchPath } from './services/route/route';
 
 export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value;

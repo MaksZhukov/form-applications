@@ -5,7 +5,7 @@ export const commentSchema: ModelAttributes = {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true,
-		unique: true
+		unique: 'id'
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,

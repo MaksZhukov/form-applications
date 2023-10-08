@@ -18,29 +18,20 @@ export default function Applications() {
 	const [page, setPage] = useState(1);
 	const selectedStatus = (searchParams.get('selectedStatus') || 'none') as ApplicationStatus | 'none';
 	const selectedOrganizationId = searchParams.get('selectedOrganizationId') || getSelectedOrganizationId() || 'none';
-	const selectedResponsibleUserId = searchParams.get('selectedResponsibleUserId') || 'none';
 
 	// IT NEEDS FOR CSR
 	useEffect(() => {}, []);
 	const { data, isLoading } = useQuery({
-		queryKey: [
-			'application',
-			getLoginTime(),
-			page,
-			selectedStatus,
-			selectedOrganizationId,
-			selectedResponsibleUserId
-		],
+		queryKey: ['application', getLoginTime(), page, selectedStatus, selectedOrganizationId],
 		staleTime: Infinity,
 		retry: 0,
 		keepPreviousData: true,
 		queryFn: () =>
-			fetchApplications<'common'>(
+			fetchApplications<'internal'>(
 				(page - 1) * API_LIMIT_ITEMS,
-				'common',
+				'internal',
 				selectedStatus === 'none' ? undefined : selectedStatus,
-				selectedOrganizationId === 'none' ? undefined : selectedOrganizationId,
-				selectedResponsibleUserId === 'none' ? undefined : selectedResponsibleUserId
+				selectedOrganizationId === 'none' ? undefined : selectedOrganizationId
 			)
 	});
 
@@ -69,24 +60,24 @@ export default function Applications() {
 	const handleChangeStatus = (e: ChangeEvent<HTMLSelectElement>) => {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
 		params.set('selectedStatus', e.target.value as ApplicationStatus | 'none');
-		router.push('/applications?' + params.toString());
+		router.push('/applications-internal?' + params.toString());
 	};
 
 	const handleChangeOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
 		params.set('selectedOrganizationId', e.target.value as ApplicationStatus | 'none');
-		router.push('/applications?' + params.toString());
+		router.push('/applications-internal?' + params.toString());
 		saveSelectedOrganizationId(e.target.value);
 	};
 
 	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (e) => {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
 		params.set('selectedResponsibleUserId', e.target.value as string | 'none');
-		router.push('/applications?' + params.toString());
+		router.push('/applications-internal?' + params.toString());
 	};
 
 	const handleClickNew = () => {
-		router.push(`/applications/new`);
+		router.push(`/applications-internal/new`);
 	};
 
 	return isLoading ? (
@@ -98,10 +89,10 @@ export default function Applications() {
 			<>
 				{' '}
 				<Button className='mb-4 bg-accent' onClick={handleClickNew}>
-					Новая задача
+					Новая внутренняя задача
 				</Button>
 				<Table
-					applicationType='common'
+					applicationType='internal'
 					organizations={organizations?.data.data}
 					selectedOrganizationId={selectedOrganizationId}
 					selectedStatus={(searchParams.get('selectedStatus') as ApplicationStatus) || 'none'}

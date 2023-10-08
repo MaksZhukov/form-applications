@@ -1,19 +1,32 @@
 import { ApplicationAttributes } from '@/db/application/types';
 import client from '../../client';
-import { ApiResponse } from '../../types';
+import { ApiResponse, ApplicationType } from '../../types';
 import { OrganizationAttributes } from '@/db/organization/types';
+import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 
-export const fetchApplication = (id: number) =>
+export const fetchApplication = <T extends ApplicationType>(id: number, applicationType: T) =>
 	client
-		.get<{ data: ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name'> } }>(
-			`/api/applications/${id}`
+		.get<{ data: T extends 'common' ? ApplicationAttributes : ApplicationInternalAttributes }>(
+			`/api/applications/${id}`,
+			{
+				params: { applicationType }
+			}
 		)
 		.then((res) => res.data);
 
-export const updateApplication = (params: { id: number; data: FormData }) =>
+export const updateApplication = <T extends ApplicationType>({
+	applicationType,
+	data,
+	id
+}: {
+	id: number;
+	applicationType: T;
+	data: FormData;
+}) =>
 	client
-		.put<ApiResponse<ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name'> }>>(
-			`/api/applications/${params.id}`,
-			params.data
+		.put<ApiResponse<T extends 'common' ? ApplicationAttributes : ApplicationInternalAttributes>>(
+			`/api/applications/${id}`,
+			data,
+			{ params: { applicationType } }
 		)
 		.then((res) => res.data);

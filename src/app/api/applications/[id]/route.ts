@@ -56,7 +56,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 	const organizationIdForm = formData.get('organizationId') as string;
 
-	if (!title || !description || applicationType === 'common' ? !phone : false || !name) {
+	if (
+		!title || !description || applicationType === 'common'
+			? !phone
+			: false || applicationType === 'common'
+			? !name
+			: false
+	) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
@@ -77,18 +83,21 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		name,
 		status,
 		isUrgent: Boolean(isUrgent),
-		organizationId: role === 'admin' ? +organizationIdForm : (organizationId as number)
+		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
 	};
 
 	if (applicationType === 'common') {
 		values.email = email;
 		values.phone = phone;
+		values.name = name;
 		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {
 		values.forWhom = forWhom;
 		values.redirection = redirection;
 		values.departmentName = departmentName;
 	}
+
+	console.log(values);
 
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
 	try {

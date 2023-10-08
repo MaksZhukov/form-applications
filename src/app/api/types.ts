@@ -4,3 +4,5 @@ export type ApiResponse<T> = {
 		total: number;
 	};
 };
+
+export type ApplicationType = 'common' | 'internal';

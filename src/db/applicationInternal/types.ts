@@ -1,5 +1,6 @@
 import { Optional } from 'sequelize';
 import { ApplicationStatus } from '../application/types';
+import { OrganizationAttributes } from '../organization/types';
 
 export type ApplicationInternalAttributes = {
 	id: number;
@@ -14,6 +15,7 @@ export type ApplicationInternalAttributes = {
 	status: ApplicationStatus;
 	redirection: string;
 	organizationId: number;
+	organization: OrganizationAttributes;
 	isUrgent: boolean;
 	isArchived: boolean;
 };

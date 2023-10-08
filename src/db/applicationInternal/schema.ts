@@ -5,7 +5,7 @@ export const applicationInternalSchema: ModelAttributes = {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true,
-		unique: true
+		unique: 'id'
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
@@ -15,7 +15,6 @@ export const applicationInternalSchema: ModelAttributes = {
 	redirection: { type: DataTypes.STRING },
 	departmentName: { type: DataTypes.STRING },
 	forWhom: { type: DataTypes.STRING },
-	name: { type: DataTypes.STRING, allowNull: false },
 	status: { type: DataTypes.ENUM('в обработке', 'в работе', 'выполнено'), allowNull: false },
 	isUrgent: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 	isArchived: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
