@@ -35,7 +35,7 @@ export default function Applications() {
 		retry: 0,
 		keepPreviousData: true,
 		queryFn: () =>
-			fetchApplications(
+			fetchApplications<'common'>(
 				(page - 1) * API_LIMIT_ITEMS,
 				'common',
 				selectedStatus === 'none' ? undefined : selectedStatus,

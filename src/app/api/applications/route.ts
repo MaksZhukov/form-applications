@@ -77,7 +77,13 @@ export async function POST(request: NextRequest) {
 
 	const organizationIdForm = formData.get('organizationId') as string;
 
-	if (!title || !description || applicationType === 'common' ? !phone : false || !name) {
+	if (
+		!title || !description || applicationType === 'common'
+			? !phone
+			: false || applicationType === 'common'
+			? !name
+			: false
+	) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
@@ -91,14 +97,14 @@ export async function POST(request: NextRequest) {
 		comment,
 		deadline: deadline ?? '',
 		isArchived: Boolean(isArchived),
-		name,
 		status: 'в обработке',
 		isUrgent: Boolean(isUrgent),
-		organizationId: role === 'admin' ? +organizationIdForm : (organizationId as number)
+		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
 	};
 
 	if (applicationType === 'common') {
 		values.email = email;
+		values.name = name;
 		values.phone = phone;
 		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {

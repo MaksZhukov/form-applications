@@ -27,7 +27,7 @@ export default function Applications() {
 		retry: 0,
 		keepPreviousData: true,
 		queryFn: () =>
-			fetchApplications(
+			fetchApplications<'internal'>(
 				(page - 1) * API_LIMIT_ITEMS,
 				'internal',
 				selectedStatus === 'none' ? undefined : selectedStatus,

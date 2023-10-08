@@ -58,9 +58,17 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
-	const updateApplicationMutation = useMutation(updateApplication);
-	const uploadFilesMutation = useMutation(uploadFiles);
-	const createApplicationMutation = useMutation(createApplication);
+	const updateApplicationMutation = useMutation({
+		mutationFn: (params: { id: number; data: FormData }) =>
+			updateApplication<'common'>({ ...params, applicationType: 'common' })
+	});
+	const uploadFilesMutation = useMutation({
+		mutationFn: (params: { applicationId: number; data: FormData }) =>
+			uploadFiles<'common'>({ ...params, applicationType: 'common' })
+	});
+	const createApplicationMutation = useMutation({
+		mutationFn: (params: FormData) => createApplication<'common'>({ data: params, applicationType: 'common' })
+	});
 
 	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'в обработке';
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {

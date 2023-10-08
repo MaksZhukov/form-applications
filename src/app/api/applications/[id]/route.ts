@@ -56,7 +56,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 	const organizationIdForm = formData.get('organizationId') as string;
 
-	if (!title || !description || applicationType === 'common' ? !phone : false || !name) {
+	if (
+		!title || !description || applicationType === 'common'
+			? !phone
+			: false || applicationType === 'common'
+			? !name
+			: false
+	) {
 		return new NextResponse('required fields', { status: 400 });
 	}
 
@@ -83,6 +89,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	if (applicationType === 'common') {
 		values.email = email;
 		values.phone = phone;
+		values.name = name;
 		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {
 		values.forWhom = forWhom;

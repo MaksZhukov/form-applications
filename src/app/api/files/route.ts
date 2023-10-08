@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
 		const application = await Model.findOne({
 			where: { id: applicationId, organizationId: organizationId }
 		});
+
 		const files = (await application?.getFiles()) || [];
 		return NextResponse.json({ data: files });
 	} catch (err) {}

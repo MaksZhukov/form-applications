@@ -37,12 +37,9 @@ export default function ApplicationPage() {
 		);
 	}
 	return (
-		<>
-			<ApplicationInternal
-				data={data?.data || null}
-				onCancel={handleCancel}
-				onUpdated={handleUpdated}></ApplicationInternal>
-			{process.env.NEXT_PUBLIC_FF_COMMENTS === 'true' && data && <Chat applicationId={data.data.id}></Chat>}
-		</>
+		<ApplicationInternal
+			data={data?.data || null}
+			onCancel={handleCancel}
+			onUpdated={handleUpdated}></ApplicationInternal>
 	);
 }

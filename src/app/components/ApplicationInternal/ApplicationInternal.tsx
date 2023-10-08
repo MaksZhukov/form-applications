@@ -33,26 +33,34 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchUser,
+		queryFn: fetchUser
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
 
 	const { data: files } = useQuery({
 		queryKey: ['files', data?.id],
-		queryFn: () => fetchFiles(data?.id as number, 'common'),
+		queryFn: () => fetchFiles(data?.id as number, 'internal'),
 		staleTime: Infinity,
 		retry: 0,
-		enabled: !!data?.id,
+		enabled: !!data?.id
 	});
 
 	const client = useQueryClient();
 
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
-	const updateApplicationMutation = useMutation(updateApplication);
-	const uploadFilesMutation = useMutation(uploadFiles);
-	const createApplicationMutation = useMutation(createApplication);
+	const updateApplicationMutation = useMutation({
+		mutationFn: (params: { id: number; data: FormData }) =>
+			updateApplication<'internal'>({ ...params, applicationType: 'internal' })
+	});
+	const uploadFilesMutation = useMutation({
+		mutationFn: (params: { applicationId: number; data: FormData }) =>
+			uploadFiles<'internal'>({ ...params, applicationType: 'internal' })
+	});
+	const createApplicationMutation = useMutation({
+		mutationFn: (params: FormData) => createApplication<'internal'>({ data: params, applicationType: 'internal' })
+	});
 
 	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'в обработке';
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -63,14 +71,14 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 			if ((isAdmin && data) || data?.status === 'в обработке') {
 				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
 					id: data.id,
-					data: formData,
+					data: formData
 				});
 				if (onUpdated) {
 					onUpdated(updatedData);
 				}
 			} else if (!data) {
 				const {
-					data: { data: createApplication },
+					data: { data: createApplication }
 				} = await createApplicationMutation.mutateAsync(formData);
 				applicationId = createApplication.id;
 			}
@@ -82,7 +90,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					formDataFiles.append('files', file, file.name);
 					const { data: uploadedFiles } = await uploadFilesMutation.mutateAsync({
 						applicationId: applicationId as number,
-						data: formDataFiles,
+						data: formDataFiles
 					});
 
 					if (files) {
@@ -90,7 +98,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 							prev
 								? {
 										...prev,
-										data: [...prev.data, ...uploadedFiles],
+										data: [...prev.data, ...uploadedFiles]
 								  }
 								: undefined
 						);
@@ -122,8 +130,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<Link
 						className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
 						key={item.id}
-						href={`/api/files/${item.name}`}
-					>
+						href={`/api/files/${item.name}`}>
 						Файл {index + 1}
 					</Link>
 				))}
@@ -132,7 +139,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	);
 
 	return (
-		<form className={data ? '2xl:w-[75%] xl:w-[70%] lg:w-[70%]' : ''} ref={ref} onSubmit={handleSubmit}>
+		<form ref={ref} onSubmit={handleSubmit}>
 			<div className='flex mb-5'>
 				<div className='flex mr-20'>
 					<Typography className='mr-10'>№</Typography>{' '}
@@ -145,9 +152,10 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<input
 						readOnly
 						defaultValue={
-							data?.createdAt ? new Date(data?.createdAt).toLocaleDateString() : new Date().toLocaleDateString()
-						}
-					></input>
+							data?.createdAt
+								? new Date(data?.createdAt).toLocaleDateString()
+								: new Date().toLocaleDateString()
+						}></input>
 				</div>
 			</div>
 
@@ -159,8 +167,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 							<select
 								defaultValue={data?.status || 'в обработке'}
 								name='status'
-								className='min-w-max h-8 flex-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-							>
+								className='min-w-max h-8 flex-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 								<option value='в обработке'>В обработке</option>
 								<option value='в работе'>В работе</option>
 								<option value='выполнено'>Выполнено</option>
@@ -175,8 +182,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<select
 						required
 						name='forWhom'
-						className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-					>
+						className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 						{FOR_WHOM.map((item) => (
 							<option key={item} value={item}>
 								{item}
@@ -220,8 +226,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					required
 					disabled={disabledEdit}
 					rows={4}
-					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-				></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 			<div className='flex mb-5'>
 				<Typography className='w-56'>Наименование отдела</Typography>{' '}
@@ -273,8 +278,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					defaultValue={data?.comment}
 					disabled={disabledEdit}
 					rows={4}
-					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-				></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 
 			<div className='flex justify-end items-center mt-4'>
@@ -284,11 +288,12 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<>
 						<div>
 							<div className='flex items-center'>
-								<Typography className='mr-3'>Прикрепить файлы(до {10 - (files?.data.length || 0)})</Typography>{' '}
+								<Typography className='mr-3'>
+									Прикрепить файлы(до {10 - (files?.data.length || 0)})
+								</Typography>{' '}
 								<div
 									onClick={handleClickFile}
-									className='inline-block cursor-pointer p-1 rounded-full border-gray-500 border'
-								>
+									className='inline-block cursor-pointer p-1 rounded-full border-gray-500 border'>
 									<BlankIcon className='text-gray-500' fontSize={20}></BlankIcon>
 									<input
 										ref={inputFileRef}
@@ -296,8 +301,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 										accept='.jpg, .png, .jpeg, .rar, .zip, .docx, .pdf'
 										type='file'
 										max={10 - (files?.data.length || 0)}
-										multiple
-									></input>
+										multiple></input>
 								</div>
 							</div>
 							{!!files?.data.length && renderPinnedFiles}

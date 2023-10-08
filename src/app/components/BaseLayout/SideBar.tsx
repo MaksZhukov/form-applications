@@ -4,10 +4,16 @@ import Link from 'next/link';
 import TaskIcon from '@/icons/TaskIcon';
 import TaskInternalIcon from '@/icons/TaskInternal';
 import { usePathname } from 'next/navigation';
+import { matchPath } from '@/services/route/route';
 
 const menuItems = [
-	{ route: '/applications', name: 'Задачи' },
-	{ route: '/applications-internal', name: 'Внутренние задачи' }
+	{ route: '/applications', routeAliases: ['/applications/new', 'applications/:id'], name: 'Задачи', icon: TaskIcon },
+	{
+		route: '/applications-internal',
+		routeAliases: ['/applications-internal/new', '/applications-internal/:id'],
+		name: 'Внутренние задачи',
+		icon: TaskInternalIcon
+	}
 ];
 
 export const SideBar = () => {
@@ -15,23 +21,29 @@ export const SideBar = () => {
 	const handleClickApplications = () => {
 		saveSelectedOrganizationId('none');
 	};
-	console.log(currentRoute);
+
 	return (
 		<div className='fixed h-full gap-2 w-24 px-2 py-5 border-r border-gray-300 flex flex-col'>
-			{menuItems.map((item) => (
-				<Link key={item.name} href={item.route}>
-					<Button
-						onClick={handleClickApplications}
-						size='sm'
-						className={`p-1 w-full h-16 flex text-[10px] flex-col justify-center items-center border-accent text-accent ${
-							currentRoute === item.route ? '' : 'border-none'
-						}`}
-						variant='outlined'>
-						<TaskIcon fontSize={24}></TaskIcon>
-						{item.name}
-					</Button>
-				</Link>
-			))}
+			{menuItems.map((item) => {
+				const Icon = item.icon;
+				return (
+					<Link key={item.name} href={item.route}>
+						<Button
+							onClick={handleClickApplications}
+							size='sm'
+							className={`p-1 w-full h-16 flex text-[10px] flex-col justify-center items-center border-accent text-accent ${
+								matchPath(item.route, currentRoute) ||
+								item.routeAliases.some((el) => matchPath(el, currentRoute))
+									? ''
+									: 'border-none'
+							}`}
+							variant='outlined'>
+							<Icon fontSize={24}></Icon>
+							{item.name}
+						</Button>
+					</Link>
+				);
+			})}
 		</div>
 	);
 };

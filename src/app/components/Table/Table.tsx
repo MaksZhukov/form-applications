@@ -5,23 +5,22 @@ import { getLoginTime } from '@/app/localStorage';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { ApplicationAttributes, ApplicationStatus } from '@/db/application/types';
 import { OrganizationAttributes } from '@/db/organization/types';
-
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
-import getConfig from 'next/config';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, ChangeEventHandler, FC, useState } from 'react';
 import ResponsibleUserSelect from '../ResponsibleUserSelect/ResponsibleUserSelect';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
+import { ApplicationType } from '@/app/api/types';
 
 const MAX_PART_PAGINATION = 10;
 
-interface Props {
-	data: (ApplicationAttributes | ApplicationInternalAttributes)[];
+interface Props<T extends ApplicationType> {
+	data: (T extends 'common' ? ApplicationAttributes : ApplicationInternalAttributes)[];
 	organizations?: Pick<OrganizationAttributes, 'id' | 'name'>[];
 	total?: number;
 	page: number;
-	applicationType: 'common' | 'internal';
+	applicationType: T;
 	selectedStatus: ApplicationStatus | 'none';
 	selectedOrganizationId: string | 'none';
 	onChangeStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
@@ -30,14 +29,12 @@ interface Props {
 	onChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement>;
 }
 
-const config = getConfig();
-
-const Table: FC<Props> = ({
+const Table: FC<Props<'common'> | Props<'internal'>> = ({
 	data,
 	total = 0,
 	organizations = [],
 	page,
-	applicationType = 'common',
+	applicationType,
 	selectedOrganizationId,
 	selectedStatus,
 	onChangePage,
@@ -186,7 +183,7 @@ const Table: FC<Props> = ({
 								{applicationType === 'common' && (
 									<td className={classes}>
 										<Typography variant='small' className='font-normal'>
-											{(item as ApplicationAttributes).responsibleUser?.name}
+											{data[index].responsibleUser?.name}
 										</Typography>
 									</td>
 								)}
