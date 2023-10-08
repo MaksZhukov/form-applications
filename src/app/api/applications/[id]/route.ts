@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		name,
 		status,
 		isUrgent: Boolean(isUrgent),
-		organizationId: role === 'admin' ? +organizationIdForm : (organizationId as number)
+		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
 	};
 
 	if (applicationType === 'common') {
@@ -96,6 +96,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		values.redirection = redirection;
 		values.departmentName = departmentName;
 	}
+
+	console.log(values);
 
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
 	try {
