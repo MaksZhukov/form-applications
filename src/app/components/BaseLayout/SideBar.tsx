@@ -7,7 +7,12 @@ import { usePathname } from 'next/navigation';
 import { matchPath } from '@/services/route/route';
 
 const menuItems = [
-	{ route: '/applications', routeAliases: ['/applications/new', 'applications/:id'], name: 'Задачи', icon: TaskIcon },
+	{
+		route: '/applications',
+		routeAliases: ['/applications/new', '/applications/:id'],
+		name: 'Задачи',
+		icon: TaskIcon
+	},
 	{
 		route: '/applications-internal',
 		routeAliases: ['/applications-internal/new', '/applications-internal/:id'],
