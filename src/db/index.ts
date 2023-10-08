@@ -72,7 +72,7 @@ export const initialize = async () => {
 	try {
 		await sequelize.sync({ alter: true });
 	} catch (err) {
-		// console.log(err);
+		console.log(err);
 	}
 
 	if (process.env.NODE_ENV === 'development') {
