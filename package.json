@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:up": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo"
   },
   "dependencies": {
     "@material-tailwind/react": "2.0.8",
@@ -19,6 +21,7 @@
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "bufferutil": "^4.0.7",
+    "dotenv": "^16.3.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "fast-ratelimit": "^3.0.1",
