@@ -63,10 +63,10 @@ export const initialize = async () => {
 	initApplicationCommentModel(sequelize);
 	initApplicationInternalCommentModel(sequelize);
 	initApplicationFileModel(sequelize);
-	await initApplicationInternalFileModel(sequelize);
+	initApplicationInternalFileModel(sequelize);
 	initApplicationModel(sequelize);
 	initApplicationInternalModel(sequelize);
-	await initFileModel(sequelize);
+	initFileModel(sequelize);
 	initComments(sequelize);
 
 	try {

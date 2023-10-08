@@ -47,7 +47,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	});
 
 	const { data: files } = useQuery({
-		queryKey: ['files', data?.id],
+		queryKey: ['files', 'common', data?.id],
 		queryFn: () => fetchFiles(data?.id as number, 'common'),
 		staleTime: Infinity,
 		retry: 0,
@@ -102,7 +102,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					});
 
 					if (files) {
-						client.setQueryData<ApiResponse<FileAttributes[]>>(['files', data?.id], (prev) =>
+						client.setQueryData<ApiResponse<FileAttributes[]>>(['files', 'common', data?.id], (prev) =>
 							prev
 								? {
 										...prev,
@@ -181,7 +181,11 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 								<option value='выполнено'>Выполнено</option>
 							</select>
 						) : (
-							<input readOnly name='status' defaultValue={data?.status || 'в обработке'}></input>
+							<input
+								readOnly
+								className='w-28'
+								name='status'
+								defaultValue={data?.status || 'в обработке'}></input>
 						)}
 					</div>
 				</div>

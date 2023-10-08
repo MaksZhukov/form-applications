@@ -13,6 +13,4 @@ export const initFileModel = async (sequelize: Sequelize) => {
 
 	FileModel.belongsToMany(ApplicationInternalModel, { through: ApplicationInternalFileModel, onDelete: 'CASCADE' });
 	ApplicationInternalModel.belongsToMany(FileModel, { through: ApplicationInternalFileModel, onDelete: 'CASCADE' });
-	await FileModel.sync({ alter: true });
-	await ApplicationInternalFileModel.sync({ alter: true });
 };

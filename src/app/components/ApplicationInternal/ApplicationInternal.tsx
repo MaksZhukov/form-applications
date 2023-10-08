@@ -39,7 +39,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	const isAdmin = userData?.data.role === 'admin';
 
 	const { data: files } = useQuery({
-		queryKey: ['files', data?.id],
+		queryKey: ['files', 'internal', data?.id],
 		queryFn: () => fetchFiles(data?.id as number, 'internal'),
 		staleTime: Infinity,
 		retry: 0,
@@ -94,7 +94,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					});
 
 					if (files) {
-						client.setQueryData<ApiResponse<FileAttributes[]>>(['files', data?.id], (prev) =>
+						client.setQueryData<ApiResponse<FileAttributes[]>>(['files', 'internal', data?.id], (prev) =>
 							prev
 								? {
 										...prev,
@@ -173,12 +173,16 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 								<option value='выполнено'>Выполнено</option>
 							</select>
 						) : (
-							<input readOnly name='status' defaultValue={data?.status || 'в обработке'}></input>
+							<input
+								readOnly
+								className='w-28'
+								name='status'
+								defaultValue={data?.status || 'в обработке'}></input>
 						)}
 					</div>
 				</div>
 				<div className='flex items-center'>
-					<Typography className='w-32'>Для кого</Typography>
+					<Typography className='w-20'>Для кого</Typography>
 					<select
 						required
 						name='forWhom'
@@ -236,7 +240,6 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='departmentName'
 					defaultValue={data?.departmentName}
-					required
 				/>
 			</div>
 
@@ -248,7 +251,6 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='redirection'
 					defaultValue={data?.redirection}
-					required
 				/>
 			</div>
 
