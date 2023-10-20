@@ -71,8 +71,7 @@ export async function POST(request: NextRequest) {
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
-	const forWhom = formData.get('forWhom') as string;
-	const redirection = formData.get('redirection') as string;
+	const employeeId = formData.get('employeeId') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -99,6 +98,7 @@ export async function POST(request: NextRequest) {
 		isArchived: Boolean(isArchived),
 		status: 'в обработке',
 		isUrgent: Boolean(isUrgent),
+		responsibleUserId: responsibleUserId === 'none' ? null : responsibleUserId,
 		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
 	};
 
@@ -106,10 +106,8 @@ export async function POST(request: NextRequest) {
 		values.email = email;
 		values.name = name;
 		values.phone = phone;
-		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {
-		values.forWhom = forWhom;
-		values.redirection = redirection;
+		values.employeeId = employeeId === 'none' ? null : employeeId;
 		values.departmentName = departmentName;
 	}
 

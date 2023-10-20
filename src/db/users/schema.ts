@@ -11,6 +11,7 @@ export const userSchema: ModelAttributes = {
 	updatedAt: DataTypes.DATE,
 	name: { type: DataTypes.STRING, allowNull: false, unique: 'name' },
 	email: { type: DataTypes.STRING, allowNull: false, unique: 'email' },
+	departmentName: { type: DataTypes.STRING, allowNull: true },
 	password: { type: DataTypes.STRING, allowNull: false },
 	token: { type: DataTypes.STRING, defaultValue: '' },
 	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false }

@@ -13,8 +13,10 @@ import { Button, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import Datepicker, { DateType, DateValueType } from 'react-tailwindcss-datepicker';
-import { FC, FormEventHandler, LegacyRef, useRef, useState } from 'react';
+import { ChangeEventHandler, FC, FormEventHandler, LegacyRef, useEffect, useRef, useState } from 'react';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
+import { fetchUsers } from '@/app/api/users';
+import ResponsibleUserSelect from '../ResponsibleUserSelect';
 
 interface Props {
 	data?: ApplicationInternalAttributes | null;
@@ -22,8 +24,6 @@ interface Props {
 	onCancel: () => void;
 	onUpdated?: (data: ApplicationInternalAttributes) => void;
 }
-
-const FOR_WHOM = ['Бухгалтерия'];
 
 const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated }) => {
 	const deadlineParts = data?.deadline ? data?.deadline.split('.') : null;
@@ -34,6 +34,12 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: fetchUser
+	});
+
+	const { data: usersData, isFetched: isFetchedUsersData } = useQuery(['users', getLoginTime()], {
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUsers({ organizationId: userData?.data.organization?.id || 1 })
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
@@ -50,6 +56,15 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 
 	const ref = useRef<HTMLFormElement>(null);
 	const inputFileRef = useRef<HTMLInputElement>(null);
+
+	const [departmentName, setDepartmentName] = useState<string>('');
+
+	useEffect(() => {
+		if (data?.departmentName) {
+			setDepartmentName(data.departmentName);
+		}
+	}, [data]);
+
 	const updateApplicationMutation = useMutation({
 		mutationFn: (params: { id: number; data: FormData }) =>
 			updateApplication<'internal'>({ ...params, applicationType: 'internal' })
@@ -63,6 +78,11 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	});
 
 	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'в обработке';
+
+	const handleChangeResponsible: ChangeEventHandler<HTMLSelectElement> = (event) => {
+		setDepartmentName(usersData?.data?.data.find((item) => item.id === +event.target.value)?.departmentName || '');
+	};
+
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault();
 		if (ref.current) {
@@ -182,14 +202,18 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					</div>
 				</div>
 				<div className='flex items-center'>
-					<Typography className='w-20'>Для кого</Typography>
+					<Typography className='w-36'>Ответственный</Typography>
 					<select
 						required
-						name='forWhom'
+						key={+isFetchedUsersData}
+						defaultValue={data?.responsibleUserId}
+						name='responsibleUserId'
+						onChange={handleChangeResponsible}
 						className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-						{FOR_WHOM.map((item) => (
-							<option key={item} value={item}>
-								{item}
+						<option value='none'>не выбрано</option>
+						{usersData?.data?.data.map((item) => (
+							<option key={item.id} value={item.id}>
+								{item.name}
 							</option>
 						))}
 					</select>
@@ -235,8 +259,9 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 			<div className='flex mb-5'>
 				<Typography className='w-56'>Наименование отдела</Typography>{' '}
 				<input
+					value={departmentName}
 					type='text'
-					disabled={disabledEdit}
+					readOnly
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='departmentName'
 					defaultValue={data?.departmentName}
@@ -244,14 +269,11 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 			</div>
 
 			<div className='flex mb-5'>
-				<Typography className='w-56'>Перенаправление</Typography>{' '}
-				<input
-					type='text'
-					disabled={disabledEdit}
-					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-					name='redirection'
-					defaultValue={data?.redirection}
-				/>
+				<Typography className='w-56'>Сотрудник</Typography>{' '}
+				<ResponsibleUserSelect
+					value={data?.employeeId}
+					name='employeeId'
+					className='flex-0.5 h-8'></ResponsibleUserSelect>
 			</div>
 
 			<div className='flex mb-5'>
