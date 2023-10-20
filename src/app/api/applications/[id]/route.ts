@@ -50,8 +50,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
-	const forWhom = formData.get('forWhom') as string;
-	const redirection = formData.get('redirection') as string;
+	const employeeId = formData.get('employeeId') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -83,6 +82,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		name,
 		status,
 		isUrgent: Boolean(isUrgent),
+		responsibleUserId: responsibleUserId === 'none' ? null : responsibleUserId,
 		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
 	};
 
@@ -90,10 +90,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		values.email = email;
 		values.phone = phone;
 		values.name = name;
-		values.responsibleUserId = responsibleUserId === 'none' ? null : responsibleUserId;
 	} else {
-		values.forWhom = forWhom;
-		values.redirection = redirection;
+		values.employeeId = employeeId === 'none' ? null : employeeId;
 		values.departmentName = departmentName;
 	}
 

@@ -8,6 +8,7 @@ export const createDefaultUser = async (organization: OrganizationModel) => {
 		defaults: {
 			email: 'admin@mail.ru',
 			name: 'admin',
+            departmentName: '',
 			organizationId: organization.dataValues.id,
 			password: await bcrypt.hash(process.env.DEFAULT_USER_ADMIN_PASS, +process.env.BCRYPT_SALT),
 			role: 'admin'

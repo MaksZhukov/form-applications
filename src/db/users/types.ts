@@ -9,6 +9,7 @@ export type UserAttributes = {
 	password: string;
 	token: string;
 	role: Role;
+    departmentName: string;
 	organizationId: number;
 	createdAt: string;
 	updatedAt: string;

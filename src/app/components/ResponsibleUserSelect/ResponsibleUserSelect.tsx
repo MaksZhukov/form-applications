@@ -6,11 +6,12 @@ import { ChangeEventHandler, FC } from 'react';
 
 interface Props {
 	value?: number;
+	name?: string;
 	className?: string;
 	onChange?: ChangeEventHandler<HTMLSelectElement>;
 }
 
-const ResponsibleUserSelect: FC<Props> = ({ value, className = '', onChange }) => {
+const ResponsibleUserSelect: FC<Props> = ({ name = 'responsibleUserId', value, className = '', onChange }) => {
 	const { data, isFetched } = useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
@@ -22,7 +23,7 @@ const ResponsibleUserSelect: FC<Props> = ({ value, className = '', onChange }) =
 		<select
 			defaultValue={value}
 			key={+isFetched}
-			name='responsibleUserId'
+			name={name}
 			onChange={onChange}
 			className={`font-normal border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none ${className}`}>
 			<option value='none'>не выбрано</option>
