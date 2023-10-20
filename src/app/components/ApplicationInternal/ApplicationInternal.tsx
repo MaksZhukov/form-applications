@@ -36,7 +36,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 		queryFn: fetchUser
 	});
 
-	const { data: usersData, isFetched: isFetchedUsersData } = useQuery(['users', getLoginTime()], {
+	const { data: usersData, isFetched: isFetchedUsersData } = useQuery(['responsibleUsers', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: () => fetchUsers({ organizationId: userData?.data.organization?.id || 1 })
