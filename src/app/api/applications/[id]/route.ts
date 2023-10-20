@@ -50,6 +50,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
+    const employee = formData.get('employee') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -91,6 +92,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		values.name = name;
 	} else {
 		values.departmentName = departmentName;
+        values.employee = employee;
 	}
 
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
