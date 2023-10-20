@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
+    const employee = formData.get('employee') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -107,6 +108,7 @@ export async function POST(request: NextRequest) {
 		values.phone = phone;
 	} else {
 		values.departmentName = departmentName;
+        values.employee = employee;
 	}
 
 	const { ApplicationModel, ApplicationInternalModel } = await initialize();
