@@ -10,9 +10,5 @@ export const initApplicationInternalModel = async (sequelize: Sequelize) => {
 		foreignKey: 'responsibleUserId',
 		as: 'responsibleUser'
 	});
-	ApplicationInternalModel.belongsTo(UserModel, {
-		foreignKey: 'employeeId',
-		as: 'employee'
-	});
 	ApplicationInternalModel.belongsTo(OrganizationModel, { constraints: false });
 };

@@ -8,8 +8,7 @@ export type ApplicationInternalAttributes = {
 	createdAt: string;
 	updatedAt: string;
 	title: string;
-	employeeId: number;
-    employee?: UserAttributes;
+	employee: string;
 	responsibleUserId: number;
     responsibleUser?: UserAttributes;
 	description: string;

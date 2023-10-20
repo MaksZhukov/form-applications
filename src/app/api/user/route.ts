@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 	const userData = (
 		await UserModel.findOne({
 			where: { token },
-			attributes: ['id', 'email', 'role', 'departmentName'],
+			attributes: ['id', 'email', 'role', 'departmentName', 'name'],
 			include: 'organization'
 		})
 	)?.toJSON();

@@ -50,7 +50,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
-	const employeeId = formData.get('employeeId') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -91,7 +90,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		values.phone = phone;
 		values.name = name;
 	} else {
-		values.employeeId = employeeId === 'none' ? null : employeeId;
 		values.departmentName = departmentName;
 	}
 
