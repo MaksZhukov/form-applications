@@ -15,5 +15,4 @@ export const initApplicationInternalModel = async (sequelize: Sequelize) => {
 		as: 'employee'
 	});
 	ApplicationInternalModel.belongsTo(OrganizationModel, { constraints: false });
-	ApplicationInternalModel.sync({ alter: true });
 };

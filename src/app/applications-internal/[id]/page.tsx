@@ -9,6 +9,9 @@ import { ApplicationAttributes } from '@/db/application/types';
 import Chat from '../../components/Chat';
 import ApplicationInternal from '@/app/components/ApplicationInternal';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
+import { getLoginTime } from '@/app/localStorage';
+import { fetchUsers } from '@/app/api/users';
+import { fetchUser } from '@/app/api/user';
 
 export default function ApplicationPage() {
 	const { id } = useParams();
@@ -19,6 +22,26 @@ export default function ApplicationPage() {
 		queryFn: () => fetchApplication<'internal'>(+id, 'internal'),
 		retry: 0,
 		staleTime: Infinity
+	});
+
+	const { data: userData } = useQuery({
+		queryKey: ['user', getLoginTime()],
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: fetchUser
+	});
+
+	useQuery(['responsibleUsers', getLoginTime()], {
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUsers({ organizationId: userData?.data.organization?.id || 1 })
+	});
+
+	useQuery({
+		queryKey: ['users', getLoginTime()],
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
 	});
 
 	const handleCancel = () => {

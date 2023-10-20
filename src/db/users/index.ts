@@ -7,5 +7,4 @@ import { ApplicationModel } from '../application/model';
 export const initUserModel = async (sequelize: Sequelize) => {
 	UserModel.init(userSchema, { sequelize, modelName: 'user' });
 	UserModel.belongsTo(OrganizationModel);
-	UserModel.sync({ alter: true });
 };
