@@ -193,7 +193,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 				</div>
 				<div className='flex items-center'>
 					<Typography className='w-36'>Ответственный</Typography>
-					<ResponsibleUserSelect className='w-56 h-8'></ResponsibleUserSelect>
+					<ResponsibleUserSelect value={data?.responsibleUserId} className='w-56 h-8'></ResponsibleUserSelect>
 				</div>
 
 				<div className='flex items-center text-xs'>
