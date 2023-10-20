@@ -24,19 +24,6 @@ export default function ApplicationPage() {
 		staleTime: Infinity
 	});
 
-	const { data: userData } = useQuery({
-		queryKey: ['user', getLoginTime()],
-		staleTime: Infinity,
-		retry: 0,
-		queryFn: fetchUser
-	});
-
-	useQuery(['responsibleUsers', getLoginTime()], {
-		staleTime: Infinity,
-		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: userData?.data.organization?.id || 1 })
-	});
-
 	useQuery({
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
