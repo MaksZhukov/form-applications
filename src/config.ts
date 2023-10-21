@@ -25,6 +25,7 @@ export const authPathsByRole: Record<Role, { path: string; methods: Method[] }[]
 		{ path: '/api/organizations', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/user', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/users', methods: ['GET', 'PUT', 'POST'] },
+        { path: '/api/users/:id', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/files', methods: ['GET', 'POST'] },
 		{ path: '/api/files/:name', methods: ['GET'] },
 		{ path: '/api/comments', methods: ['GET'] },

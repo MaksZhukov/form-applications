@@ -4,7 +4,6 @@ import { createApplication } from '@/app/api/applications';
 import { updateApplication } from '@/app/api/applications/[id]';
 import { fetchFiles, uploadFiles } from '@/app/api/files';
 import { fetchUser } from '@/app/api/user';
-import { fetchOrganizations } from '@/app/api/organizations';
 import { ApiResponse } from '@/app/api/types';
 import { getLoginTime } from '@/app/localStorage';
 import { FileAttributes } from '@/db/file/types';
@@ -13,10 +12,11 @@ import { Button, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import Datepicker, { DateType, DateValueType } from 'react-tailwindcss-datepicker';
-import { ChangeEventHandler, FC, FormEventHandler, LegacyRef, useEffect, useRef, useState } from 'react';
+import { ChangeEventHandler, FC, FormEventHandler, useRef, useState } from 'react';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 import { fetchUsers } from '@/app/api/users';
 import ResponsibleUserSelect from '../ResponsibleUserSelect';
+import { UserAttributes } from '@/db/users/types';
 
 interface Props {
 	data?: ApplicationInternalAttributes | null;
@@ -30,16 +30,21 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	const [deadline, setDeadline] = useState<null | DateType>(
 		deadlineParts ? `${deadlineParts[1]}.${deadlineParts[0]}.${deadlineParts[2]}` : null
 	);
+	const [responsibleUser, setResponsibleUser] = useState<Pick<
+		UserAttributes,
+		'id' | 'name' | 'departmentName'
+	> | null>(null);
 	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: fetchUser
 	});
 
-	const { data: usersData, isFetched: isFetchedUsersData } = useQuery(['responsibleUsers', getLoginTime()], {
+	const { data: usersData } = useQuery({
+		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: userData?.data.organization?.id || 1 })
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
@@ -130,6 +135,11 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 		setDeadline(value ? value.startDate : null);
 	};
 
+	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (event) => {
+		const responsibleUserObj = usersData?.data.data.find((item) => item.id === +event.target.value) || null;
+		setResponsibleUser(responsibleUserObj);
+	};
+
 	const renderPinnedFiles = (
 		<div>
 			<Typography className='leading-3 mb-1'>Прикрепленные файлы:</Typography>
@@ -145,8 +155,6 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 			</div>
 		</div>
 	);
-
-	console.log(userData?.data?.name);
 
 	return (
 		<form ref={ref} onSubmit={handleSubmit}>
@@ -193,7 +201,10 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 				</div>
 				<div className='flex items-center'>
 					<Typography className='w-36'>Ответственный</Typography>
-					<ResponsibleUserSelect value={data?.responsibleUserId} className='w-56 h-8'></ResponsibleUserSelect>
+					<ResponsibleUserSelect
+						onChange={handleChangeResponsibleUser}
+						value={data?.responsibleUserId}
+						className='w-56 h-8'></ResponsibleUserSelect>
 				</div>
 
 				<div className='flex items-center text-xs'>
@@ -237,10 +248,11 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 				<Typography className='w-56'>Наименование отдела</Typography>{' '}
 				<input
 					type='text'
+					key={responsibleUser?.id}
 					readOnly
 					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='departmentName'
-					defaultValue={userData?.data.departmentName}
+					defaultValue={responsibleUser?.departmentName || data?.departmentName}
 				/>
 			</div>
 
