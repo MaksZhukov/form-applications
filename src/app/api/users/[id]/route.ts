@@ -9,8 +9,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const email = formData.get('email') as string;
 	const password = formData.get('password') as string;
 	try {
-		const { OrganizationModel } = await initialize();
-		await OrganizationModel.update(omitBy({ email, password: await bcrypt.hash(password, 10) }, isNil), {
+		const { UserModel } = await initialize();
+		await UserModel.update(omitBy({ email, password: await bcrypt.hash(password, 10) }, isNil), {
 			where: { id }
 		});
 	} catch (err) {

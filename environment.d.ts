@@ -6,6 +6,7 @@ namespace NodeJS {
 		DATABASE_USER: string;
 		DATABASE_USER_PASSWORD: string;
 		DEFAULT_USER_ADMIN_PASS: string;
+		SUPER_ADMIN_TOKEN: string;
 		BCRYPT_SALT: string;
 		WS_PORT: number;
 		NEXT_PUBLIC_WS_HOST: string;
