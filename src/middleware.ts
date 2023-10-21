@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
 		const res = new NextResponse('no token', { status: 400 });
 		res.cookies.delete('token');
 		return res;
-	} else {
+	} else if (token !== process.env.SUPER_ADMIN_TOKEN) {
 		try {
 			const {
 				payload: { role }
