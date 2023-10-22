@@ -58,7 +58,6 @@ export default function Login() {
 							value={email}
 							onChange={handleChangeEmail}
 							className='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-accent block w-full p-5 focus:outline-none'
-							placeholder='John'
 							required
 						/>
 					</div>
@@ -74,7 +73,6 @@ export default function Login() {
 							type='password'
 							id='password'
 							className='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-accent block w-full p-5 focus:outline-none'
-							placeholder='John'
 							required
 						/>
 						{isInvalid && <p className='mt-2 text-sm text-red-600 dark:text-red-500'>Неверный пароль</p>}
