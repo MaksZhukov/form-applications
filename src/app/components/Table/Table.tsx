@@ -160,7 +160,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 											: item.description}
 									</Typography>
 								</td>
-								{isAdmin && (
+								{isAdmin && applicationType === 'common' && (
 									<td className={classes + ' max-w-xs'}>
 										<Typography variant='medium' className='font-normal'>
 											{item.organization.name}
