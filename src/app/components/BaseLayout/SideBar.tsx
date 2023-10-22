@@ -17,7 +17,7 @@ const getMenuItems = (user?: UserAttributes & { organization: OrganizationAttrib
 		name: 'Задачи',
 		icon: TaskIcon
 	},
-	...(user?.role === 'admin' || user?.organizationId === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
+	...(user?.role === 'admin' || user?.organization.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
 		? [
 				{
 					route: '/applications-internal',

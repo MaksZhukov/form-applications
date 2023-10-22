@@ -48,7 +48,6 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 		queryFn: fetchUser
 	});
 	const isAdmin = userData?.data.role === 'admin';
-	const isUserOrganizationOwner = userData?.data?.organizationId === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID;
 	const router = useRouter();
 	const handleClickMore = (item: ApplicationAttributes | ApplicationInternalAttributes) => () => {
 		router.push(`/applications${applicationType === 'common' ? '' : '-internal'}/${item.id}`);
