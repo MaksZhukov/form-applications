@@ -13,13 +13,15 @@ export async function GET(request: NextRequest) {
 		const {
 			payload: { organizationId, role }
 		} = await verify(token);
-		const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();
+		const { ApplicationModel, ApplicationInternalModel, OrganizationModel, LaborCostsModel } = await initialize();
+
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 		//@ts-expect-error error
 		const data = await Model.findOne({
 			where: role === 'admin' ? { id } : { id, organizationId: organizationId as number },
 			include: { model: OrganizationModel, attributes: ['id', 'name'] }
 		});
+		console.log(Object.keys(data));
 		if (data) {
 			const result = { data };
 			return NextResponse.json(result);
@@ -50,7 +52,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
-    const employee = formData.get('employee') as string;
+	const employee = formData.get('employee') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -92,7 +94,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		values.name = name;
 	} else {
 		values.departmentName = departmentName;
-        values.employee = employee;
+		values.employee = employee;
 	}
 
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel } = await initialize();

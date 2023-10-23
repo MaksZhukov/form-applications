@@ -7,7 +7,7 @@ import { ApplicationModel } from '../application/model';
 import { ApplicationInternalModel } from '../applicationInternal/model';
 import { ApplicationInternalCommentModel } from '../applicationInternalComments/model';
 
-export const initComments = async (sequelize: Sequelize) => {
+export const initCommentsModel = async (sequelize: Sequelize) => {
 	CommentModel.init(commentSchema, { sequelize, modelName: 'comment' });
 	CommentModel.belongsTo(UserModel, { constraints: false, foreignKey: 'userId' });
 	CommentModel.belongsToMany(ApplicationModel, {

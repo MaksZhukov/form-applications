@@ -15,7 +15,8 @@ export const authPathsByRole: Record<Role, { path: string; methods: Method[] }[]
 		{ path: '/api/files/:name', methods: ['GET'] },
 		{ path: '/api/comments', methods: ['GET'] },
 		{ path: '/api/socket', methods: ['GET'] },
-		{ path: '/api/logout', methods: ['POST'] }
+		{ path: '/api/logout', methods: ['POST'] },
+		{ path: '/api/kinds-of-work', methods: ['POST', 'GET'] }
 	],
 	admin: [
 		{ path: '/api/applications', methods: ['GET', 'PUT', 'POST'] },
@@ -25,12 +26,13 @@ export const authPathsByRole: Record<Role, { path: string; methods: Method[] }[]
 		{ path: '/api/organizations', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/user', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/users', methods: ['GET', 'PUT', 'POST'] },
-        { path: '/api/users/:id', methods: ['GET', 'PUT', 'POST'] },
+		{ path: '/api/users/:id', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/files', methods: ['GET', 'POST'] },
 		{ path: '/api/files/:name', methods: ['GET'] },
 		{ path: '/api/comments', methods: ['GET'] },
 		{ path: '/api/socket', methods: ['GET', 'PUT', 'POST'] },
-		{ path: '/api/logout', methods: ['POST'] }
+		{ path: '/api/logout', methods: ['POST'] },
+		{ path: '/api/kinds-of-work', methods: ['POST', 'GET'] }
 	]
 };
 

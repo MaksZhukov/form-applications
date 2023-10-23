@@ -1,29 +1,17 @@
+import { createKindOfWork, fetchKindsOfWork } from '@/app/api/kinds-of-work';
+import { ApiResponse } from '@/app/api/types';
 import { fetchUser } from '@/app/api/user';
 import { getLoginTime } from '@/app/localStorage';
+import { KindsOfWorkAttributes } from '@/db/kindsOfWork/types';
 import { Button, Typography } from '@material-tailwind/react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChangeEvent, ChangeEventHandler, FC, FormEventHandler, useState } from 'react';
+import { HOURS_OF_WORK } from './constants';
 
 interface Props {
 	onSubmit: FormEventHandler<HTMLFormElement>;
 	onCancel: () => void;
 }
-
-const HOURS_OF_WORK = [
-	'15 минут',
-	'30 минут',
-	'45 минут',
-	'1 час',
-	'2 часа',
-	'3 часа',
-	'4 часа',
-	'5 часов',
-	'6 часов',
-	'7 часов',
-	'8 часов'
-];
-
-const KIND_OF_WORK = ['Разработка'];
 
 const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 	const [isAddingKindOfWork, setIsAddingKindOfWork] = useState<boolean>(false);
@@ -34,6 +22,18 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 		queryFn: fetchUser
 	});
 
+	const { data: kindsOfWorkData } = useQuery(['kindsOfWork', getLoginTime()], {
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: fetchKindsOfWork
+	});
+
+	const client = useQueryClient();
+
+	const createKindOfWorkMutation = useMutation({
+		mutationFn: (params: { name: string }) => createKindOfWork(params)
+	});
+
 	const handleClickAddKindOfWork = () => {
 		setIsAddingKindOfWork(!isAddingKindOfWork);
 	};
@@ -42,8 +42,19 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 		setKindOfWork(event.target.value);
 	};
 
-	const handleClickSaveKindOfWork = () => {
+	const handleClickSaveKindOfWork = async () => {
 		if (kindOfWork.length > 0) {
+			const {
+				data: { data: kindOfWorkData }
+			} = await createKindOfWorkMutation.mutateAsync({ name: kindOfWork });
+			client.setQueryData<ApiResponse<KindsOfWorkAttributes[]>>(['kindsOfWork', getLoginTime()], (prev) =>
+				prev
+					? {
+							...prev,
+							data: [...prev.data, kindOfWorkData]
+					  }
+					: undefined
+			);
 			setKindOfWork('');
 			setIsAddingKindOfWork(false);
 		}
@@ -78,11 +89,11 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 								<input
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-									name='employee'
 									readOnly
 									required
 									defaultValue={userData?.data?.name || ''}
 								/>
+								<input type='hidden' name='employeeId' value={userData?.data?.id}></input>
 							</div>
 							<div className='mb-2'>
 								<div className='flex justify-between mb-1'>
@@ -113,10 +124,11 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 									</div>
 								)}
 								<select
+									name='kindOfWorkId'
 									className={`font-normal w-full h-8 border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none`}>
-									{KIND_OF_WORK.map((item) => (
-										<option key={item} value={item}>
-											{item}
+									{kindsOfWorkData?.data.map((item) => (
+										<option key={item.id} value={item.name}>
+											{item.name}
 										</option>
 									))}
 								</select>
