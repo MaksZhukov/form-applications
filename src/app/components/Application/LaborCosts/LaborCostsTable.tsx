@@ -5,7 +5,7 @@ import { FC } from 'react';
 const TABLE_HEAD = [
 	{ name: 'Дата', width: 100 },
 	{ name: 'Сотрудник', width: 150 },
-	{ name: 'Вид работы', width: 100 },
+	{ name: 'Вид работы', width: 150 },
 	{ name: 'Количество времени', width: 100 },
 	{ name: 'Описание' }
 ];
@@ -51,7 +51,7 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 									</Typography>
 								</td>
 
-								<td className={classes + ' max-w-xs'} style={{ width: 100 }}>
+								<td className={classes + ' max-w-xs'} style={{ width: 150 }}>
 									<Typography variant='small' className='font-normal'>
 										{item.kindsOfWork?.name}
 									</Typography>
