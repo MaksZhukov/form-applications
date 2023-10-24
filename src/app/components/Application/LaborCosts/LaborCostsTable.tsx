@@ -41,7 +41,7 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 
 						return (
 							<tr key={item.id}>
-								<td className={classes} style={{ width: TABLE_HEAD[i].width }}>
+								<td className={classes} style={{ width: TABLE_HEAD[index].width }}>
 									<Typography variant='small' className='font-normal'>
 										{item.date}
 									</Typography>
