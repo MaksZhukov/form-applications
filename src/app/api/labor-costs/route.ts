@@ -36,25 +36,22 @@ export async function POST(request: NextRequest) {
 	try {
 		const [application, laborCost] = await Promise.all([
 			ApplicationModel.findByPk(+applicationId),
-			LaborCostsModel.create(
-				{
-					date,
-					employeeId: +employeeId,
-					kindsOfWorkId: +kindsOfWorkId,
-					timeSpent,
-					description
-				},
-				{
-					include: [
-						{ as: 'kindsOfWork', model: KindsOfWorkModel },
-						{ as: 'employee', model: UserModel, attributes: ['id', 'name'] }
-					]
-				}
-			)
+			LaborCostsModel.create({
+				date,
+				employeeId: +employeeId,
+				kindsOfWorkId: +kindsOfWorkId,
+				timeSpent,
+				description
+			})
 		]);
 		application?.addLaborCosts([laborCost]);
-
-		return NextResponse.json({ data: laborCost });
+		const data = await LaborCostsModel.findByPk(laborCost.dataValues.id, {
+			include: [
+				{ as: 'kindsOfWork', model: KindsOfWorkModel },
+				{ as: 'employee', model: UserModel, attributes: ['id', 'name'] }
+			]
+		});
+		return NextResponse.json({ data });
 	} catch (err) {
 		console.log(err);
 		//@ts-expect-error error

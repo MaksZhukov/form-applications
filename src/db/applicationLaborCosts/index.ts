@@ -8,5 +8,4 @@ export const initApplicationLaborCostsModel = async (sequelize: Sequelize) => {
 		modelName: 'application_labor_costs',
 		timestamps: false
 	});
-	await ApplicationLaborCostsModel.sync({ alter: true });
 };

@@ -9,5 +9,5 @@ export const kindsOfWorkSchema: ModelAttributes = {
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
-	name: DataTypes.STRING
+	name: { unique: true, type: DataTypes.STRING }
 };
