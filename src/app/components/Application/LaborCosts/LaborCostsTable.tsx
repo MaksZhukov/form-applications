@@ -4,9 +4,9 @@ import { FC } from 'react';
 
 const TABLE_HEAD = [
 	{ name: 'Дата', width: 100 },
-	{ name: 'Сотрудник' },
-	{ name: 'Вид работы' },
-	{ name: 'Количество часов' },
+	{ name: 'Сотрудник', width: 150 },
+	{ name: 'Вид работы', width: 100 },
+	{ name: 'Количество часов', width: 100 },
 	{ name: 'Описание' }
 ];
 
@@ -38,27 +38,26 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 						const classes = isLast
 							? 'w-full p-3 align-baseline'
 							: 'w-full p-3 border-b border-accent align-baseline';
-
 						return (
 							<tr key={item.id}>
-								<td className={classes} style={{ width: TABLE_HEAD[index].width }}>
+								<td className={classes} style={{ width: 100 }}>
 									<Typography variant='small' className='font-normal'>
 										{item.date}
 									</Typography>
 								</td>
-								<td className={classes + ' max-w-xs'}>
+								<td className={classes + ' max-w-xs'} style={{ width: 150 }}>
 									<Typography variant='small' className='font-normal'>
 										{item.employee?.name}
 									</Typography>
 								</td>
 
-								<td className={classes + ' max-w-xs'}>
+								<td className={classes + ' max-w-xs'} style={{ width: 100 }}>
 									<Typography variant='small' className='font-normal'>
 										{item.kindsOfWork?.name}
 									</Typography>
 								</td>
 
-								<td className={classes}>
+								<td className={classes} style={{ width: 100 }}>
 									<Typography variant='small' className='font-normal'>
 										{item.timeSpent}
 									</Typography>
