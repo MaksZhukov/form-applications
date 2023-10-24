@@ -24,6 +24,6 @@ export const initLaborCostsModel = async (sequelize: Sequelize) => {
 		onDelete: 'CASCADE'
 	});
 
-	// LaborCostsModel.sync({ alter: true });
-	// ApplicationModel.sync({ alter: true });
+	LaborCostsModel.sync({ alter: true });
+	ApplicationModel.sync({ alter: true });
 };
