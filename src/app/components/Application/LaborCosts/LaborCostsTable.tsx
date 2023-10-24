@@ -6,7 +6,7 @@ const TABLE_HEAD = [
 	{ name: 'Дата', width: 100 },
 	{ name: 'Сотрудник', width: 150 },
 	{ name: 'Вид работы', width: 100 },
-	{ name: 'Количество часов', width: 100 },
+	{ name: 'Количество времени', width: 100 },
 	{ name: 'Описание' }
 ];
 
