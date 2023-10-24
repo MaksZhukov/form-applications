@@ -3,11 +3,11 @@ import { Typography } from '@material-tailwind/react';
 import { FC } from 'react';
 
 const TABLE_HEAD = [
-	{ name: 'Дата' },
+	{ name: 'Дата', width: 100 },
 	{ name: 'Сотрудник' },
 	{ name: 'Вид работы' },
 	{ name: 'Количество часов' },
-	{ name: 'Описание', width: 200 }
+	{ name: 'Описание' }
 ];
 
 interface Props {
@@ -21,11 +21,11 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 				<thead>
 					<tr className='bg-white'>
 						{TABLE_HEAD.map((head) => (
-							<th key={head.name} className='bg-white sticky top-0 border-b border-gray-100 p-3'>
-								<Typography
-									style={{ width: head.width }}
-									variant='small'
-									className='font-bold leading-none opacity-90'>
+							<th
+								key={head.name}
+								style={{ width: head.width }}
+								className='bg-white sticky top-0 border-b border-gray-100 p-3'>
+								<Typography variant='small' className='font-bold leading-none opacity-90'>
 									{head.name}
 								</Typography>
 							</th>
@@ -41,7 +41,7 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 
 						return (
 							<tr key={item.id}>
-								<td className={classes}>
+								<td className={classes} style={{ width: TABLE_HEAD[i].width }}>
 									<Typography variant='small' className='font-normal'>
 										{item.date}
 									</Typography>
