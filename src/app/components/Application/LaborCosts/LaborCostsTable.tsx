@@ -1,3 +1,4 @@
+import { LaborCostsAttributes } from '@/db/laborCosts/types';
 import { Typography } from '@material-tailwind/react';
 import { FC } from 'react';
 
@@ -6,11 +7,11 @@ const TABLE_HEAD = [
 	{ name: 'Сотрудник' },
 	{ name: 'Вид работы' },
 	{ name: 'Количество часов' },
-	{ name: 'Описание' },
+	{ name: 'Описание', width: 200 }
 ];
 
 interface Props {
-	data: any[];
+	data: LaborCostsAttributes[];
 }
 
 const LaborCostsTable: FC<Props> = ({ data }) => {
@@ -21,7 +22,10 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 					<tr className='bg-white'>
 						{TABLE_HEAD.map((head) => (
 							<th key={head.name} className='bg-white sticky top-0 border-b border-gray-100 p-3'>
-								<Typography variant='small' className='font-bold leading-none opacity-90'>
+								<Typography
+									style={{ width: head.width }}
+									variant='small'
+									className='font-bold leading-none opacity-90'>
 									{head.name}
 								</Typography>
 							</th>
@@ -31,13 +35,15 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 				<tbody className=''>
 					{data.map((item, index) => {
 						const isLast = index === data.length - 1;
-						const classes = isLast ? 'w-full p-3 align-baseline' : 'w-full p-3 border-b border-accent align-baseline';
+						const classes = isLast
+							? 'w-full p-3 align-baseline'
+							: 'w-full p-3 border-b border-accent align-baseline';
 
 						return (
 							<tr key={item.id}>
 								<td className={classes}>
 									<Typography variant='small' className='font-normal'>
-										{new Date(item.date).toLocaleDateString()}
+										{item.date}
 									</Typography>
 								</td>
 								<td className={classes + ' max-w-xs'}>
@@ -48,7 +54,7 @@ const LaborCostsTable: FC<Props> = ({ data }) => {
 
 								<td className={classes + ' max-w-xs'}>
 									<Typography variant='small' className='font-normal'>
-										{item.kindOfWork}
+										{item.kindsOfWork?.name}
 									</Typography>
 								</td>
 

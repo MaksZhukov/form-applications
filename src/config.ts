@@ -16,7 +16,8 @@ export const authPathsByRole: Record<Role, { path: string; methods: Method[] }[]
 		{ path: '/api/comments', methods: ['GET'] },
 		{ path: '/api/socket', methods: ['GET'] },
 		{ path: '/api/logout', methods: ['POST'] },
-		{ path: '/api/kinds-of-work', methods: ['POST', 'GET'] }
+		{ path: '/api/kinds-of-work', methods: ['POST', 'GET'] },
+		{ path: '/api/labor-costs', methods: ['POST', 'GET'] }
 	],
 	admin: [
 		{ path: '/api/applications', methods: ['GET', 'PUT', 'POST'] },
@@ -32,7 +33,8 @@ export const authPathsByRole: Record<Role, { path: string; methods: Method[] }[]
 		{ path: '/api/comments', methods: ['GET'] },
 		{ path: '/api/socket', methods: ['GET', 'PUT', 'POST'] },
 		{ path: '/api/logout', methods: ['POST'] },
-		{ path: '/api/kinds-of-work', methods: ['POST', 'GET'] }
+		{ path: '/api/kinds-of-work', methods: ['POST', 'GET'] },
+		{ path: '/api/labor-costs', methods: ['POST', 'GET'] }
 	]
 };
 

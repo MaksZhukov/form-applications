@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 			where: role === 'admin' ? { id } : { id, organizationId: organizationId as number },
 			include: { model: OrganizationModel, attributes: ['id', 'name'] }
 		});
-		console.log(Object.keys(data));
+
 		if (data) {
 			const result = { data };
 			return NextResponse.json(result);

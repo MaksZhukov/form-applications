@@ -35,7 +35,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: fetchUser,
+		queryFn: fetchUser
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
@@ -44,7 +44,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		staleTime: Infinity,
 		enabled: isAdmin,
 		retry: 0,
-		queryFn: () => fetchOrganizations(),
+		queryFn: () => fetchOrganizations()
 	});
 
 	const { data: files } = useQuery({
@@ -52,7 +52,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 		queryFn: () => fetchFiles(data?.id as number, 'common'),
 		staleTime: Infinity,
 		retry: 0,
-		enabled: !!data?.id,
+		enabled: !!data?.id
 	});
 
 	const client = useQueryClient();
@@ -61,14 +61,14 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	const inputFileRef = useRef<HTMLInputElement>(null);
 	const updateApplicationMutation = useMutation({
 		mutationFn: (params: { id: number; data: FormData }) =>
-			updateApplication<'common'>({ ...params, applicationType: 'common' }),
+			updateApplication<'common'>({ ...params, applicationType: 'common' })
 	});
 	const uploadFilesMutation = useMutation({
 		mutationFn: (params: { applicationId: number; data: FormData }) =>
-			uploadFiles<'common'>({ ...params, applicationType: 'common' }),
+			uploadFiles<'common'>({ ...params, applicationType: 'common' })
 	});
 	const createApplicationMutation = useMutation({
-		mutationFn: (params: FormData) => createApplication<'common'>({ data: params, applicationType: 'common' }),
+		mutationFn: (params: FormData) => createApplication<'common'>({ data: params, applicationType: 'common' })
 	});
 
 	const disabledEdit = isAdmin ? false : !data ? false : data?.status !== 'в обработке';
@@ -80,14 +80,14 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			if ((isAdmin && data) || data?.status === 'в обработке') {
 				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
 					id: data.id,
-					data: formData,
+					data: formData
 				});
 				if (onUpdated) {
 					onUpdated(updatedData);
 				}
 			} else if (!data) {
 				const {
-					data: { data: createApplication },
+					data: { data: createApplication }
 				} = await createApplicationMutation.mutateAsync(formData);
 				applicationId = createApplication.id;
 			}
@@ -99,7 +99,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					formDataFiles.append('files', file, file.name);
 					const { data: uploadedFiles } = await uploadFilesMutation.mutateAsync({
 						applicationId: applicationId as number,
-						data: formDataFiles,
+						data: formDataFiles
 					});
 
 					if (files) {
@@ -107,7 +107,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							prev
 								? {
 										...prev,
-										data: [...prev.data, ...uploadedFiles],
+										data: [...prev.data, ...uploadedFiles]
 								  }
 								: undefined
 						);
@@ -139,8 +139,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<Link
 						className='font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3'
 						key={item.id}
-						href={`/api/files/${item.name}`}
-					>
+						href={`/api/files/${item.name}`}>
 						Файл {index + 1}
 					</Link>
 				))}
@@ -162,9 +161,10 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<input
 						readOnly
 						defaultValue={
-							data?.createdAt ? new Date(data?.createdAt).toLocaleDateString() : new Date().toLocaleDateString()
-						}
-					></input>
+							data?.createdAt
+								? new Date(data?.createdAt).toLocaleDateString()
+								: new Date().toLocaleDateString()
+						}></input>
 				</div>
 			</div>
 
@@ -176,14 +176,17 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							<select
 								defaultValue={data?.status || 'в обработке'}
 								name='status'
-								className='min-w-max h-8 flex-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-							>
+								className='min-w-max h-8 flex-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 								<option value='в обработке'>В обработке</option>
 								<option value='в работе'>В работе</option>
 								<option value='выполнено'>Выполнено</option>
 							</select>
 						) : (
-							<input readOnly className='w-28' name='status' defaultValue={data?.status || 'в обработке'}></input>
+							<input
+								readOnly
+								className='w-28'
+								name='status'
+								defaultValue={data?.status || 'в обработке'}></input>
 						)}
 					</div>
 				</div>
@@ -192,10 +195,11 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						<Typography className='w-32'>Организация</Typography>
 						<select
 							required
-							defaultValue={organizations.data.data.find((item) => item.name === data?.organization.name)?.id}
+							defaultValue={
+								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
+							}
 							name='organizationId'
-							className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-						>
+							className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
 							{organizations.data.data.map((item) => (
 								<option key={item.id} value={item.id}>
 									{item.name}
@@ -239,8 +243,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					required
 					disabled={disabledEdit}
 					rows={4}
-					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-				></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 			<div className='flex gap-5'>
 				<div className='flex-0.5'>
@@ -271,8 +274,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 									required
 									{...props}
 								/>
-							)}
-						></MaskedInput>
+							)}></MaskedInput>
 					</div>
 					<div className='flex mb-5'>
 						<Typography className='w-56'>Email</Typography>{' '}
@@ -287,7 +289,9 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					{isAdmin && (
 						<div className='flex mb-5'>
 							<Typography className='w-56'>Ответственный</Typography>
-							<ResponsibleUserSelect value={data?.responsibleUserId} className='flex-1 h-8'></ResponsibleUserSelect>
+							<ResponsibleUserSelect
+								value={data?.responsibleUserId}
+								className='flex-1 h-8'></ResponsibleUserSelect>
 						</div>
 					)}
 					{isAdmin && (
@@ -311,9 +315,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						</div>
 					)}
 				</div>
-				{(isAdmin || userData?.data?.organization?.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID) && (
-					<LaborCosts></LaborCosts>
-				)}
+				{(isAdmin || userData?.data?.organization?.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID) &&
+					data && <LaborCosts applicationId={data.id}></LaborCosts>}
 			</div>
 			<div className='w-3/4'>
 				<textarea
@@ -322,8 +325,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					defaultValue={data?.comment}
 					disabled={disabledEdit}
 					rows={4}
-					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-				></textarea>
+					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
 
 			<div className='flex justify-end items-center mt-4'>
@@ -333,11 +335,12 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					<>
 						<div>
 							<div className='flex items-center'>
-								<Typography className='mr-3'>Прикрепить файлы(до {10 - (files?.data.length || 0)})</Typography>{' '}
+								<Typography className='mr-3'>
+									Прикрепить файлы(до {10 - (files?.data.length || 0)})
+								</Typography>{' '}
 								<div
 									onClick={handleClickFile}
-									className='inline-block cursor-pointer p-1 rounded-full border-gray-500 border'
-								>
+									className='inline-block cursor-pointer p-1 rounded-full border-gray-500 border'>
 									<BlankIcon className='text-gray-500' fontSize={20}></BlankIcon>
 									<input
 										ref={inputFileRef}
@@ -345,8 +348,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 										accept='.jpg, .png, .jpeg, .rar, .zip, .docx, .pdf'
 										type='file'
 										max={10 - (files?.data.length || 0)}
-										multiple
-									></input>
+										multiple></input>
 								</div>
 							</div>
 							{!!files?.data.length && renderPinnedFiles}

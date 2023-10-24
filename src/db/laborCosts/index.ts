@@ -12,7 +12,7 @@ export const initLaborCostsModel = async (sequelize: Sequelize) => {
 		foreignKey: 'employeeId',
 		as: 'employee'
 	});
-	LaborCostsModel.belongsTo(KindsOfWorkModel);
+	LaborCostsModel.belongsTo(KindsOfWorkModel, { as: 'kindsOfWork' });
 
 	LaborCostsModel.belongsToMany(ApplicationModel, {
 		through: ApplicationLaborCostsModel,
@@ -20,7 +20,7 @@ export const initLaborCostsModel = async (sequelize: Sequelize) => {
 	});
 	ApplicationModel.belongsToMany(LaborCostsModel, {
 		through: ApplicationLaborCostsModel,
-        as: { plural: 'LaborCosts', singular: 'LaborCost' },
+		as: { plural: 'LaborCosts', singular: 'LaborCost' },
 		onDelete: 'CASCADE'
 	});
 

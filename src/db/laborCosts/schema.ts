@@ -9,6 +9,7 @@ export const laborCostsSchema: ModelAttributes = {
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
-	date: DataTypes.DATE,
+	date: DataTypes.STRING,
     timeSpent: DataTypes.STRING,
+    description: DataTypes.STRING
 };

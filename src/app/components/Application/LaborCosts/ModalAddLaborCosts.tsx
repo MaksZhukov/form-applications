@@ -2,10 +2,11 @@ import { createKindOfWork, fetchKindsOfWork } from '@/app/api/kinds-of-work';
 import { ApiResponse } from '@/app/api/types';
 import { fetchUser } from '@/app/api/user';
 import { getLoginTime } from '@/app/localStorage';
+import ReactDOM from 'react-dom';
 import { KindsOfWorkAttributes } from '@/db/kindsOfWork/types';
 import { Button, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChangeEvent, ChangeEventHandler, FC, FormEventHandler, useState } from 'react';
+import { ChangeEvent, ChangeEventHandler, FC, FormEventHandler, RefObject, useRef, useState } from 'react';
 import { HOURS_OF_WORK } from './constants';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 	const [isAddingKindOfWork, setIsAddingKindOfWork] = useState<boolean>(false);
 	const [kindOfWork, setKindOfWork] = useState<string>('');
+	const ref = useRef<HTMLFormElement>(null);
 	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
@@ -60,7 +62,7 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 		}
 	};
 
-	return (
+	return ReactDOM.createPortal(
 		<>
 			<div className='justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none'>
 				<div className='relative w-auto my-6 mx-auto max-w-3xl'>
@@ -124,10 +126,10 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 									</div>
 								)}
 								<select
-									name='kindOfWorkId'
+									name='kindsOfWorkId'
 									className={`font-normal w-full h-8 border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none`}>
 									{kindsOfWorkData?.data.map((item) => (
-										<option key={item.id} value={item.name}>
+										<option key={item.id} value={item.id}>
 											{item.name}
 										</option>
 									))}
@@ -136,6 +138,7 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 							<div className='mb-2'>
 								<Typography>Количество затраченого времени</Typography>
 								<select
+									name='timeSpent'
 									className={`font-normal w-full h-8 border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none`}>
 									{HOURS_OF_WORK.map((item) => (
 										<option key={item} value={item}>
@@ -143,6 +146,13 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 										</option>
 									))}
 								</select>
+							</div>
+							<div className='mb-2'>
+								<Typography>Описание</Typography>
+								<textarea
+									name='description'
+									rows={4}
+									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 							</div>
 						</div>
 						{/*footer*/}
@@ -166,7 +176,8 @@ const ModalAddLaborCosts: FC<Props> = ({ onSubmit, onCancel }) => {
 				</div>
 			</div>
 			<div className='opacity-25 fixed inset-0 z-40 bg-black'></div>
-		</>
+		</>,
+		document.body
 	);
 };
 

@@ -1,5 +1,6 @@
 import { Optional } from 'sequelize';
 import { UserAttributes } from '../users/types';
+import { KindsOfWorkAttributes } from '../kindsOfWork/types';
 
 export type LaborCostsAttributes = {
 	id: number;
@@ -7,9 +8,12 @@ export type LaborCostsAttributes = {
 	updatedAt: string;
 	date: string;
 	timeSpent: string;
+	employee: UserAttributes;
 	employeeId: number;
-	kindOfWorkId: number;
+	kindsOfWorkId: number;
+	kindsOfWork: KindsOfWorkAttributes;
+	description: string;
 };
 
 export interface LaborCostsAttributesCreation
-	extends Optional<LaborCostsAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+	extends Optional<LaborCostsAttributes, 'id' | 'createdAt' | 'updatedAt' | 'employee' | 'kindsOfWork'> {}
