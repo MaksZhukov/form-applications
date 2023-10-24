@@ -18,6 +18,7 @@ import Datepicker, { DateType, DateValueType } from 'react-tailwindcss-datepicke
 import { FC, FormEventHandler, LegacyRef, useRef, useState } from 'react';
 import MaskedInput from 'react-text-mask';
 import ResponsibleUserSelect from '../ResponsibleUserSelect';
+import LaborCosts from './LaborCosts';
 
 interface Props {
 	data?: (ApplicationAttributes & { organization: Pick<OrganizationAttributes, 'id' | 'name'> }) | null;
@@ -244,76 +245,79 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
-			<div className='flex mb-5'>
-				<Typography className='w-56'>Имя*</Typography>{' '}
-				<input
-					type='text'
-					disabled={disabledEdit}
-					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-					name='name'
-					defaultValue={data?.name}
-					required
-				/>
-			</div>
-			<div className='flex mb-5'>
-				<Typography className='w-56'>Телефон*</Typography>{' '}
-				<MaskedInput
-					defaultValue={data?.phone}
-					mask={['(', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-					render={(ref, props) => (
+			<div className='flex gap-5'>
+				<div className='flex-0.5'>
+					<div className='flex mb-5'>
+						<Typography className='w-56'>Имя*</Typography>{' '}
 						<input
-							ref={ref as LegacyRef<HTMLInputElement>}
 							type='text'
 							disabled={disabledEdit}
-							className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-							name='phone'
-							placeholder='(29) 999-9999'
+							className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+							name='name'
+							defaultValue={data?.name}
 							required
-							{...props}
 						/>
-					)}></MaskedInput>
-			</div>
-
-			<div className='flex mb-5'>
-				<Typography className='w-56'>Email</Typography>{' '}
-				<input
-					type='text'
-					disabled={disabledEdit}
-					className='flex-0.5 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-					name='email'
-					defaultValue={data?.email}
-				/>
-			</div>
-
-			{isAdmin && (
-				<div className='flex mb-5'>
-					<Typography className='w-56'>Ответственный</Typography>
-					<ResponsibleUserSelect
-						value={data?.responsibleUserId}
-						className='flex-0.5 h-8'></ResponsibleUserSelect>
+					</div>
+					<div className='flex mb-5'>
+						<Typography className='w-56'>Телефон*</Typography>{' '}
+						<MaskedInput
+							defaultValue={data?.phone}
+							mask={['(', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+							render={(ref, props) => (
+								<input
+									ref={ref as LegacyRef<HTMLInputElement>}
+									type='text'
+									disabled={disabledEdit}
+									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+									name='phone'
+									placeholder='(29) 999-9999'
+									required
+									{...props}
+								/>
+							)}></MaskedInput>
+					</div>
+					<div className='flex mb-5'>
+						<Typography className='w-56'>Email</Typography>{' '}
+						<input
+							type='text'
+							disabled={disabledEdit}
+							className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+							name='email'
+							defaultValue={data?.email}
+						/>
+					</div>
+					{isAdmin && (
+						<div className='flex mb-5'>
+							<Typography className='w-56'>Ответственный</Typography>
+							<ResponsibleUserSelect
+								value={data?.responsibleUserId}
+								className='flex-1 h-8'></ResponsibleUserSelect>
+						</div>
+					)}
+					{isAdmin && (
+						<div className='flex mb-5'>
+							<Typography className='w-56'>Срок выполнения*</Typography>{' '}
+							<Datepicker
+								minDate={new Date()}
+								value={{ startDate: deadline, endDate: deadline }}
+								onChange={handleChangeDeadline}
+								asSingle
+								i18n='ru'
+								displayFormat='DD.MM.YYYY'
+								useRange={false}
+								placeholder='24.12.2012'
+								inputName='deadline'
+								inputClassName={(cl) =>
+									`${cl} border-b border-black rounded-none focus:outline-none focus:shadow-none focus:transition-none text-black`
+								}
+								containerClassName={(cl) => `${cl} flex-0.5`}
+							/>
+						</div>
+					)}
 				</div>
-			)}
-
-			{isAdmin && (
-				<div className='flex mb-5'>
-					<Typography className='w-56'>Срок выполнения*</Typography>{' '}
-					<Datepicker
-						minDate={new Date()}
-						value={{ startDate: deadline, endDate: deadline }}
-						onChange={handleChangeDeadline}
-						asSingle
-						i18n='ru'
-						displayFormat='DD.MM.YYYY'
-						useRange={false}
-						placeholder='24.12.2012'
-						inputName='deadline'
-						inputClassName={(cl) =>
-							`${cl} border-b border-black rounded-none focus:outline-none focus:shadow-none focus:transition-none text-black`
-						}
-						containerClassName={(cl) => `${cl} flex-0.25`}
-					/>
-				</div>
-			)}
+				{(isAdmin || userData?.data?.organization?.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID) &&
+					data && <LaborCosts applicationId={data.id}></LaborCosts>}
+			</div>
 			<div className='w-3/4'>
 				<textarea
 					name='comment'

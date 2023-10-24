@@ -11,7 +11,7 @@ import { ApplicationFileModel } from './applicationFiles/model';
 import { ApplicationInternalModel } from './applicationInternal/model';
 import { ApplicationInternalFileModel } from './applicationInternalFiles/model';
 import { ApplicationInternalCommentModel } from './applicationInternalComments/model';
-import { initComments } from './comment';
+import { initCommentsModel } from './comment';
 import { initFileModel } from './file';
 import { createDefaultOrganization } from './organization/default';
 import { createDefaultUser } from './users/default';
@@ -23,6 +23,12 @@ import { initApplicationFileModel } from './applicationFiles';
 import { initApplicationInternalFileModel } from './applicationInternalFiles';
 import { initApplicationModel } from './application';
 import { initApplicationInternalModel } from './applicationInternal';
+import { initKindsOfWorkModel } from './kindsOfWork';
+import { initLaborCostsModel } from './laborCosts';
+import { LaborCostsModel } from './laborCosts/model';
+import { initApplicationLaborCostsModel } from './applicationLaborCosts';
+import { KindsOfWorkModel } from './kindsOfWork/model';
+import { ApplicationLaborCostsModel } from './applicationLaborCosts/model';
 
 let sequelize: Sequelize;
 
@@ -36,7 +42,10 @@ const models = {
 	ApplicationFileModel,
 	ApplicationInternalModel,
 	ApplicationInternalCommentModel,
-	ApplicationInternalFileModel
+	ApplicationInternalFileModel,
+	LaborCostsModel,
+	KindsOfWorkModel,
+	ApplicationLaborCostsModel
 };
 
 export const initialize = async () => {
@@ -67,14 +76,17 @@ export const initialize = async () => {
 	initApplicationModel(sequelize);
 	initApplicationInternalModel(sequelize);
 	initFileModel(sequelize);
-	initComments(sequelize);
+	initCommentsModel(sequelize);
+	initApplicationLaborCostsModel(sequelize);
+	initKindsOfWorkModel(sequelize);
+	initLaborCostsModel(sequelize);
 
 	if (process.env.NODE_ENV === 'development') {
-        try {
-            await sequelize.sync({ alter: true });
-        } catch (err) {
-            console.log(err);
-        }
+		try {
+			await sequelize.sync({ alter: true });
+		} catch (err) {
+			console.log(err);
+		}
 		const organization = await createDefaultOrganization();
 		await createDefaultUser(organization);
 	}
