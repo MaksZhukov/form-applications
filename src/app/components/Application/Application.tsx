@@ -44,7 +44,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	const { data: organizations } = useQuery({
 		queryKey: ['organizations', getLoginTime()],
 		staleTime: Infinity,
-		enabled: isAdmin,
+		enabled: isAdmin || isOwnerOrganizationWorker,
 		retry: 0,
 		queryFn: () => fetchOrganizations()
 	});
