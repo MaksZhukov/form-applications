@@ -52,11 +52,13 @@ export default function Applications() {
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
+	const isOwnerOrganizationWorker =
+		userData?.data?.organization.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID;
 
 	const { data: organizations } = useQuery({
 		queryKey: ['organizations', getLoginTime()],
 		staleTime: Infinity,
-		enabled: isAdmin,
+		enabled: isAdmin || isOwnerOrganizationWorker,
 		retry: 0,
 		queryFn: fetchOrganizations
 	});
