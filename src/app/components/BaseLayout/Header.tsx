@@ -10,9 +10,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { fetchUser } from '@/app/api/user';
 import { createOrganization } from '@/app/api/organizations';
 import { createUser, fetchUsers } from '@/app/api/users';
-import { logout } from '@/app/api/logout';
 import { useRouter } from 'next/navigation';
-import { queryClient } from '@/app/query';
 
 interface Props {
 	onClickLogo: () => void;

@@ -119,7 +119,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			if (!data) {
 				onCancel();
 			}
-			client.refetchQueries({ queryKey: ['application', getLoginTime(), 1] });
+			client.refetchQueries({ queryKey: ['applications', getLoginTime(), 1] });
 		}
 	};
 
