@@ -24,7 +24,7 @@ export default function Applications() {
 	useEffect(() => {}, []);
 	const { data, isLoading } = useQuery({
 		queryKey: [
-			'application',
+			'applications',
 			getLoginTime(),
 			page,
 			selectedStatus,

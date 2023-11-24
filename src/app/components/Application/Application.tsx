@@ -119,7 +119,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 			if (!data) {
 				onCancel();
 			}
-			client.refetchQueries({ queryKey: ['application', getLoginTime(), 1] });
+			client.refetchQueries({ queryKey: ['applications', getLoginTime(), 1] });
 		}
 	};
 
@@ -286,13 +286,15 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 							defaultValue={data?.email}
 						/>
 					</div>
-					{isAdmin && (
+					{isAdmin ? (
 						<div className='flex mb-5'>
 							<Typography className='w-56'>Ответственный</Typography>
 							<ResponsibleUserSelect
 								value={data?.responsibleUserId}
 								className='flex-1 h-8'></ResponsibleUserSelect>
 						</div>
+					) : (
+						<input type='hidden' name='responsibleUserId' value={userData?.data?.id}></input>
 					)}
 					{isAdmin && (
 						<div className='flex mb-5'>

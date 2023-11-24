@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel, UserModel } = await initialize();
 	try {
 		const {
-			payload: { role, organizationId }
+			payload: { role, organizationId, id }
 		} = await verify(token);
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 		//@ts-expect-error error
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 					isArchived: false,
 					status,
 					organizationId: role === 'admin' ? organizationIdParam : organizationId,
-					responsibleUserId
+					responsibleUserId: role === 'admin' ? responsibleUserId : id
 				},
 				isNil
 			),
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 
-    const employee = formData.get('employee') as string;
+	const employee = formData.get('employee') as string;
 	const departmentName = formData.get('departmentName') as string;
 
 	const organizationIdForm = formData.get('organizationId') as string;
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 		values.phone = phone;
 	} else {
 		values.departmentName = departmentName;
-        values.employee = employee;
+		values.employee = employee;
 	}
 
 	const { ApplicationModel, ApplicationInternalModel } = await initialize();

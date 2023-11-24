@@ -9,8 +9,7 @@ import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { fetchUser } from '@/app/api/user';
 import { createOrganization } from '@/app/api/organizations';
-import { createUser } from '@/app/api/users';
-import { logout } from '@/app/api/logout';
+import { createUser, fetchUsers } from '@/app/api/users';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -28,6 +27,13 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		queryFn: fetchUser
 	});
 
+	const { refetch } = useQuery({
+		queryKey: ['users', getLoginTime()],
+		staleTime: Infinity,
+		retry: 0,
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
+	});
+
 	const createOrganizationMutation = useMutation(createOrganization);
 	const createUserMutation = useMutation(createUser);
 	const handleClickAddOrganization = () => {
@@ -38,7 +44,8 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		setShowModal('createUser');
 	};
 
-	const handleCancel = () => {
+	const handleCancel = async () => {
+		await refetch();
 		setShowModal(null);
 	};
 	const handleSubmitCreateOrganization: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -53,6 +60,7 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		e.preventDefault();
 		const formData = new FormData(e.target as HTMLFormElement);
 		await createUserMutation.mutateAsync(formData);
+		await refetch();
 		alert('Пользователь добавлен');
 		setShowModal(null);
 	};

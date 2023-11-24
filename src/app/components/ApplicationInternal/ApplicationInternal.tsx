@@ -123,7 +123,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 			if (!data) {
 				onCancel();
 			}
-			client.refetchQueries({ queryKey: ['application', getLoginTime(), 1] });
+			client.refetchQueries({ queryKey: ['applications-internal', getLoginTime(), 1] });
 		}
 	};
 
