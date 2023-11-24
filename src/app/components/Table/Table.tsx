@@ -182,7 +182,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 										{item.status}
 									</Typography>
 								</td>
-								{applicationType === 'common' && (
+								{isAdmin && applicationType === 'common' && (
 									<td className={classes}>
 										<Typography variant='small' className='font-normal'>
 											{data[index].responsibleUser?.name}
