@@ -48,6 +48,8 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 		queryFn: fetchUser
 	});
 	const isAdmin = userData?.data.role === 'admin';
+	const isOwnerOrganizationWorker =
+		userData?.data?.organization.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID;
 	const router = useRouter();
 	const handleClickMore = (item: ApplicationAttributes | ApplicationInternalAttributes) => () => {
 		router.push(`/applications${applicationType === 'common' ? '' : '-internal'}/${item.id}`);
@@ -64,7 +66,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 		{ name: '№' },
 		{ name: 'Дата создания' },
 		{ name: 'Наименование' },
-		...(isAdmin && applicationType === 'common'
+		...((isAdmin || isOwnerOrganizationWorker) && applicationType === 'common'
 			? [
 					{
 						name: 'Организация',
@@ -88,7 +90,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 		{
 			name: 'Статус',
 			width: 135,
-			filter: isAdmin && (
+			filter: (isAdmin || isOwnerOrganizationWorker) && (
 				<select
 					value={selectedStatus}
 					onChange={onChangeStatus}
@@ -100,7 +102,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 				</select>
 			)
 		},
-		...(applicationType === 'common'
+		...(isAdmin && applicationType === 'common'
 			? [
 					{
 						name: 'Ответственный',
@@ -159,7 +161,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 											: item.description}
 									</Typography>
 								</td>
-								{isAdmin && applicationType === 'common' && (
+								{(isAdmin || isOwnerOrganizationWorker) && applicationType === 'common' && (
 									<td className={classes + ' max-w-xs'}>
 										<Typography variant='medium' className='font-normal'>
 											{item.organization.name}
