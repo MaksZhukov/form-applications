@@ -18,7 +18,10 @@ export async function GET(request: NextRequest) {
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 		//@ts-expect-error error
 		const data = await Model.findOne({
-			where: role === 'admin' ? { id } : { id, organizationId: organizationId as number },
+			where:
+				role === 'admin' || (organizationId as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
+					? { id }
+					: { id, organizationId: organizationId as number },
 			include: { model: OrganizationModel, attributes: ['id', 'name'] }
 		});
 
@@ -85,7 +88,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		status,
 		isUrgent: Boolean(isUrgent),
 		responsibleUserId: responsibleUserId === 'none' ? null : responsibleUserId,
-		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
+		organizationId:
+			role === 'admin' ||
+			((organizationId as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID && organizationIdForm)
+				? +organizationIdForm
+				: (organizationId as number)
 	};
 
 	if (applicationType === 'common') {
@@ -102,7 +109,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 		//@ts-expect-error error
 		await Model.update(omitBy(values, isUndefined), {
-			where: role === 'admin' ? { id } : { id, organizationId: organizationId as number }
+			where:
+				role === 'admin' || (organizationId as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
+					? { id }
+					: { id, organizationId: organizationId as number }
 		});
 		//@ts-expect-error error
 		const data = await Model.findByPk(id, {

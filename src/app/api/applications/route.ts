@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 					status,
 					organizationId:
 						role === 'admin' ||
-						(organizationId as unknown as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
+						(organizationId as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
 							? organizationIdParam
 							: organizationId,
 					responsibleUserId: role === 'admin' ? responsibleUserId : id
@@ -104,7 +104,11 @@ export async function POST(request: NextRequest) {
 		status: 'в обработке',
 		isUrgent: Boolean(isUrgent),
 		responsibleUserId: responsibleUserId === 'none' ? null : responsibleUserId,
-		organizationId: role === 'admin' && organizationIdForm ? +organizationIdForm : (organizationId as number)
+		organizationId:
+			(role === 'admin' || (organizationId as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID) &&
+			organizationIdForm
+				? +organizationIdForm
+				: (organizationId as number)
 	};
 
 	if (applicationType === 'common') {

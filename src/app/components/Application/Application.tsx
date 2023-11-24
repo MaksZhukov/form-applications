@@ -39,6 +39,8 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
+	const isOwnerOrganizationWorker =
+		userData?.data?.organization.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID;
 	const { data: organizations } = useQuery({
 		queryKey: ['organizations', getLoginTime()],
 		staleTime: Infinity,
@@ -190,7 +192,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						)}
 					</div>
 				</div>
-				{isAdmin && organizations && (
+				{(isAdmin || isOwnerOrganizationWorker) && organizations && (
 					<div className='flex items-center'>
 						<Typography className='w-32'>Организация</Typography>
 						<select
@@ -317,8 +319,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						</div>
 					)}
 				</div>
-				{(isAdmin || userData?.data?.organization?.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID) &&
-					data && <LaborCosts applicationId={data.id}></LaborCosts>}
+				{(isAdmin || isOwnerOrganizationWorker) && data && <LaborCosts applicationId={data.id}></LaborCosts>}
 			</div>
 			<div className='w-3/4'>
 				<textarea
