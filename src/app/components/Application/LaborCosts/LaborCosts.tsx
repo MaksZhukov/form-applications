@@ -17,7 +17,7 @@ const LaborCosts: FC<Props> = ({ applicationId }) => {
 
 	const client = useQueryClient();
 
-	const { data } = useQuery(['laborCosts', getLoginTime()], {
+	const { data } = useQuery([applicationId, 'laborCosts', getLoginTime()], {
 		retry: 0,
 		staleTime: Infinity,
 		queryFn: () => fetchLaborCosts({ applicationId })
@@ -41,13 +41,15 @@ const LaborCosts: FC<Props> = ({ applicationId }) => {
 		const {
 			data: { data: createdLaborCosts }
 		} = await createLaborCostsMutation.mutateAsync(formData);
-		client.setQueryData<ApiResponse<LaborCostsAttributes[]>>(['laborCosts', getLoginTime()], (prev) =>
-			prev
-				? {
-						...prev,
-						data: [...prev.data, createdLaborCosts]
-				  }
-				: undefined
+		client.setQueryData<ApiResponse<LaborCostsAttributes[]>>(
+			[applicationId, 'laborCosts', getLoginTime()],
+			(prev) =>
+				prev
+					? {
+							...prev,
+							data: [...prev.data, createdLaborCosts]
+					  }
+					: undefined
 		);
 		setIsModalAddLaborCostsOpen(false);
 	};
