@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
 		return new NextResponse("limit param isn't valid", { status: 400 });
 	}
 	const { ApplicationModel, ApplicationInternalModel, OrganizationModel, UserModel } = await initialize();
-
 	try {
 		const {
 			payload: { role, organizationId, id }
 		} = await verify(token);
+		const isOwnerOrganizationWorker = organizationId === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID;
 		const Model = applicationType === 'common' ? ApplicationModel : ApplicationInternalModel;
 		//@ts-expect-error error
 		const { rows, count } = await Model.findAndCountAll({
@@ -32,11 +32,8 @@ export async function GET(request: NextRequest) {
 					isArchived: false,
 					status,
 					organizationId:
-						role === 'admin' ||
-						(organizationId as number) === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID
-							? organizationIdParam
-							: organizationId,
-					responsibleUserId: role === 'admin' ? responsibleUserId : id
+						role === 'admin' || isOwnerOrganizationWorker ? organizationIdParam : organizationId,
+					responsibleUserId: role === 'admin' ? responsibleUserId : isOwnerOrganizationWorker ? id : null
 				},
 				isNil
 			),
