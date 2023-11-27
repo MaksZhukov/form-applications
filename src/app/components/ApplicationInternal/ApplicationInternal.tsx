@@ -83,7 +83,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 		if (ref.current) {
 			const formData = new FormData(ref.current);
 			let applicationId = data?.id;
-			if ((isAdmin && data) || data?.status === 'в обработке') {
+			if (((isAdmin || isOwnerOrganizationWorker) && data) || data?.status === 'в обработке') {
 				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
 					id: data.id,
 					data: formData
