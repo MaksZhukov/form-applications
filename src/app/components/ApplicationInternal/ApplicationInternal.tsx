@@ -48,6 +48,8 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	});
 
 	const isAdmin = userData?.data.role === 'admin';
+	const isOwnerOrganizationWorker =
+		userData?.data?.organization.id === +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID;
 
 	const { data: files } = useQuery({
 		queryKey: ['files', 'internal', data?.id],
@@ -181,7 +183,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 				<div className='flex justify-between'>
 					<div className='flex items-center'>
 						<Typography className='w-20'>Статус</Typography>{' '}
-						{isAdmin ? (
+						{isAdmin || isOwnerOrganizationWorker ? (
 							<select
 								defaultValue={data?.status || 'в обработке'}
 								name='status'
