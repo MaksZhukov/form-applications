@@ -333,7 +333,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Отправить задачу
 					</Button>
-				) : isAdmin || data.status === 'в обработке' ? (
+				) : isAdmin || isOwnerOrganizationWorker || data.status === 'в обработке' ? (
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Обновить задачу
 					</Button>
