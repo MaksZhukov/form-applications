@@ -23,3 +23,7 @@ html {
 body{
     min-height: 100vh;
 }
+
+input:read-only, textarea:read-only{
+    background-color: rgba(239, 239, 239, 0.3);
+}

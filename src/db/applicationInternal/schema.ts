@@ -12,6 +12,7 @@ export const applicationInternalSchema: ModelAttributes = {
 	title: { type: DataTypes.STRING, allowNull: false },
 	description: { type: DataTypes.STRING(2500), allowNull: false },
 	comment: { type: DataTypes.STRING },
+	deadline: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
 	employee: { type: DataTypes.STRING },
 	departmentName: { type: DataTypes.STRING },
 	status: { type: DataTypes.ENUM('в обработке', 'в работе', 'выполнено'), allowNull: false },
