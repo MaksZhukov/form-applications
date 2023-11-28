@@ -170,6 +170,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 				<div className='flex'>
 					<Typography className='mr-10'>Дата создания</Typography>{' '}
 					<input
+						className='!bg-transparent'
 						readOnly
 						defaultValue={
 							data?.createdAt
