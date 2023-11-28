@@ -83,7 +83,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 		if (ref.current) {
 			const formData = new FormData(ref.current);
 			let applicationId = data?.id;
-			if ((isAdmin && data) || data?.status === 'в обработке') {
+			if (((isAdmin || isOwnerOrganizationWorker) && data) || data?.status === 'в обработке') {
 				const { data: updatedData } = await updateApplicationMutation.mutateAsync({
 					id: data.id,
 					data: formData
@@ -229,7 +229,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 				<Typography className='w-56'>Наименование*</Typography>{' '}
 				<input
 					type='text'
-					disabled={disabledEdit}
+					readOnly={disabledEdit}
 					defaultValue={data?.title}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 					name='title'
@@ -242,7 +242,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					name='description'
 					defaultValue={data?.description}
 					required
-					disabled={disabledEdit}
+					readOnly={disabledEdit}
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
@@ -293,7 +293,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					name='comment'
 					placeholder='Комментарий'
 					defaultValue={data?.comment}
-					disabled={disabledEdit}
+					readOnly={disabledEdit}
 					rows={4}
 					className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'></textarea>
 			</div>
@@ -333,7 +333,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Отправить задачу
 					</Button>
-				) : isAdmin || data.status === 'в обработке' ? (
+				) : isAdmin || isOwnerOrganizationWorker || data.status === 'в обработке' ? (
 					<Button variant='outlined' className='border-accent text-accent' type='submit'>
 						Обновить задачу
 					</Button>
