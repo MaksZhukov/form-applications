@@ -32,7 +32,7 @@ export default function ApplicationPage() {
 	});
 
 	const handleCancel = () => {
-		router.push('/');
+		router.push('/applications-internal');
 	};
 	const handleUpdated = (updatedData: ApplicationInternalAttributes) => {
 		client.setQueryData<ApiResponse<ApplicationInternalAttributes>>([id], (currData) =>
