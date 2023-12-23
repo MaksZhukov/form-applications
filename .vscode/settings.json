@@ -1,7 +1,7 @@
 {
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "never",
-        "source.fixAll": "never"
+        "source.organizeImports": false,
+        "source.fixAll": false,
     },
     "files.refactoring.autoSave": false
 }
