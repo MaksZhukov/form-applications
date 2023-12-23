@@ -10,15 +10,27 @@ import { fetchApplications } from '../api/applications';
 import { fetchUser } from '../api/user';
 import { fetchOrganizations } from '../api/organizations';
 import Table from '../components/Table';
-import { getLoginTime, getSelectedOrganizationId, saveSelectedOrganizationId } from '../localStorage';
+import {
+	getLoginTime,
+	getSelectedOrganizationId,
+	getSelectedResponsibleUserId,
+	getSelectedStatus,
+	saveSelectedOrganizationId,
+	saveSelectedResponsibleUserId,
+	saveSelectedStatus
+} from '../localStorage';
 
 export default function Applications() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [page, setPage] = useState(1);
-	const selectedStatus = (searchParams.get('selectedStatus') || 'none') as ApplicationStatus | 'none';
+	const selectedStatus = (searchParams.get('selectedStatus') || getSelectedStatus() || 'none') as
+		| ApplicationStatus
+		| 'none';
+
 	const selectedOrganizationId = searchParams.get('selectedOrganizationId') || getSelectedOrganizationId() || 'none';
-	const selectedResponsibleUserId = searchParams.get('selectedResponsibleUserId') || 'none';
+	const selectedResponsibleUserId =
+		searchParams.get('selectedResponsibleUserId') || getSelectedResponsibleUserId() || 'none';
 
 	// IT NEEDS FOR CSR
 	useEffect(() => {}, []);
@@ -72,6 +84,7 @@ export default function Applications() {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
 		params.set('selectedStatus', e.target.value as ApplicationStatus | 'none');
 		router.push('/applications?' + params.toString());
+		saveSelectedStatus(e.target.value);
 	};
 
 	const handleChangeOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -85,6 +98,7 @@ export default function Applications() {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
 		params.set('selectedResponsibleUserId', e.target.value as string | 'none');
 		router.push('/applications?' + params.toString());
+		saveSelectedResponsibleUserId(e.target.value);
 	};
 
 	const handleClickNew = () => {
@@ -106,7 +120,8 @@ export default function Applications() {
 					applicationType='common'
 					organizations={organizations?.data.data}
 					selectedOrganizationId={selectedOrganizationId}
-					selectedStatus={(searchParams.get('selectedStatus') as ApplicationStatus) || 'none'}
+					selectedStatus={selectedStatus}
+					selectedResponsibleUserId={selectedResponsibleUserId}
 					onChangeStatus={handleChangeStatus}
 					onChangeOrganization={handleChangeOrganization}
 					onChangeResponsibleUser={handleChangeResponsibleUser}

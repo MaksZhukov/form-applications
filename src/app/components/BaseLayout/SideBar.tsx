@@ -1,4 +1,9 @@
-import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
+import {
+	getLoginTime,
+	saveSelectedOrganizationId,
+	saveSelectedResponsibleUserId,
+	saveSelectedStatus
+} from '@/app/localStorage';
 import { Button } from '@material-tailwind/react';
 import Link from 'next/link';
 import TaskIcon from '@/icons/TaskIcon';
@@ -33,6 +38,8 @@ export const SideBar = () => {
 	const currentRoute = usePathname();
 	const handleClickApplications = () => {
 		saveSelectedOrganizationId('none');
+		saveSelectedResponsibleUserId('none');
+		saveSelectedStatus('none');
 	};
 
 	const { data: userData } = useQuery({

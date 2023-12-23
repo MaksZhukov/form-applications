@@ -2,7 +2,12 @@
 
 import { logout } from '@/app/api/logout';
 import { fetchUser } from '@/app/api/user';
-import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
+import {
+	getLoginTime,
+	saveSelectedOrganizationId,
+	saveSelectedResponsibleUserId,
+	saveSelectedStatus
+} from '@/app/localStorage';
 import { Spinner } from '@material-tailwind/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -45,6 +50,8 @@ const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 			await mutateAsync();
 		} catch (err) {}
 		saveSelectedOrganizationId('none');
+		saveSelectedStatus('none');
+		saveSelectedResponsibleUserId('none');
 		router.push('/login');
 	};
 

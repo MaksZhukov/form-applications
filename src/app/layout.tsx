@@ -1,11 +1,8 @@
 import { Inter } from 'next/font/google';
 import { QueryProvider } from './query';
-import { saveSelectedOrganizationId } from './localStorage';
 const inter = Inter({ subsets: ['latin'] });
 import './globals.css';
 import { Metadata } from 'next';
-
-typeof window !== 'undefined' && saveSelectedOrganizationId('none');
 
 export const metadata: Metadata = {
 	title: 'Modern Solutions',

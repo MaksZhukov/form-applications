@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ChangeEventHandler, FC } from 'react';
 
 interface Props {
-	value?: number;
+	value?: string;
 	name?: string;
 	className?: string;
 	onChange?: ChangeEventHandler<HTMLSelectElement>;
