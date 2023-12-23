@@ -23,6 +23,7 @@ interface Props<T extends ApplicationType> {
 	applicationType: T;
 	selectedStatus: ApplicationStatus | 'none';
 	selectedOrganizationId: string | 'none';
+	selectedResponsibleUserId?: string | 'none';
 	onChangeStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangeOrganization: (e: ChangeEvent<HTMLSelectElement>) => void;
 	onChangePage: (page: number) => () => void;
@@ -37,6 +38,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 	applicationType,
 	selectedOrganizationId,
 	selectedStatus,
+	selectedResponsibleUserId,
 	onChangePage,
 	onChangeOrganization,
 	onChangeStatus,
@@ -109,6 +111,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 						width: 135,
 						filter: isAdmin && (
 							<ResponsibleUserSelect
+								value={selectedResponsibleUserId}
 								className='mt-1 w-full'
 								onChange={onChangeResponsibleUser}></ResponsibleUserSelect>
 						)

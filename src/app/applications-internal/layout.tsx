@@ -9,7 +9,6 @@ const Layout = ({ children }: { children: React.ReactElement }) => {
 	const router = useRouter();
 	const handleClickLogo = () => {
 		router.push('/applications');
-		saveSelectedOrganizationId('none');
 	};
 
 	return <BaseLayout onClickLogo={handleClickLogo}>{children}</BaseLayout>;
