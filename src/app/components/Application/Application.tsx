@@ -293,7 +293,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						<div className='flex mb-5'>
 							<Typography className='w-56'>Ответственный</Typography>
 							<ResponsibleUserSelect
-								value={data?.responsibleUserId}
+								value={data?.responsibleUserId.toString()}
 								className='flex-1 h-8'></ResponsibleUserSelect>
 						</div>
 					) : (

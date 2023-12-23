@@ -206,7 +206,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 					<Typography className='w-36'>Ответственный</Typography>
 					<ResponsibleUserSelect
 						onChange={handleChangeResponsibleUser}
-						value={data?.responsibleUserId}
+						value={data?.responsibleUserId.toString()}
 						className='w-56 h-8'></ResponsibleUserSelect>
 				</div>
 
