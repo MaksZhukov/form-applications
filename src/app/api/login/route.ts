@@ -18,7 +18,6 @@ export const POST = async (request: NextRequest) => {
 	const token = await sign({
 		id: userData.id,
 		email,
-		password,
 		role: userData.role,
 		organizationId: userData.organizationId
 	});
