@@ -9,7 +9,7 @@ export const userSchema: ModelAttributes = {
 	},
 	createdAt: DataTypes.DATE,
 	updatedAt: DataTypes.DATE,
-	name: { type: DataTypes.STRING, allowNull: false, unique: 'name' },
+	name: { type: DataTypes.STRING, allowNull: false },
 	email: { type: DataTypes.STRING, allowNull: false, unique: 'email' },
 	departmentName: { type: DataTypes.STRING, allowNull: true },
 	password: { type: DataTypes.STRING, allowNull: false },
