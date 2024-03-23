@@ -6,7 +6,7 @@ import {
 } from '@/app/localStorage';
 import { Button } from '@material-tailwind/react';
 import Link from 'next/link';
-import TaskIcon from '@/icons/TaskIcon';
+import TaskIcon from '@/icons/task.svg';
 import TaskInternalIcon from '@/icons/TaskInternal';
 import { usePathname } from 'next/navigation';
 import { matchPath } from '@/services/route/route';
@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchUser } from '@/app/api/user';
 import { UserAttributes } from '@/db/users/types';
 import { OrganizationAttributes } from '@/db/organization/types';
+import EmployeeIcon from '@/icons/employee.svg';
 
 const getMenuItems = (user?: UserAttributes & { organization: OrganizationAttributes }) => [
 	{
@@ -29,7 +30,8 @@ const getMenuItems = (user?: UserAttributes & { organization: OrganizationAttrib
 					routeAliases: ['/applications-internal/new', '/applications-internal/:id'],
 					name: 'Внутренние задачи',
 					icon: TaskInternalIcon
-				}
+				},
+				{ route: '/employees', routeAliases: [], name: 'Сотрудники', icon: EmployeeIcon }
 		  ]
 		: [])
 ];

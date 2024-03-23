@@ -14,5 +14,6 @@ export const userSchema: ModelAttributes = {
 	departmentName: { type: DataTypes.STRING, allowNull: true },
 	password: { type: DataTypes.STRING, allowNull: false },
 	token: { type: DataTypes.STRING, defaultValue: '' },
-	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false }
+	role: { type: DataTypes.ENUM('admin', 'regular'), allowNull: false },
+	isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }
 };

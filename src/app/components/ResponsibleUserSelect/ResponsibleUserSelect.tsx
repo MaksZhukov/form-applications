@@ -16,7 +16,7 @@ const ResponsibleUserSelect: FC<Props> = ({ name = 'responsibleUserId', value, c
 		queryKey: ['users', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID, isActive: true })
 	});
 
 	return (
