@@ -2,14 +2,13 @@ import client from '../client';
 import { ApiResponse } from '../types';
 import { UserAttributes } from '@/db/users/types';
 
+export type UserAPI = Pick<UserAttributes, 'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive' | 'phone'>;
+
 export const fetchUsers = (data: { organizationId: number }) =>
 	client
-		.get<ApiResponse<Pick<UserAttributes, 'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive'>[]>>(
-			`/api/users`,
-			{
-				params: data
-			}
-		)
+		.get<ApiResponse<UserAPI[]>>(`/api/users`, {
+			params: data
+		})
 		.then((res) => res.data);
 
 export const createUser = (data: FormData) =>

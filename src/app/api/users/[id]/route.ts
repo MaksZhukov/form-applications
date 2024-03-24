@@ -7,7 +7,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	const { id } = params;
 	const formData = await request.formData();
 	const email = formData.get('email') as string;
+	const name = formData.get('name') as string;
 	const password = formData.get('password') as string;
+	const phone = formData.get('phone') as string;
 	const departmentName = formData.get('departmentName') as string;
 	const rawIsActive = formData.get('isActive') as string;
 	const isActive = rawIsActive === null ? undefined : rawIsActive === 'true';
@@ -15,7 +17,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 		const { UserModel } = await initialize();
 		await UserModel.update(
 			omitBy(
-				{ email, password: password ? await bcrypt.hash(password, 10) : undefined, departmentName, isActive },
+				{
+					name,
+					email,
+					password: password ? await bcrypt.hash(password, 10) : undefined,
+					departmentName,
+					isActive,
+					phone
+				},
 				isNil
 			),
 			{

@@ -12,9 +12,10 @@ export type UserAttributes = {
 	departmentName: string;
 	organizationId: number;
 	isActive: boolean;
+	phone: string;
 	createdAt: string;
 	updatedAt: string;
 };
 
 export interface UserAttributesCreation
-	extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'token' | 'isActive'> {}
+	extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'token' | 'isActive' | 'phone'> {}

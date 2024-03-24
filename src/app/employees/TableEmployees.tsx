@@ -1,20 +1,33 @@
 import { Button, ButtonGroup, IconButton, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
-import { deleteUser, fetchUsers, updateUser } from '../api/users';
-import { useState } from 'react';
+import { UserAPI, deleteUser, fetchUsers, updateUser } from '../api/users';
+import { FormEventHandler, useState } from 'react';
 import { API_LIMIT_ITEMS, MAX_PART_PAGINATION } from '@/constants';
 import { UserAttributes } from '@/db/users/types';
 import { ApiResponse } from '../api/types';
-import { AxiosResponse } from 'axios';
 import TrashIcon from '@/icons/trash.svg';
+import ModalUpdateUser from '../components/modals/ModalUpdateUser';
 
 const nameByRole = {
 	admin: 'админ',
 	regular: 'обычный'
 };
 
+const TABLE_HEAD = [
+	{ name: 'Имя' },
+	{ name: 'email' },
+	{ name: 'Роль' },
+	{ name: 'Телефон' },
+	{ name: 'Отдел' },
+	{ name: 'Статус', width: 120 },
+	{ name: '', width: 120 },
+	{ name: '', width: 170 },
+	{ name: '', width: 50 }
+];
+
 const TableEmployees = () => {
+	const [updateUserModalData, setUpdateUserModalData] = useState<UserAPI | null>(null);
 	const [partPagination, setPartPagination] = useState<number>(1);
 	const [page, setPage] = useState(1);
 	const handleChangePage = (newPage: number) => () => {
@@ -43,43 +56,28 @@ const TableEmployees = () => {
 			: MAX_PART_PAGINATION;
 	const maxPartPaginationCount = Math.ceil(countPages / MAX_PART_PAGINATION);
 
-	const TABLE_HEAD = [
-		{ name: 'Имя' },
-		{ name: 'email' },
-		{ name: 'Роль' },
-		{ name: 'Отдел' },
-		{ name: 'Статус', width: 120 },
-		{ name: '', width: 170 },
-		{ name: '', width: 50 }
-	];
-
 	const handleChangePart = (value: number) => () => {
 		setPartPagination(value);
 	};
 
-	const handleClickDeactivate =
-		(item: Pick<UserAttributes, 'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive'>) => async () => {
-			const formData = new FormData();
-			formData.append('isActive', `${!item.isActive}`);
-			updateUserMutation.mutateAsync({ id: item.id, data: formData });
-			client.setQueryData<
-				ApiResponse<Pick<UserAttributes, 'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive'>[]>
-			>(['employees', getLoginTime()], (prev) =>
-				prev
-					? {
-							...prev,
-							data: prev.data.map((el) => (el.id === item.id ? { ...el, isActive: !item.isActive } : el))
-					  }
-					: undefined
-			);
-		};
+	const handleClickDeactivate = (item: UserAPI) => async () => {
+		const formData = new FormData();
+		formData.append('isActive', `${!item.isActive}`);
+		updateUserMutation.mutateAsync({ id: item.id, data: formData });
+		client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
+			prev
+				? {
+						...prev,
+						data: prev.data.map((el) => (el.id === item.id ? { ...el, isActive: !item.isActive } : el))
+				  }
+				: undefined
+		);
+	};
 
 	const handleClickDelete = (id: number) => () => {
 		if (window.confirm('Вы уверены?')) {
 			deleteUserMutation.mutateAsync(id);
-			client.setQueryData<
-				ApiResponse<Pick<UserAttributes, 'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive'>[]>
-			>(['employees', getLoginTime()], (prev) =>
+			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 				prev
 					? {
 							...prev,
@@ -87,6 +85,41 @@ const TableEmployees = () => {
 					  }
 					: undefined
 			);
+		}
+	};
+
+	const handleClickEdit = (item: UserAPI) => () => {
+		setUpdateUserModalData(item);
+	};
+
+	const handleCancelUpdateUser = () => {
+		setUpdateUserModalData(null);
+	};
+	const handleSubmitUpdateUser: FormEventHandler<HTMLFormElement> = async (e) => {
+		if (updateUserModalData) {
+			e.preventDefault();
+			const formData = new FormData(e.target as HTMLFormElement);
+			formData.append('organizationId', process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID);
+			updateUserMutation.mutateAsync({ id: updateUserModalData.id, data: formData });
+			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
+				prev
+					? {
+							...prev,
+							data: prev.data.map((item) =>
+								item.id === updateUserModalData.id
+									? {
+											...item,
+											departmentName: formData.get('departmentName') as string,
+											phone: formData.get('phone') as string,
+											name: formData.get('name') as string
+									  }
+									: item
+							)
+					  }
+					: undefined
+			);
+			alert('Пользователь изменен');
+			setUpdateUserModalData(null);
 		}
 	};
 
@@ -122,8 +155,17 @@ const TableEmployees = () => {
 								<td className={classes}>{item.name}</td>
 								<td className={classes}>{item.email}</td>
 								<td className={classes}>{nameByRole[item.role]}</td>
+								<td className={classes}>{item.phone}</td>
 								<td className={classes}>{item.departmentName}</td>
 								<td className={classes}>{item.isActive ? 'Активен' : 'Не активен'}</td>
+								<td className={classes}>
+									<Button
+										variant='outlined'
+										className='border-accent text-accent w-[165px]'
+										onClick={handleClickEdit(item)}>
+										Изменить
+									</Button>
+								</td>
 								<td className={classes}>
 									<Button
 										variant='outlined'
@@ -174,6 +216,12 @@ const TableEmployees = () => {
 					</ButtonGroup>
 				)}
 			</div>
+			{updateUserModalData && (
+				<ModalUpdateUser
+					data={updateUserModalData}
+					onCancel={handleCancelUpdateUser}
+					onSubmit={handleSubmitUpdateUser}></ModalUpdateUser>
+			)}
 		</>
 	);
 };
