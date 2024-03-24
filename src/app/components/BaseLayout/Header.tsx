@@ -55,7 +55,7 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		e.preventDefault();
 		const formData = new FormData(e.target as HTMLFormElement);
 		await createUserMutation.mutateAsync(formData);
-		client.refetchQueries({ queryKey: ['users', getLoginTime()] });
+		client.refetchQueries({ queryKey: ['employees', getLoginTime()] });
 		alert('Пользователь добавлен');
 		setShowModal(null);
 	};

@@ -13,10 +13,10 @@ interface Props {
 
 const ResponsibleUserSelect: FC<Props> = ({ name = 'responsibleUserId', value, className = '', onChange }) => {
 	const { data, isFetched } = useQuery({
-		queryKey: ['users', getLoginTime()],
+		queryKey: ['employees', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID, isActive: true })
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
 	});
 
 	return (
@@ -27,11 +27,13 @@ const ResponsibleUserSelect: FC<Props> = ({ name = 'responsibleUserId', value, c
 			onChange={onChange}
 			className={`font-normal border border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none ${className}`}>
 			<option value='none'>не выбрано</option>
-			{data?.data.data.map((item) => (
-				<option key={item.id} value={item.id}>
-					{item.name}
-				</option>
-			))}
+			{data?.data
+				.filter((item) => item.isActive)
+				.map((item) => (
+					<option key={item.id} value={item.id}>
+						{item.name}
+					</option>
+				))}
 		</select>
 	);
 };

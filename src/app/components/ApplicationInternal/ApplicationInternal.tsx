@@ -41,7 +41,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	});
 
 	const { data: usersData } = useQuery({
-		queryKey: ['users', getLoginTime()],
+		queryKey: ['employees', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
@@ -138,7 +138,7 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	};
 
 	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (event) => {
-		const responsibleUserObj = usersData?.data.data.find((item) => item.id === +event.target.value) || null;
+		const responsibleUserObj = usersData?.data.find((item) => item.id === +event.target.value) || null;
 		setResponsibleUser(responsibleUserObj);
 	};
 

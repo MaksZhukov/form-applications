@@ -14,12 +14,16 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 	try {
 		const { UserModel } = await initialize();
 		await UserModel.update(
-			omitBy({ email, password: await bcrypt.hash(password, 10), departmentName, isActive }, isNil),
+			omitBy(
+				{ email, password: password ? await bcrypt.hash(password, 10) : undefined, departmentName, isActive },
+				isNil
+			),
 			{
 				where: { id }
 			}
 		);
 	} catch (err) {
+		console.log(err);
 		if (err instanceof Error) {
 			return new NextResponse(err.message, { status: 500 });
 		}

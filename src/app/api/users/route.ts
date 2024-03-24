@@ -6,13 +6,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
 	const organizationId = request.nextUrl.searchParams.get('organizationId') as string;
-	const rawIsActive = request.nextUrl.searchParams.get('isActive');
-	const isActive = rawIsActive === null ? undefined : rawIsActive === 'true';
+
 	try {
 		const { UserModel } = await initialize();
 		const users = await UserModel.findAll({
-			attributes: ['id', 'name', 'departmentName'],
-			where: omitBy({ organizationId, isActive }, isUndefined)
+			attributes: ['id', 'name', 'departmentName', 'role', 'isActive', 'email'],
+			where: omitBy({ organizationId }, isUndefined)
 		});
 		return NextResponse.json({ data: users });
 	} catch (err) {
