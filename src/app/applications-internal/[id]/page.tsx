@@ -25,7 +25,7 @@ export default function ApplicationPage() {
 	});
 
 	useQuery({
-		queryKey: ['users', getLoginTime()],
+		queryKey: ['employees', getLoginTime()],
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })

@@ -9,10 +9,13 @@ export type UserAttributes = {
 	password: string;
 	token: string;
 	role: Role;
-    departmentName: string;
+	departmentName: string;
 	organizationId: number;
+	isActive: boolean;
+	phone: string;
 	createdAt: string;
 	updatedAt: string;
 };
 
-export interface UserAttributesCreation extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'token'> {}
+export interface UserAttributesCreation
+	extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'token' | 'isActive' | 'phone'> {}

@@ -1,17 +1,13 @@
-import { FC, SVGProps } from 'react';
-
-const TaskIcon: FC<SVGProps<any>> = (props) => (
-	<svg
-		className={props.className}
-		version='1.1'
-		id='Layer_1'
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg version="1.1"  id='Layer_1'
 		xmlns='http://www.w3.org/2000/svg'
-		xmlnsXlink='http://www.w3.org/1999/xlink'
+		xmlns:xlink='http://www.w3.org/1999/xlink'
 		x='0px'
 		y='0px'
-		style={{ fontSize: props.fontSize, width: '1em', height: '1em', fill: 'currentcolor' }}
+        fill="currentColor" height="24" width="24" 
 		viewBox='0 0 100.353 100.353'
-		xmlSpace='preserve'>
+		xml:space='preserve'>
 		<g>
 			<path
 				d='M62.978,68.072c-0.828,0-1.5,0.672-1.5,1.5v13.711H12.515V18.684h48.962v11.4c0,0.829,0.672,1.5,1.5,1.5s1.5-0.671,1.5-1.5
@@ -36,7 +32,4 @@ const TaskIcon: FC<SVGProps<any>> = (props) => (
 		S18.355,46.992,19.184,46.992z'
 			/>
 		</g>
-	</svg>
-);
-
-export default TaskIcon;
+</svg>

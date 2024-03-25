@@ -2,7 +2,7 @@
 
 import { fetchUser } from '@/app/api/user';
 import { getLoginTime } from '@/app/localStorage';
-import { API_LIMIT_ITEMS } from '@/constants';
+import { API_LIMIT_ITEMS, MAX_PART_PAGINATION } from '@/constants';
 import { ApplicationAttributes, ApplicationStatus } from '@/db/application/types';
 import { OrganizationAttributes } from '@/db/organization/types';
 import { Button, ButtonGroup, IconButton, Typography } from '@material-tailwind/react';
@@ -12,8 +12,6 @@ import { ChangeEvent, ChangeEventHandler, FC, useState } from 'react';
 import ResponsibleUserSelect from '../ResponsibleUserSelect/ResponsibleUserSelect';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 import { ApplicationType } from '@/app/api/types';
-
-const MAX_PART_PAGINATION = 10;
 
 interface Props<T extends ApplicationType> {
 	data: (T extends 'common' ? ApplicationAttributes : ApplicationInternalAttributes)[];

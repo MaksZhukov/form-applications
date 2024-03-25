@@ -20,7 +20,7 @@ import { socketService } from '@/app/socket';
 
 interface Props {
 	children: ReactNode;
-	onClickLogo: () => void;
+	onClickLogo?: () => void;
 }
 
 const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
@@ -56,7 +56,11 @@ const BaseLayout: FC<Props> = ({ children, onClickLogo }) => {
 	};
 
 	const handleClickLogo = () => {
-		onClickLogo();
+		if (onClickLogo) {
+			onClickLogo();
+		} else {
+			router.push('/applications');
+		}
 	};
 
 	if (isLoading || isError) {
