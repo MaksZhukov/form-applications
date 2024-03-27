@@ -6,6 +6,7 @@ export type OrganizationAttributes = {
 	id: number;
 	name: string;
 	uid: string;
+	address: string;
 	createdAt: string;
 	updatedAt: string;
 };

@@ -1,10 +1,19 @@
+import { OrganizationAttributes } from '@/db/organization/types';
 import client from '../client';
 import { ApiResponse } from '../types';
 import { UserAttributes } from '@/db/users/types';
 
-export type UserAPI = Pick<UserAttributes, 'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive' | 'phone'>;
+export type UserAPI = Pick<
+	UserAttributes,
+	'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive' | 'phone'
+> & { organization: OrganizationAttributes };
 
-export const fetchUsers = (data: { organizationId: number }) =>
+export const fetchUsers = (data: {
+	organizationId?: number;
+	onlyCustomers?: boolean;
+	offset?: number;
+	search?: string;
+}) =>
 	client
 		.get<ApiResponse<UserAPI[]>>(`/api/users`, {
 			params: data
