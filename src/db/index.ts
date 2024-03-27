@@ -82,11 +82,6 @@ export const initialize = async () => {
 	initLaborCostsModel(sequelize);
 
 	if (process.env.NODE_ENV === 'development') {
-		try {
-			await sequelize.sync({ alter: true });
-		} catch (err) {
-			console.log(err);
-		}
 		const organization = await createDefaultOrganization();
 		await createDefaultUser(organization);
 	}
