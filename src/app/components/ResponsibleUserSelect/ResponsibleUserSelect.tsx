@@ -11,12 +11,14 @@ interface Props {
 	onChange?: ChangeEventHandler<HTMLSelectElement>;
 }
 
+const isActive = true;
+
 const ResponsibleUserSelect: FC<Props> = ({ name = 'responsibleUserId', value, className = '', onChange }) => {
 	const { data, isFetched } = useQuery({
-		queryKey: ['employees', getLoginTime()],
+		queryKey: ['employees', getLoginTime(), 'isActive'],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID, isActive: true })
 	});
 
 	return (

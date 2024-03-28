@@ -7,6 +7,7 @@ export async function GET() {
 		const organizations = await OrganizationModel.findAll({ attributes: ['id', 'name', 'createdAt', 'address'] });
 		return NextResponse.json({ data: organizations });
 	} catch (err) {
+		console.log(err);
 		return new NextResponse('error getting users', { status: 500 });
 	}
 }

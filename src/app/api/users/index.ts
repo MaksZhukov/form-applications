@@ -10,6 +10,7 @@ export type UserAPI = Pick<
 
 export const fetchUsers = (data: {
 	organizationId?: number;
+	isActive?: boolean;
 	onlyCustomers?: boolean;
 	offset?: number;
 	search?: string;

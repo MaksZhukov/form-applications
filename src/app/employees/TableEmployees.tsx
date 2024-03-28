@@ -53,7 +53,6 @@ const TableEmployees = () => {
 	const handleClickDeactivate = (item: UserAPI) => async () => {
 		const formData = new FormData();
 		formData.append('isActive', `${!item.isActive}`);
-		updateUserMutation.mutateAsync({ id: item.id, data: formData });
 		client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 			prev
 				? {
@@ -62,11 +61,12 @@ const TableEmployees = () => {
 				  }
 				: undefined
 		);
+		await updateUserMutation.mutateAsync({ id: item.id, data: formData });
+		client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
 	};
 
-	const handleClickDelete = (id: number) => () => {
+	const handleClickDelete = (id: number) => async () => {
 		if (window.confirm('Вы уверены?')) {
-			deleteUserMutation.mutateAsync(id);
 			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 				prev
 					? {
@@ -75,6 +75,8 @@ const TableEmployees = () => {
 					  }
 					: undefined
 			);
+			await deleteUserMutation.mutateAsync(id);
+			client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
 		}
 	};
 
@@ -90,7 +92,6 @@ const TableEmployees = () => {
 			e.preventDefault();
 			const formData = new FormData(e.target as HTMLFormElement);
 			formData.append('organizationId', process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID);
-			updateUserMutation.mutateAsync({ id: updateUserModalData.id, data: formData });
 			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 				prev
 					? {
@@ -108,6 +109,8 @@ const TableEmployees = () => {
 					  }
 					: undefined
 			);
+			await updateUserMutation.mutateAsync({ id: updateUserModalData.id, data: formData });
+			client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
 			alert('Пользователь изменен');
 			setUpdateUserModalData(null);
 		}

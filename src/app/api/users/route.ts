@@ -9,8 +9,10 @@ import { Op } from 'sequelize';
 export async function GET(request: NextRequest) {
 	const organizationId = request.nextUrl.searchParams.get('organizationId') as string;
 	const rawOnlyCustomers = request.nextUrl.searchParams.get('onlyCustomers') as string;
-	const search = request.nextUrl.searchParams.get('search') as string;
 	const onlyCustomers = rawOnlyCustomers === null ? undefined : rawOnlyCustomers === 'true';
+	const rawIsActive = request.nextUrl.searchParams.get('isActive') as string;
+	const isActive = rawIsActive === null ? undefined : rawIsActive === 'true';
+	const search = request.nextUrl.searchParams.get('search') as string;
 	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
 	try {
@@ -26,7 +28,7 @@ export async function GET(request: NextRequest) {
 							{ '$organization.uid$': { [Op.like]: `%${search}%` } }
 						]
 				  }
-				: omitBy({ organizationId }, isUndefined),
+				: omitBy({ organizationId, isActive }, isUndefined),
 			limit,
 			offset
 		});
