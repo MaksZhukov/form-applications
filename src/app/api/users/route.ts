@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
 		const { UserModel, OrganizationModel } = await initialize();
 		const { count, rows } = await UserModel.findAndCountAll({
 			attributes: ['id', 'name', 'departmentName', 'role', 'isActive', 'email', 'phone'],
-			include: [{ model: OrganizationModel }],
+			include: [
+				{
+					model: OrganizationModel,
+					include: [{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }]
+				}
+			],
 			where: onlyCustomers
 				? {
 						id: { [Op.ne]: process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID },

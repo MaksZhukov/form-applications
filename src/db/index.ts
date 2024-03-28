@@ -16,7 +16,7 @@ import { initFileModel } from './file';
 import { createDefaultOrganization } from './organization/default';
 import { createDefaultUser } from './users/default';
 import { initUserModel } from './users';
-import { initOrganizationModel } from './organization';
+import { initOrganizationModel, initOrganizationModelRelations } from './organization';
 import { initApplicationCommentModel } from './applicationComment';
 import { initApplicationInternalCommentModel } from './applicationInternalComments';
 import { initApplicationFileModel } from './applicationFiles';
@@ -80,6 +80,7 @@ export const initialize = async () => {
 	initApplicationLaborCostsModel(sequelize);
 	initKindsOfWorkModel(sequelize);
 	initLaborCostsModel(sequelize);
+    initOrganizationModelRelations();
 
 	if (process.env.NODE_ENV === 'development') {
 		const organization = await createDefaultOrganization();

@@ -6,7 +6,11 @@ import { UserAttributes } from '@/db/users/types';
 export type UserAPI = Pick<
 	UserAttributes,
 	'id' | 'name' | 'departmentName' | 'email' | 'role' | 'isActive' | 'phone'
-> & { organization: OrganizationAttributes };
+> & {
+	organization: Omit<OrganizationAttributes, 'responsibleUser'> & {
+		responsibleUser: Pick<UserAttributes, 'id' | 'name'>;
+	};
+};
 
 export const fetchUsers = (data: {
 	organizationId?: number;

@@ -77,7 +77,7 @@ const TableCustomers = () => {
 								<td className={classes}>{item.organization.name}</td>
 								<td className={classes}>{item.phone}</td>
 								<td className={classes}>{item.email}</td>
-								<td className={classes}>RESPONSIBLE USER</td>
+								<td className={classes}>{item.organization.responsibleUser?.name}</td>
 								<td className={classes}>
 									{new Date(item.organization.createdAt).toLocaleDateString()}
 								</td>
