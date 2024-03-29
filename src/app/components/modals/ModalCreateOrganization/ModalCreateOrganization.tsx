@@ -1,5 +1,6 @@
 import { Button, Typography } from '@material-tailwind/react';
 import { FC, FormEventHandler } from 'react';
+import ResponsibleUserSelect from '../../ResponsibleUserSelect';
 
 interface Props {
 	onSubmit: FormEventHandler<HTMLFormElement>;
@@ -38,6 +39,21 @@ const ModalCreateOrganization: FC<Props> = ({ onSubmit, onCancel }) => {
 									name='uid'
 									required
 								/>
+							</div>
+							<div>
+								<Typography>Адрес</Typography>
+								<input
+									type='text'
+									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+									name='address'
+									required
+								/>
+							</div>
+							<div>
+								<Typography>Ответственный</Typography>
+								<ResponsibleUserSelect
+									className='w-full h-12 px-2'
+									name='responsibleUserId'></ResponsibleUserSelect>
 							</div>
 						</div>
 						{/*footer*/}

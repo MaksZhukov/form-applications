@@ -10,9 +10,12 @@ export type OrganizationAttributes = {
 	address: string;
 	createdAt: string;
 	updatedAt: string;
-	responsibleUserId?: number;
+	responsibleUserId?: number | null;
 	responsibleUser?: UserAttributes;
 };
 
 export interface OrganizationAttributesCreation
-	extends Optional<OrganizationAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+	extends Optional<
+		OrganizationAttributes,
+		'id' | 'createdAt' | 'updatedAt' | 'responsibleUser' | 'responsibleUserId'
+	> {}
