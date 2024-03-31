@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
 				  }
 				: omitBy({ organizationId, isActive }, isUndefined),
 			limit,
-			offset
+			offset,
+			order: [['createdAt', 'DESC']]
 		});
 		const result = { data: rows, meta: { total: count } };
 		return NextResponse.json(result);
