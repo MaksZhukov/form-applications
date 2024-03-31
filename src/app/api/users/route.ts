@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 			],
 			where: onlyCustomers
 				? {
-						id: { [Op.ne]: process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID },
+						'$organization.id$': { [Op.ne]: process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID },
 						[Op.or]: [
 							{ '$organization.name$': { [Op.like]: `%${search}%` } },
 							{ '$organization.uid$': { [Op.like]: `%${search}%` } }
