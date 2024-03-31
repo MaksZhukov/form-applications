@@ -1,13 +1,13 @@
-import { Button, ButtonGroup, IconButton, Spinner, Typography } from '@material-tailwind/react';
+import { Button, IconButton, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
 import { UserAPI, deleteUser, fetchUsers, updateUser } from '../api/users';
 import { FormEventHandler, useState } from 'react';
-import { API_LIMIT_ITEMS, MAX_PART_PAGINATION } from '@/constants';
-import { UserAttributes } from '@/db/users/types';
+import { API_LIMIT_ITEMS } from '@/constants';
 import { ApiResponse } from '../api/types';
 import TrashIcon from '@/icons/trash.svg';
 import ModalUpdateUser from '../components/modals/ModalUpdateUser';
+import Pagination from '../components/Pagination';
 
 const nameByRole = {
 	admin: 'админ',
@@ -28,7 +28,6 @@ const TABLE_HEAD = [
 
 const TableEmployees = () => {
 	const [updateUserModalData, setUpdateUserModalData] = useState<UserAPI | null>(null);
-	const [partPagination, setPartPagination] = useState<number>(1);
 	const [page, setPage] = useState(1);
 	const handleChangePage = (newPage: number) => () => {
 		setPage(newPage);
@@ -50,20 +49,10 @@ const TableEmployees = () => {
 	const employees = data?.data || [];
 
 	const countPages = Math.ceil((data?.meta?.total || 1) / API_LIMIT_ITEMS);
-	const countPagesByPart =
-		MAX_PART_PAGINATION * partPagination > countPages
-			? countPages - MAX_PART_PAGINATION * (partPagination - 1)
-			: MAX_PART_PAGINATION;
-	const maxPartPaginationCount = Math.ceil(countPages / MAX_PART_PAGINATION);
-
-	const handleChangePart = (value: number) => () => {
-		setPartPagination(value);
-	};
 
 	const handleClickDeactivate = (item: UserAPI) => async () => {
 		const formData = new FormData();
 		formData.append('isActive', `${!item.isActive}`);
-		updateUserMutation.mutateAsync({ id: item.id, data: formData });
 		client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 			prev
 				? {
@@ -72,11 +61,12 @@ const TableEmployees = () => {
 				  }
 				: undefined
 		);
+		await updateUserMutation.mutateAsync({ id: item.id, data: formData });
+		client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
 	};
 
-	const handleClickDelete = (id: number) => () => {
+	const handleClickDelete = (id: number) => async () => {
 		if (window.confirm('Вы уверены?')) {
-			deleteUserMutation.mutateAsync(id);
 			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 				prev
 					? {
@@ -85,6 +75,8 @@ const TableEmployees = () => {
 					  }
 					: undefined
 			);
+			await deleteUserMutation.mutateAsync(id);
+			client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
 		}
 	};
 
@@ -100,7 +92,6 @@ const TableEmployees = () => {
 			e.preventDefault();
 			const formData = new FormData(e.target as HTMLFormElement);
 			formData.append('organizationId', process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID);
-			updateUserMutation.mutateAsync({ id: updateUserModalData.id, data: formData });
 			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
 				prev
 					? {
@@ -118,6 +109,8 @@ const TableEmployees = () => {
 					  }
 					: undefined
 			);
+			await updateUserMutation.mutateAsync({ id: updateUserModalData.id, data: formData });
+			client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
 			alert('Пользователь изменен');
 			setUpdateUserModalData(null);
 		}
@@ -186,36 +179,7 @@ const TableEmployees = () => {
 					})}
 				</tbody>
 			</table>
-			<div className='w-full flex'>
-				{countPages > 1 && (
-					<ButtonGroup variant='outlined' className='mx-auto'>
-						{partPagination > 1 && (
-							<IconButton onClick={handleChangePart(partPagination - 1)}>...</IconButton>
-						)}
-						{new Array(countPagesByPart).fill(null).map((item, index) => {
-							const currentPage = index + MAX_PART_PAGINATION * (partPagination - 1) + 1;
-							return (
-								<IconButton
-									key={currentPage}
-									className={
-										page === currentPage
-											? 'bg-blue-100 text-blue-gray-900'
-											: index + 1 === countPagesByPart &&
-											  partPagination === maxPartPaginationCount
-											? 'border-r-1'
-											: ''
-									}
-									onClick={handleChangePage(currentPage)}>
-									{currentPage}
-								</IconButton>
-							);
-						})}
-						{partPagination !== maxPartPaginationCount && (
-							<IconButton onClick={handleChangePart(partPagination + 1)}>...</IconButton>
-						)}
-					</ButtonGroup>
-				)}
-			</div>
+			<Pagination countPages={countPages} onChangePage={handleChangePage} page={page} />
 			{updateUserModalData && (
 				<ModalUpdateUser
 					data={updateUserModalData}

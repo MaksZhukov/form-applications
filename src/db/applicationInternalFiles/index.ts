@@ -8,5 +8,4 @@ export const initApplicationInternalFileModel = async (sequelize: Sequelize) => 
 		modelName: 'application_internal_files',
 		timestamps: false
 	});
-	// await ApplicationInternalFileModel.sync({ alter: true });
 };

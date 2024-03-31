@@ -24,7 +24,7 @@ const Employees = () => {
 		const formData = new FormData(e.target as HTMLFormElement);
 		formData.append('organizationId', process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID);
 		await createUserMutation.mutateAsync(formData);
-		client.refetchQueries({ queryKey: ['employees', getLoginTime()] });
+		client.invalidateQueries(['employees']);
 		alert('Пользователь добавлен');
 		setShowModal(null);
 	};

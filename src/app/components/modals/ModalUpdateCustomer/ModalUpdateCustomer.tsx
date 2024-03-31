@@ -1,13 +1,15 @@
+import { UserAPI } from '@/app/api/users';
 import { Button, Typography } from '@material-tailwind/react';
 import { FC, FormEventHandler } from 'react';
 import ResponsibleUserSelect from '../../ResponsibleUserSelect';
 
 interface Props {
+	data: UserAPI;
 	onSubmit: FormEventHandler<HTMLFormElement>;
 	onCancel: () => void;
 }
 
-const ModalCreateOrganization: FC<Props> = ({ onSubmit, onCancel }) => {
+const ModalUpdateCustomer: FC<Props> = ({ onSubmit, onCancel, data }) => {
 	return (
 		<>
 			<div className='justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none'>
@@ -18,42 +20,45 @@ const ModalCreateOrganization: FC<Props> = ({ onSubmit, onCancel }) => {
 						className='border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none'>
 						{/*header*/}
 						<div className='flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t'>
-							<h3 className='text-3xl font-semibold'>Добавление организации</h3>
+							<h3 className='text-3xl font-semibold'>Изменение данных клиента</h3>
 						</div>
 						{/*body*/}
 						<div className='relative p-6 flex-auto'>
 							<div>
-								<Typography>Название организации</Typography>
+								<Typography>Название</Typography>
 								<input
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 									name='name'
+									defaultValue={data.organization?.name}
 									required
 								/>
 							</div>
 							<div>
-								<Typography>УНП</Typography>
+								<Typography>Телефон</Typography>
 								<input
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-									name='uid'
+									name='userPhone'
+									defaultValue={data.phone}
 									required
 								/>
+							</div>
+							<div>
+								<Typography>Ответственный за компанию</Typography>
+								<ResponsibleUserSelect
+									value={data.organization.responsibleUserId?.toString()}
+									className='w-full h-12 px-2'
+									name='responsibleUserId'></ResponsibleUserSelect>
 							</div>
 							<div>
 								<Typography>Адрес</Typography>
 								<input
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+									defaultValue={data.organization.address}
 									name='address'
-									required
 								/>
-							</div>
-							<div>
-								<Typography>Ответственный</Typography>
-								<ResponsibleUserSelect
-									className='w-full h-12 px-2'
-									name='responsibleUserId'></ResponsibleUserSelect>
 							</div>
 						</div>
 						{/*footer*/}
@@ -70,7 +75,7 @@ const ModalCreateOrganization: FC<Props> = ({ onSubmit, onCancel }) => {
 								size='sm'
 								className='ml-1 p-2 border-accent text-accent'
 								variant='outlined'>
-								Добавить
+								Изменить
 							</Button>
 						</div>
 					</form>
@@ -81,4 +86,4 @@ const ModalCreateOrganization: FC<Props> = ({ onSubmit, onCancel }) => {
 	);
 };
 
-export default ModalCreateOrganization;
+export default ModalUpdateCustomer;

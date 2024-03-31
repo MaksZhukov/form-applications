@@ -5,13 +5,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../../api/applications/[id]';
 import { ApiResponse } from '../../api/types';
-import { ApplicationAttributes } from '@/db/application/types';
-import Chat from '../../components/Chat';
 import ApplicationInternal from '@/app/components/ApplicationInternal';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 import { getLoginTime } from '@/app/localStorage';
 import { fetchUsers } from '@/app/api/users';
-import { fetchUser } from '@/app/api/user';
 
 export default function ApplicationPage() {
 	const { id } = useParams();
@@ -25,10 +22,10 @@ export default function ApplicationPage() {
 	});
 
 	useQuery({
-		queryKey: ['employees', getLoginTime()],
+		queryKey: ['employees', getLoginTime(), 'isActive'],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID, isActive: true })
 	});
 
 	const handleCancel = () => {

@@ -41,10 +41,10 @@ const ApplicationInternal: FC<Props> = ({ data, newApplicationId, onCancel, onUp
 	});
 
 	const { data: usersData } = useQuery({
-		queryKey: ['employees', getLoginTime()],
+		queryKey: ['employees', getLoginTime(), 'isActive'],
 		staleTime: Infinity,
 		retry: 0,
-		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID })
+		queryFn: () => fetchUsers({ organizationId: +process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID, isActive: true })
 	});
 
 	const isAdmin = userData?.data.role === 'admin';

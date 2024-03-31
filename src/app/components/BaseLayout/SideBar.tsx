@@ -15,6 +15,7 @@ import { fetchUser } from '@/app/api/user';
 import { UserAttributes } from '@/db/users/types';
 import { OrganizationAttributes } from '@/db/organization/types';
 import EmployeeIcon from '@/icons/employee.svg';
+import CustomerIcon from '@/icons/customers.svg';
 
 const getMenuItems = (user?: UserAttributes & { organization: OrganizationAttributes }) => [
 	{
@@ -31,7 +32,8 @@ const getMenuItems = (user?: UserAttributes & { organization: OrganizationAttrib
 					name: 'Внутренние задачи',
 					icon: TaskInternalIcon
 				},
-				{ route: '/employees', routeAliases: [], name: 'Сотрудники', icon: EmployeeIcon }
+				{ route: '/employees', routeAliases: [], name: 'Сотрудники', icon: EmployeeIcon },
+				{ route: '/customers', routeAliases: [], name: 'Клиенты', icon: CustomerIcon }
 		  ]
 		: [])
 ];
