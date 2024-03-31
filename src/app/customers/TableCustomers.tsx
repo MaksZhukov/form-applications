@@ -1,11 +1,14 @@
 import { Button, Spinner, Typography } from '@material-tailwind/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
-import { fetchUsers } from '../api/users';
-import { useState } from 'react';
+import { UserAPI, fetchUsers, updateUser } from '../api/users';
+import { FormEventHandler, useState } from 'react';
 import { API_LIMIT_ITEMS } from '@/constants';
 import Pagination from '../components/Pagination';
 import { useSearchParams } from 'next/navigation';
+import ModalUpdateCustomer from '../components/modals/ModalUpdateCustomer';
+import { ApiResponse } from '../api/types';
+import { updateOrganization } from '../api/organizations';
 
 const TABLE_HEAD = [
 	{ name: 'Название', width: 400 },
@@ -20,9 +23,17 @@ const TABLE_HEAD = [
 const TableCustomers = () => {
 	const searchParams = useSearchParams();
 	const [page, setPage] = useState(1);
+	const [updateCustomerModalData, setUpdateCustomerModalData] = useState<UserAPI | null>(null);
 	const search = searchParams.get('search') || '';
 	const client = useQueryClient();
-	console.log({ onlyCustomers: true, offset: (page - 1) * API_LIMIT_ITEMS });
+
+	const updateUserMutation = useMutation({
+		mutationFn: (params: { id: number; data: FormData }) => updateUser(params)
+	});
+
+	const updateOrganizationMutation = useMutation({
+		mutationFn: (params: { id: number; data: FormData }) => updateOrganization(params)
+	});
 	const { data, isLoading } = useQuery({
 		queryKey: ['customers', page, search, getLoginTime()],
 		retry: 0,
@@ -39,6 +50,57 @@ const TableCustomers = () => {
 	const handleChangePage = (newPage: number) => () => {
 		setPage(newPage);
 		window.scroll(0, 0);
+	};
+
+	const handleOpenChangeModal = (data: UserAPI) => () => {
+		setUpdateCustomerModalData(data);
+	};
+
+	const handleCancel = () => {
+		setUpdateCustomerModalData(null);
+	};
+
+	const handleSubmitUpdateCustomer: FormEventHandler<HTMLFormElement> = async (e) => {
+		if (updateCustomerModalData) {
+			e.preventDefault();
+			const formData = new FormData(e.target as HTMLFormElement);
+			const userPhone = formData.get('userPhone') as string;
+			formData.delete('userPhone');
+			const userFormData = new FormData();
+			userFormData.append('phone', userPhone);
+			const employees = client.getQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime(), 'isActive']);
+			const newResponsibleUserId = +(formData.get('responsibleUserId') as string);
+			client.setQueryData<ApiResponse<UserAPI[]>>(['customers', page, search, getLoginTime()], (prev) =>
+				prev
+					? {
+							...prev,
+							data: prev.data.map((item) =>
+								item.id === updateCustomerModalData.id
+									? {
+											...item,
+											phone: userPhone,
+											organization: {
+												...item.organization,
+												name: formData.get('name') as string,
+												address: formData.get('address') as string,
+												responsibleUser: employees?.data.find(
+													(item) => item.id === newResponsibleUserId
+												) as UserAPI,
+												responsibleUserId: newResponsibleUserId
+											}
+									  }
+									: item
+							)
+					  }
+					: undefined
+			);
+
+			updateUserMutation.mutateAsync({ id: updateCustomerModalData.id, data: userFormData });
+			updateOrganizationMutation.mutateAsync({ id: updateCustomerModalData.organization.id, data: formData });
+			client.invalidateQueries(['organizations']);
+			alert('Клиент изменен');
+			setUpdateCustomerModalData(null);
+		}
 	};
 
 	const customers = data?.data || [];
@@ -86,7 +148,7 @@ const TableCustomers = () => {
 									<Button
 										variant='outlined'
 										className='border-accent text-accent w-[165px]'
-										onClick={() => {}}>
+										onClick={handleOpenChangeModal(item)}>
 										Изменить
 									</Button>
 								</td>
@@ -96,6 +158,13 @@ const TableCustomers = () => {
 				</tbody>
 			</table>
 			<Pagination page={page} countPages={countPages} onChangePage={handleChangePage} />
+			{updateCustomerModalData && (
+				<ModalUpdateCustomer
+					data={updateCustomerModalData}
+					onSubmit={handleSubmitUpdateCustomer}
+					onCancel={handleCancel}
+				/>
+			)}
 		</>
 	);
 };

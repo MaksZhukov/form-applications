@@ -4,7 +4,7 @@
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		return queryInterface.addColumn('organizations', 'address', {
-			type: Sequelize.BOOLEAN
+			type: Sequelize.STRING
 		});
 		/**
 		 * Add altering commands here.

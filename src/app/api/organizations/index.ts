@@ -9,3 +9,9 @@ export const fetchOrganizations = () =>
 
 export const createOrganization = (data: FormData) =>
 	client.post<ApiResponse<Pick<OrganizationAttributes, 'id' | 'name' | 'address'>[]>>(`/api/organizations`, data);
+
+export const updateOrganization = ({ id, data }: { id: number; data: FormData }) =>
+	client.put<ApiResponse<Pick<OrganizationAttributes, 'id' | 'name' | 'address'>[]>>(
+		`/api/organizations/${id}`,
+		data
+	);
