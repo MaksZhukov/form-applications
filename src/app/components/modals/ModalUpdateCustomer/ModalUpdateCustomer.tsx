@@ -41,7 +41,6 @@ const ModalUpdateCustomer: FC<Props> = ({ onSubmit, onCancel, data }) => {
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 									name='userPhone'
 									defaultValue={data.phone}
-									required
 								/>
 							</div>
 							<div>
@@ -57,6 +56,7 @@ const ModalUpdateCustomer: FC<Props> = ({ onSubmit, onCancel, data }) => {
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 									defaultValue={data.organization.address}
+									required
 									name='address'
 								/>
 							</div>

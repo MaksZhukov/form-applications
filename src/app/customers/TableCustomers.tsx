@@ -74,23 +74,24 @@ const TableCustomers = () => {
 				prev
 					? {
 							...prev,
-							data: prev.data.map((item) =>
-								item.id === updateCustomerModalData.id
-									? {
-											...item,
-											phone: userPhone,
-											organization: {
-												...item.organization,
-												name: formData.get('name') as string,
-												address: formData.get('address') as string,
-												responsibleUser: employees?.data.find(
-													(item) => item.id === newResponsibleUserId
-												) as UserAPI,
-												responsibleUserId: newResponsibleUserId
-											}
-									  }
-									: item
-							)
+							data: prev.data.map((item) => {
+								let newItem = item;
+								if (item.id === updateCustomerModalData.id) {
+									item.phone = userPhone;
+								}
+								if (item.organization.id === updateCustomerModalData.organization.id) {
+									item.organization = {
+										...item.organization,
+										name: formData.get('name') as string,
+										address: formData.get('address') as string,
+										responsibleUser: employees?.data.find(
+											(item) => item.id === newResponsibleUserId
+										) as UserAPI,
+										responsibleUserId: newResponsibleUserId
+									};
+								}
+								return newItem;
+							})
 					  }
 					: undefined
 			);
