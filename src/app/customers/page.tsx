@@ -15,7 +15,6 @@ import CreateUser from '../_features/CreateUser';
 const Customers = () => {
 	const searchParams = useSearchParams();
 	const createOrganizationMutation = useMutation(createOrganization);
-	const createUserMutation = useMutation(createUser);
 	const client = useQueryClient();
 	const [showModal, setShowModal] = useState<'createOrganization' | 'createUser' | null>(null);
 	const router = useRouter();
@@ -55,7 +54,7 @@ const Customers = () => {
 
 	return (
 		<>
-			<div className='flex gap-6 mb-4'>
+			<div className='flex items-center gap-6 mb-4'>
 				<Button className='bg-accent' onClick={handleShowModal('createOrganization')}>
 					Новая организация
 				</Button>
@@ -67,7 +66,7 @@ const Customers = () => {
 					defaultValue={searchParams.get('search') || ''}
 					type='search'
 					placeholder='Найти'
-					className='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-accent  p-3 inline-block focus:outline-none'
+					className='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-accent  p-2.5 inline-block focus:outline-none'
 					required
 				/>
 			</div>
