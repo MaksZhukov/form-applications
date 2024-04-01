@@ -4,8 +4,8 @@ import { Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { fetchNewApplicationId } from '../../api/applications/new';
-import Application from '../../components/Application';
-import Layout from '../../components/BaseLayout';
+import Application from '../../_components/Application';
+import Layout from '../../_components/BaseLayout';
 
 const ApplicationPage = () => {
 	const router = useRouter();

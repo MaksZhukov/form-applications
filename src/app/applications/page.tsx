@@ -9,7 +9,7 @@ import { ChangeEvent, ChangeEventHandler, FC, forwardRef, useEffect, useImperati
 import { fetchApplications } from '../api/applications';
 import { fetchUser } from '../api/user';
 import { fetchOrganizations } from '../api/organizations';
-import Table from '../components/Table';
+import Table from '../_components/Table';
 import {
 	getLoginTime,
 	getSelectedOrganizationId,

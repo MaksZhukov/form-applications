@@ -1,6 +1,6 @@
 'use client';
 
-import BaseLayout from '../components/BaseLayout';
+import BaseLayout from '../_components/BaseLayout';
 import React from 'react';
 
 const Layout = ({ children }: { children: React.ReactElement }) => {

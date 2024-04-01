@@ -6,8 +6,8 @@ import { FormEventHandler, useState } from 'react';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { ApiResponse } from '../api/types';
 import TrashIcon from '@/icons/trash.svg';
-import ModalUpdateUser from '../components/modals/ModalUpdateUser';
-import Pagination from '../components/Pagination';
+import ModalUpdateUser from '../_components/modals/ModalUpdateUser';
+import Pagination from '../_components/Pagination';
 
 const nameByRole = {
 	admin: 'админ',

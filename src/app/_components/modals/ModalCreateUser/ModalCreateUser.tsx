@@ -116,7 +116,7 @@ const ModalCreateUser: FC<Props> = ({
 							<Button
 								onClick={onCancel}
 								size='sm'
-                            className='ml-1 p-2 border-accent text-accent'
+								className='ml-1 p-2 border-accent text-accent'
 								variant='outlined'>
 								Отмена
 							</Button>
