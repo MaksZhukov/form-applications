@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
 	const search = request.nextUrl.searchParams.get('search') as string;
 	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
 	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
+
 	try {
 		const { UserModel, OrganizationModel } = await initialize();
 		const { count, rows } = await UserModel.findAndCountAll({
@@ -27,7 +28,15 @@ export async function GET(request: NextRequest) {
 			],
 			where: onlyCustomers
 				? {
-						'$organization.id$': { [Op.ne]: process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID },
+						'$organization.id$': {
+							[Op.notIn]:
+								process.env.NODE_ENV === 'production'
+									? [
+											process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID,
+											process.env.NEXT_PUBLIC_DEFAULT_ORGANIZATION_ID
+									  ]
+									: [process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID]
+						},
 						[Op.or]: [
 							{ '$organization.name$': { [Op.like]: `%${search}%` } },
 							{ '$organization.uid$': { [Op.like]: `%${search}%` } }
