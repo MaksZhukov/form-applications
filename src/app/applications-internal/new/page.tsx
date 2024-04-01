@@ -4,7 +4,7 @@ import { Spinner } from '@material-tailwind/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { fetchNewApplicationId } from '../../api/applications/new';
-import ApplicationInternal from '@/app/components/ApplicationInternal';
+import ApplicationInternal from '@/app/_components/ApplicationInternal';
 
 const ApplicationPage = () => {
 	const router = useRouter();
@@ -22,7 +22,10 @@ const ApplicationPage = () => {
 	}
 
 	return (
-		<ApplicationInternal newApplicationId={data?.data.data} onCancel={handleCancel} data={null}></ApplicationInternal>
+		<ApplicationInternal
+			newApplicationId={data?.data.data}
+			onCancel={handleCancel}
+			data={null}></ApplicationInternal>
 	);
 };
 

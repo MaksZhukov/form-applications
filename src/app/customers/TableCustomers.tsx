@@ -4,9 +4,9 @@ import { getLoginTime } from '../localStorage';
 import { UserAPI, fetchUsers, updateUser } from '../api/users';
 import { FormEventHandler, useState } from 'react';
 import { API_LIMIT_ITEMS } from '@/constants';
-import Pagination from '../components/Pagination';
+import Pagination from '../_components/Pagination';
 import { useSearchParams } from 'next/navigation';
-import ModalUpdateCustomer from '../components/modals/ModalUpdateCustomer';
+import ModalUpdateCustomer from '../_components/modals/ModalUpdateCustomer';
 import { ApiResponse } from '../api/types';
 import { updateOrganization } from '../api/organizations';
 

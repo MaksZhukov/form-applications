@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../../api/applications/[id]';
 import { ApiResponse } from '../../api/types';
-import ApplicationInternal from '@/app/components/ApplicationInternal';
+import ApplicationInternal from '@/app/_components/ApplicationInternal';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 import { getLoginTime } from '@/app/localStorage';
 import { fetchUsers } from '@/app/api/users';

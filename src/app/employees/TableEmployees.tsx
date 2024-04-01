@@ -2,12 +2,12 @@ import { Button, IconButton, Spinner, Typography } from '@material-tailwind/reac
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
 import { UserAPI, deleteUser, fetchUsers, updateUser } from '../api/users';
-import { FormEventHandler, useState } from 'react';
+import { useState } from 'react';
 import { API_LIMIT_ITEMS } from '@/constants';
 import { ApiResponse } from '../api/types';
 import TrashIcon from '@/icons/trash.svg';
-import ModalUpdateUser from '../components/modals/ModalUpdateUser';
-import Pagination from '../components/Pagination';
+import Pagination from '../_components/Pagination';
+import UpdateUser from '../_features/UpdateUser';
 
 const nameByRole = {
 	admin: 'админ',
@@ -87,33 +87,8 @@ const TableEmployees = () => {
 	const handleCancelUpdateUser = () => {
 		setUpdateUserModalData(null);
 	};
-	const handleSubmitUpdateUser: FormEventHandler<HTMLFormElement> = async (e) => {
-		if (updateUserModalData) {
-			e.preventDefault();
-			const formData = new FormData(e.target as HTMLFormElement);
-			formData.append('organizationId', process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID);
-			client.setQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime()], (prev) =>
-				prev
-					? {
-							...prev,
-							data: prev.data.map((item) =>
-								item.id === updateUserModalData.id
-									? {
-											...item,
-											departmentName: formData.get('departmentName') as string,
-											phone: formData.get('phone') as string,
-											name: formData.get('name') as string
-									  }
-									: item
-							)
-					  }
-					: undefined
-			);
-			await updateUserMutation.mutateAsync({ id: updateUserModalData.id, data: formData });
-			client.invalidateQueries(['employees', getLoginTime(), 'isActive']);
-			alert('Пользователь изменен');
-			setUpdateUserModalData(null);
-		}
+	const handleUpdatedUser = () => {
+		setUpdateUserModalData(null);
 	};
 
 	if (isLoading) {
@@ -181,10 +156,10 @@ const TableEmployees = () => {
 			</table>
 			<Pagination countPages={countPages} onChangePage={handleChangePage} page={page} />
 			{updateUserModalData && (
-				<ModalUpdateUser
-					data={updateUserModalData}
+				<UpdateUser
+					onUpdated={handleUpdatedUser}
 					onCancel={handleCancelUpdateUser}
-					onSubmit={handleSubmitUpdateUser}></ModalUpdateUser>
+					data={updateUserModalData}></UpdateUser>
 			)}
 		</>
 	);

@@ -2,15 +2,14 @@
 
 import { Button, Menu, MenuHandler, MenuItem, MenuList } from '@material-tailwind/react';
 import Image from 'next/image';
-import { FC, FormEventHandler, useEffect, useState } from 'react';
+import { FC, FormEventHandler, useState } from 'react';
 import ModalCreateOrganization from '../modals/ModalCreateOrganization';
-import ModalCreateUser from '../modals/ModalCreateUser';
-import { getLoginTime, saveSelectedOrganizationId } from '@/app/localStorage';
+import { getLoginTime } from '@/app/localStorage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUser } from '@/app/api/user';
 import { createOrganization } from '@/app/api/organizations';
-import { createUser, fetchUsers } from '@/app/api/users';
 import { useRouter } from 'next/navigation';
+import CreateUser from '@/app/_features/CreateUser';
 
 interface Props {
 	onClickLogo: () => void;
@@ -28,7 +27,6 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 	});
 
 	const createOrganizationMutation = useMutation(createOrganization);
-	const createUserMutation = useMutation(createUser);
 	const handleClickAddOrganization = () => {
 		setShowModal('createOrganization');
 	};
@@ -51,12 +49,8 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		setShowModal(null);
 	};
 
-	const handleSubmitCreateUser: FormEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target as HTMLFormElement);
-		await createUserMutation.mutateAsync(formData);
-		client.invalidateQueries(['employees']);
-		alert('Пользователь добавлен');
+	const handleCreateUser = () => {
+		client.invalidateQueries(['employees', 'customers']);
 		setShowModal(null);
 	};
 
@@ -99,7 +93,7 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 					onSubmit={handleSubmitCreateOrganization}></ModalCreateOrganization>
 			)}
 			{showModal === 'createUser' && (
-				<ModalCreateUser onCancel={handleCancel} onSubmit={handleSubmitCreateUser}></ModalCreateUser>
+				<CreateUser onCancel={handleCancel} onCreated={handleCreateUser}></CreateUser>
 			)}
 		</>
 	);

@@ -1,16 +1,13 @@
 'use client';
 
-import React, { FormEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@material-tailwind/react';
-import ModalCreateUser from '../components/modals/ModalCreateUser';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createUser } from '../api/users';
-import { getLoginTime } from '../localStorage';
 import TableEmployees from './TableEmployees';
+import CreateUser from '../_features/CreateUser';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Employees = () => {
-	const [showModal, setShowModal] = useState<'createUser' | 'updateUser' | null>(null);
-	const createUserMutation = useMutation(createUser);
+	const [showModal, setShowModal] = useState<'createUser' | null>(null);
 	const client = useQueryClient();
 	const handleClickNewEmployee = () => {
 		setShowModal('createUser');
@@ -19,13 +16,8 @@ const Employees = () => {
 		setShowModal(null);
 	};
 
-	const handleSubmitCreateUser: FormEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target as HTMLFormElement);
-		formData.append('organizationId', process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID);
-		await createUserMutation.mutateAsync(formData);
+	const handleCreateUser = () => {
 		client.invalidateQueries(['employees']);
-		alert('Пользователь добавлен');
 		setShowModal(null);
 	};
 	return (
@@ -35,11 +27,12 @@ const Employees = () => {
 			</Button>
 			<TableEmployees />
 			{showModal === 'createUser' && (
-				<ModalCreateUser
+				<CreateUser
 					title='Добавить сотрудника'
 					withOrganization={false}
+					defaultOrganization={process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID}
 					onCancel={handleCancel}
-					onSubmit={handleSubmitCreateUser}></ModalCreateUser>
+					onCreated={handleCreateUser}></CreateUser>
 			)}
 		</>
 	);

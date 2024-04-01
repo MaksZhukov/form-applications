@@ -5,9 +5,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchApplication } from '../../api/applications/[id]';
 import { ApiResponse } from '../../api/types';
-import Application from '../../components/Application';
+import Application from '../../_components/Application';
 import { ApplicationAttributes } from '@/db/application/types';
-import Chat from '../../components/Chat';
+import Chat from '../../_components/Chat';
 
 export default function ApplicationPage() {
 	const { id } = useParams();

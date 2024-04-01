@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import BaseLayout from '../components/BaseLayout';
+import BaseLayout from '../_components/BaseLayout';
 import { saveSelectedOrganizationId } from '../localStorage';
 import React from 'react';
 
