@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 				: omitBy({ organizationId, isActive }, isUndefined),
 			limit,
 			offset,
-			order: [['createdAt', 'DESC']]
+			order: [[{ model: OrganizationModel, as: 'organization' }, 'name', 'ASC']]
 		});
 		const result = { data: rows, meta: { total: count } };
 		return NextResponse.json(result);
