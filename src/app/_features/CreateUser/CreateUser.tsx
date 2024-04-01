@@ -28,7 +28,6 @@ const CreateUser: FC<Props> = ({
 		queryFn: fetchUser
 	});
 	const createUserMutation = useMutation(createUser);
-	const client = useQueryClient();
 	const isAdmin = userData?.data.role === 'admin';
 
 	const { data: organizations } = useQuery({
@@ -46,7 +45,6 @@ const CreateUser: FC<Props> = ({
 			formData.append('organizationId', defaultOrganization);
 		}
 		await createUserMutation.mutateAsync(formData);
-		client.invalidateQueries(['employees']);
 		alert('Пользователь добавлен');
 		onCreated();
 	};

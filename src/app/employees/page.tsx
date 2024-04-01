@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { Button } from '@material-tailwind/react';
 import TableEmployees from './TableEmployees';
 import CreateUser from '../_features/CreateUser';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Employees = () => {
 	const [showModal, setShowModal] = useState<'createUser' | null>(null);
+	const client = useQueryClient();
 	const handleClickNewEmployee = () => {
 		setShowModal('createUser');
 	};
@@ -15,6 +17,7 @@ const Employees = () => {
 	};
 
 	const handleCreateUser = () => {
+		client.invalidateQueries(['employees']);
 		setShowModal(null);
 	};
 	return (

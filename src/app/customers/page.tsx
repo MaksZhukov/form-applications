@@ -6,11 +6,11 @@ import TableCustomers from './TableCustomers';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { debounce } from 'lodash';
 import ModalCreateOrganization from '../_components/modals/ModalCreateOrganization';
-import ModalCreateUser from '../_components/modals/ModalCreateUser';
 import { createOrganization } from '../api/organizations';
 import { createUser } from '../api/users';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
+import CreateUser from '../_features/CreateUser';
 
 const Customers = () => {
 	const searchParams = useSearchParams();
@@ -48,12 +48,8 @@ const Customers = () => {
 		setShowModal('createUser');
 	};
 
-	const handleSubmitCreateUser: FormEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target as HTMLFormElement);
-		await createUserMutation.mutateAsync(formData);
+	const handleCreated = () => {
 		client.invalidateQueries(['customers']);
-		alert('Пользователь добавлен');
 		setShowModal(null);
 	};
 
@@ -79,9 +75,7 @@ const Customers = () => {
 			{showModal === 'createOrganization' && (
 				<ModalCreateOrganization onSubmit={handleSubmitCreateOrganization} onCancel={handleCancel} />
 			)}
-			{showModal === 'createUser' && (
-				<ModalCreateUser onSubmit={handleSubmitCreateUser} onCancel={handleCancel} />
-			)}
+			{showModal === 'createUser' && <CreateUser onCreated={handleCreated} onCancel={handleCancel} />}
 		</>
 	);
 };

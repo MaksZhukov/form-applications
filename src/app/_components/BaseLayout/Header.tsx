@@ -50,6 +50,7 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 	};
 
 	const handleCreateUser = () => {
+		client.invalidateQueries(['employees', 'customers']);
 		setShowModal(null);
 	};
 
