@@ -3,7 +3,7 @@ import client from '../client';
 import { ApiResponse } from '../types';
 
 export const fetchOrganizations = () =>
-	client.get<ApiResponse<Pick<OrganizationAttributes, 'id' | 'name' | 'address' | 'createdAt'>[]>>(
+	client.get<ApiResponse<Pick<OrganizationAttributes, 'id' | 'name' | 'address' | 'createdAt' | 'uid'>[]>>(
 		`/api/organizations`
 	);
 

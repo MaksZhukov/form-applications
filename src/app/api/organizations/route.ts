@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET() {
 	try {
 		const { OrganizationModel } = await initialize();
-		const organizations = await OrganizationModel.findAll({ attributes: ['id', 'name', 'createdAt', 'address'] });
+		const organizations = await OrganizationModel.findAll({
+			attributes: ['id', 'name', 'createdAt', 'address', 'uid'],
+			order: [['name', 'ASC']]
+		});
 		return NextResponse.json({ data: organizations });
 	} catch (err) {
 		console.log(err);

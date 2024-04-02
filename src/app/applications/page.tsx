@@ -19,6 +19,7 @@ import {
 	saveSelectedResponsibleUserId,
 	saveSelectedStatus
 } from '../localStorage';
+import { AutocompleteItem } from '../_components/common/Autocomplete/types';
 
 export default function Applications() {
 	const router = useRouter();
@@ -87,11 +88,11 @@ export default function Applications() {
 		saveSelectedStatus(e.target.value);
 	};
 
-	const handleChangeOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
+	const handleChangeOrganization = (data: AutocompleteItem) => {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
-		params.set('selectedOrganizationId', e.target.value as ApplicationStatus | 'none');
+		params.set('selectedOrganizationId', data.value as ApplicationStatus | 'none');
 		router.push('/applications?' + params.toString());
-		saveSelectedOrganizationId(e.target.value);
+		saveSelectedOrganizationId(data.value);
 	};
 
 	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (e) => {
