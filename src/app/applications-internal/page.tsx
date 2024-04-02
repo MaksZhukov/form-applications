@@ -11,6 +11,7 @@ import { fetchUser } from '../api/user';
 import { fetchOrganizations } from '../api/organizations';
 import Table from '../_components/Table';
 import { getLoginTime, getSelectedOrganizationId, saveSelectedOrganizationId } from '../localStorage';
+import { AutocompleteItem } from '../_components/common/Autocomplete/types';
 
 export default function Applications() {
 	const router = useRouter();
@@ -65,13 +66,6 @@ export default function Applications() {
 		router.push('/applications-internal?' + params.toString());
 	};
 
-	const handleChangeOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
-		const params = new URLSearchParams(Array.from(searchParams.entries()));
-		params.set('selectedOrganizationId', e.target.value as ApplicationStatus | 'none');
-		router.push('/applications-internal?' + params.toString());
-		saveSelectedOrganizationId(e.target.value);
-	};
-
 	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (e) => {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
 		params.set('selectedResponsibleUserId', e.target.value as string | 'none');
@@ -99,7 +93,6 @@ export default function Applications() {
 					selectedOrganizationId={selectedOrganizationId}
 					selectedStatus={(searchParams.get('selectedStatus') as ApplicationStatus) || 'none'}
 					onChangeStatus={handleChangeStatus}
-					onChangeOrganization={handleChangeOrganization}
 					onChangeResponsibleUser={handleChangeResponsibleUser}
 					data={data.data.data}
 					total={data.data.meta?.total}

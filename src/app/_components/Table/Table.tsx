@@ -12,10 +12,12 @@ import { ChangeEvent, ChangeEventHandler, FC, useState } from 'react';
 import ResponsibleUserSelect from '../ResponsibleUserSelect/ResponsibleUserSelect';
 import { ApplicationInternalAttributes } from '@/db/applicationInternal/types';
 import { ApplicationType } from '@/app/api/types';
+import Autocomplete from '../common/Autocomplete';
+import { AutocompleteItem } from '../common/Autocomplete/types';
 
 interface Props<T extends ApplicationType> {
 	data: (T extends 'common' ? ApplicationAttributes : ApplicationInternalAttributes)[];
-	organizations?: Pick<OrganizationAttributes, 'id' | 'name'>[];
+	organizations?: Pick<OrganizationAttributes, 'id' | 'name' | 'uid'>[];
 	total?: number;
 	page: number;
 	applicationType: T;
@@ -23,7 +25,7 @@ interface Props<T extends ApplicationType> {
 	selectedOrganizationId: string | 'none';
 	selectedResponsibleUserId?: string | 'none';
 	onChangeStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
-	onChangeOrganization: (e: ChangeEvent<HTMLSelectElement>) => void;
+	onChangeOrganization?: (item: AutocompleteItem) => void;
 	onChangePage: (page: number) => () => void;
 	onChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement>;
 }
@@ -38,7 +40,7 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 	selectedStatus,
 	selectedResponsibleUserId,
 	onChangePage,
-	onChangeOrganization,
+	onChangeOrganization = () => {},
 	onChangeStatus,
 	onChangeResponsibleUser
 }) => {
@@ -71,18 +73,21 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 					{
 						name: 'Организация',
 						filter: (
-							<select
-								value={selectedOrganizationId}
-								onChange={onChangeOrganization}
-								className='mt-1 border font-normal border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-								<option value='none'>Не выбрано</option>
-								{organizations.map((item) => (
-									<option key={item.id} value={item.id}>
-										{item.name}
-									</option>
-								))}
-							</select>
-						)
+							<>
+								<Autocomplete
+									value={selectedOrganizationId}
+									onChange={onChangeOrganization}
+									data={[
+										{ title: 'Не выбрано', value: 'none' },
+										...organizations.map((item) => ({
+											title: item.name,
+											value: item.id.toString(),
+											uid: item.uid
+										}))
+									]}></Autocomplete>
+							</>
+						),
+						width: 250
 					}
 			  ]
 			: []),
@@ -132,8 +137,8 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 							<th key={head.name} style={{ width: head.width }} className='border-b border-gray-100 p-3'>
 								<Typography variant='small' className='font-bold leading-none opacity-90'>
 									{head.name}
-									{head.filter}
 								</Typography>
+								{head.filter}
 							</th>
 						))}
 					</tr>
