@@ -22,7 +22,7 @@ const Autocomplete: FC<Props> = ({ data, value, onChange }) => {
 	};
 
 	const handleBlur = () => {
-		setShowList(true);
+		setShowList(false);
 	};
 
 	const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -50,7 +50,7 @@ const Autocomplete: FC<Props> = ({ data, value, onChange }) => {
 				required
 			/>
 			{showList && (
-				<ul className='max-h-60 w-full p-2 bg-white overflow-auto absolute top-6 z-10 shadow-md'>
+				<ul className='max-h-60 w-full py-1 bg-white overflow-auto absolute top-6 z-10 shadow-md'>
 					{(isTyped
 						? data.filter((item) =>
 								Object.keys(item).some((key) => item[key].toLowerCase().includes(search.toLowerCase()))
@@ -59,7 +59,7 @@ const Autocomplete: FC<Props> = ({ data, value, onChange }) => {
 					).map((item) => (
 						<li
 							key={item.value}
-							className='px-2 py-2 cursor-pointer font-normal hover:bg-opacity-25 hover:bg-accent break-words'
+							className='px-4 text-sm py-2 cursor-pointer font-normal hover:bg-opacity-25 hover:bg-accent break-words'
 							onClick={handleSelect(item)}>
 							{item.title}
 						</li>
