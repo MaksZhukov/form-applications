@@ -2,15 +2,16 @@ import { Button, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
 import { UserAPI, fetchUsers, updateUser } from '../api/users';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 import { API_LIMIT_ITEMS } from '@/constants';
 import Pagination from '../_components/Pagination';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ModalUpdateCustomer from '../_components/modals/ModalUpdateCustomer';
 import { ApiResponse } from '../api/types';
 import { updateOrganization } from '../api/organizations';
 
 const TABLE_HEAD = [
+	{ name: 'УНП' },
 	{ name: 'Название', width: 400 },
 	{ name: 'Телефон' },
 	{ name: 'Электронная почта' },
@@ -22,10 +23,11 @@ const TABLE_HEAD = [
 
 const TableCustomers = () => {
 	const searchParams = useSearchParams();
-	const [page, setPage] = useState(1);
 	const [updateCustomerModalData, setUpdateCustomerModalData] = useState<UserAPI | null>(null);
 	const search = searchParams.get('search') || '';
+	const page = searchParams.get('page') ? Number(searchParams.get('page')) : 1;
 	const client = useQueryClient();
+	const router = useRouter();
 
 	const updateUserMutation = useMutation({
 		mutationFn: (params: { id: number; data: FormData }) => updateUser(params)
@@ -34,6 +36,7 @@ const TableCustomers = () => {
 	const updateOrganizationMutation = useMutation({
 		mutationFn: (params: { id: number; data: FormData }) => updateOrganization(params)
 	});
+
 	const { data, isLoading } = useQuery({
 		queryKey: ['customers', page, search, getLoginTime()],
 		retry: 0,
@@ -48,7 +51,9 @@ const TableCustomers = () => {
 	});
 
 	const handleChangePage = (newPage: number) => () => {
-		setPage(newPage);
+		const params = new URLSearchParams(Array.from(searchParams.entries()));
+		params.set('page', `${newPage}`);
+		router.push('/customers?' + params.toString());
 		window.scroll(0, 0);
 	};
 
@@ -137,6 +142,7 @@ const TableCustomers = () => {
 
 						return (
 							<tr key={item.id}>
+								<td className={classes}>{item.organization.uid}</td>
 								<td className={classes}>{item.organization.name}</td>
 								<td className={classes}>{item.phone}</td>
 								<td className={classes}>{item.email}</td>
