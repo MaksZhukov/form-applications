@@ -21,7 +21,12 @@ const Customers = () => {
 	const debouncedSearch = useRef(
 		debounce((search) => {
 			const params = new URLSearchParams(Array.from(searchParams.entries()));
-			params.set('search', search);
+			if (search) {
+				params.set('search', search);
+			} else {
+				params.delete('search');
+			}
+			params.set('page', '1');
 			router.push('/customers?' + params.toString());
 		}, 300)
 	).current;
