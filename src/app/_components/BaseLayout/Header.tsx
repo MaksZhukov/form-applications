@@ -39,7 +39,6 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 	const handleCreateOrganization = () => {
 		client.invalidateQueries(['organizations']);
 		client.invalidateQueries(['customers']);
-		console.log('INVALIDATED');
 		setShowModal(null);
 	};
 
