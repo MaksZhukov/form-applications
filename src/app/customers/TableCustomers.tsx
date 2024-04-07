@@ -1,12 +1,11 @@
 import { Button, Spinner, Typography } from '@material-tailwind/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getLoginTime } from '../localStorage';
-import { UserAPI, updateUser } from '../api/users';
-import { FormEventHandler, useState } from 'react';
+import { UserAPI } from '../api/users';
+import { useState } from 'react';
 import { API_LIMIT_ITEMS } from '@/constants';
 import Pagination from '../_components/Pagination';
 import { useRouter, useSearchParams } from 'next/navigation';
-import ModalUpdateCustomer from '../_components/modals/ModalUpdateCustomer';
 import { ApiResponse } from '../api/types';
 import { Organization, fetchOrganizations, updateOrganization } from '../api/organizations';
 import UpdateOrganization from '../_features/UpdateOrganization';
