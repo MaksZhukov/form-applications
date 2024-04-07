@@ -4,6 +4,8 @@ import { isUndefined, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 import { Op } from 'sequelize';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 export async function GET(request: NextRequest) {
 	try {
 		const { OrganizationModel, UserModel } = await initialize();
@@ -18,11 +20,12 @@ export async function GET(request: NextRequest) {
 			where: search
 				? omitBy(
 						{
-							[Op.or]: [{ name: { [Op.substring]: search } }, { uid: { [Op.substring]: search } }]
+							[Op.or]: [{ name: { [Op.substring]: search } }, { uid: { [Op.substring]: search } }],
+							...(isProd ? { id: { [Op.ne]: process.env.NEXT_PUBLIC_DEFAULT_ORGANIZATION_ID } } : {})
 						},
 						isUndefined
 				  )
-				: {},
+				: { ...(isProd ? { id: { [Op.ne]: process.env.NEXT_PUBLIC_DEFAULT_ORGANIZATION_ID } } : {}) },
 			include: [{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }]
 		});
 
