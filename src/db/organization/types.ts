@@ -8,6 +8,8 @@ export type OrganizationAttributes = {
 	name: string;
 	uid: string;
 	address: string;
+	phone: string;
+	email: string;
 	createdAt: string;
 	updatedAt: string;
 	responsibleUserId?: number | null;

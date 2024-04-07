@@ -1,14 +1,32 @@
+import { API_LIMIT_ITEMS } from '@/constants';
 import { initialize } from '@/db';
+import { isUndefined, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
+import { Op } from 'sequelize';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 	try {
-		const { OrganizationModel } = await initialize();
-		const organizations = await OrganizationModel.findAll({
+		const { OrganizationModel, UserModel } = await initialize();
+		const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
+		const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
+		const search = request.nextUrl.searchParams.get('search');
+		const { rows, count } = await OrganizationModel.findAndCountAll({
 			attributes: ['id', 'name', 'createdAt', 'address', 'uid'],
-			order: [['name', 'ASC']]
+			limit,
+			offset,
+			order: [['name', 'ASC']],
+			where: search
+				? omitBy(
+						{
+							[Op.or]: [{ name: { [Op.substring]: search } }, { uid: { [Op.substring]: search } }]
+						},
+						isUndefined
+				  )
+				: {},
+			include: [{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }]
 		});
-		return NextResponse.json({ data: organizations });
+
+		return NextResponse.json({ data: rows, meta: { total: count } });
 	} catch (err) {
 		console.log(err);
 		return new NextResponse('error getting users', { status: 500 });
@@ -20,6 +38,8 @@ export async function POST(request: NextRequest) {
 	const uid = formData.get('uid') as string;
 	const name = formData.get('name') as string;
 	const address = formData.get('address') as string;
+	const email = formData.get('email') as string;
+	const phone = formData.get('phone') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 	try {
 		const { OrganizationModel } = await initialize();
@@ -27,6 +47,8 @@ export async function POST(request: NextRequest) {
 			name,
 			address,
 			uid,
+			email,
+			phone,
 			responsibleUserId: responsibleUserId === 'none' ? null : +responsibleUserId
 		});
 	} catch (err) {

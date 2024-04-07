@@ -11,5 +11,7 @@ export const organizationSchema: ModelAttributes = {
 	updatedAt: DataTypes.DATE,
 	name: { type: DataTypes.STRING, allowNull: false, unique: 'name' },
 	uid: { type: DataTypes.STRING, allowNull: false, unique: 'uid' },
-	address: { type: DataTypes.STRING }
+	address: { type: DataTypes.STRING },
+	email: { type: DataTypes.STRING },
+	phone: { type: DataTypes.STRING }
 };

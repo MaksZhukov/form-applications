@@ -1,10 +1,10 @@
-import { UserAPI } from '@/app/api/users';
 import { Button, Typography } from '@material-tailwind/react';
 import { FC, FormEventHandler } from 'react';
 import ResponsibleUserSelect from '../../ResponsibleUserSelect';
+import { Organization } from '@/app/api/organizations';
 
 interface Props {
-	data: UserAPI;
+	data: Organization;
 	onSubmit: FormEventHandler<HTMLFormElement>;
 	onCancel: () => void;
 }
@@ -30,7 +30,7 @@ const ModalUpdateCustomer: FC<Props> = ({ onSubmit, onCancel, data }) => {
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
 									name='name'
-									defaultValue={data.organization?.name}
+									defaultValue={data.name}
 									required
 								/>
 							</div>
@@ -39,14 +39,23 @@ const ModalUpdateCustomer: FC<Props> = ({ onSubmit, onCancel, data }) => {
 								<input
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-									name='userPhone'
+									name='phone'
 									defaultValue={data.phone}
+								/>
+							</div>
+							<div>
+								<Typography>Email</Typography>
+								<input
+									type='text'
+									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
+									name='email'
+									defaultValue={data.email}
 								/>
 							</div>
 							<div>
 								<Typography>Ответственный за компанию</Typography>
 								<ResponsibleUserSelect
-									value={data.organization.responsibleUserId?.toString()}
+									value={data.responsibleUserId?.toString()}
 									className='w-full h-12 px-2'
 									name='responsibleUserId'></ResponsibleUserSelect>
 							</div>
@@ -55,8 +64,7 @@ const ModalUpdateCustomer: FC<Props> = ({ onSubmit, onCancel, data }) => {
 								<input
 									type='text'
 									className='flex-1 border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'
-									defaultValue={data.organization.address}
-									required
+									defaultValue={data.address}
 									name='address'
 								/>
 							</div>

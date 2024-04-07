@@ -32,7 +32,7 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 	const [deadline, setDeadline] = useState<null | DateType>(
 		deadlineParts ? `${deadlineParts[1]}.${deadlineParts[0]}.${deadlineParts[2]}` : null
 	);
-	const { data: userData, isSuccess } = useQuery(['user', getLoginTime()], {
+	const { data: userData } = useQuery(['user', getLoginTime()], {
 		staleTime: Infinity,
 		retry: 0,
 		queryFn: fetchUser
@@ -198,12 +198,10 @@ const Application: FC<Props> = ({ data, newApplicationId, onCancel, onUpdated })
 						<Typography className='w-32'>Организация</Typography>
 						<select
 							required
-							defaultValue={
-								organizations.data.data.find((item) => item.name === data?.organization.name)?.id
-							}
+							defaultValue={organizations.data.find((item) => item.name === data?.organization.name)?.id}
 							name='organizationId'
 							className='mt-1 border w-44 h-8 border-gray-300 text-sm rounded-lg block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-							{organizations.data.data.map((item) => (
+							{organizations.data.map((item) => (
 								<option key={item.id} value={item.id}>
 									{item.name}
 								</option>

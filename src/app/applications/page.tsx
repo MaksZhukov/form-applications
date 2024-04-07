@@ -73,7 +73,7 @@ export default function Applications() {
 		staleTime: Infinity,
 		enabled: isAdmin || isOwnerOrganizationWorker,
 		retry: 0,
-		queryFn: fetchOrganizations
+		queryFn: () => fetchOrganizations()
 	});
 
 	const handleChangePage = (newPage: number) => () => {
@@ -88,11 +88,11 @@ export default function Applications() {
 		saveSelectedStatus(e.target.value);
 	};
 
-	const handleChangeOrganization = (data: AutocompleteItem) => {
+	const handleChangeOrganization = (item: string) => {
 		const params = new URLSearchParams(Array.from(searchParams.entries()));
-		params.set('selectedOrganizationId', data.value as ApplicationStatus | 'none');
+		params.set('selectedOrganizationId', item);
 		router.push('/applications?' + params.toString());
-		saveSelectedOrganizationId(data.value);
+		saveSelectedOrganizationId(item);
 	};
 
 	const handleChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement> = (e) => {
@@ -119,7 +119,7 @@ export default function Applications() {
 				</Button>
 				<Table
 					applicationType='common'
-					organizations={organizations?.data.data}
+					organizations={organizations?.data}
 					selectedOrganizationId={selectedOrganizationId}
 					selectedStatus={selectedStatus}
 					selectedResponsibleUserId={selectedResponsibleUserId}

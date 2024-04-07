@@ -11,7 +11,6 @@ import { fetchUser } from '../api/user';
 import { fetchOrganizations } from '../api/organizations';
 import Table from '../_components/Table';
 import { getLoginTime, getSelectedOrganizationId, saveSelectedOrganizationId } from '../localStorage';
-import { AutocompleteItem } from '../_components/common/Autocomplete/types';
 
 export default function Applications() {
 	const router = useRouter();
@@ -52,7 +51,7 @@ export default function Applications() {
 		staleTime: Infinity,
 		enabled: isAdmin || isOwnerOrganizationWorker,
 		retry: 0,
-		queryFn: fetchOrganizations
+		queryFn: () => fetchOrganizations()
 	});
 
 	const handleChangePage = (newPage: number) => () => {
@@ -89,7 +88,7 @@ export default function Applications() {
 				</Button>
 				<Table
 					applicationType='internal'
-					organizations={organizations?.data.data}
+					organizations={organizations?.data}
 					selectedOrganizationId={selectedOrganizationId}
 					selectedStatus={(searchParams.get('selectedStatus') as ApplicationStatus) || 'none'}
 					onChangeStatus={handleChangeStatus}

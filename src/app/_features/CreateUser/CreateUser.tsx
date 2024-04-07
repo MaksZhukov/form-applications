@@ -57,11 +57,11 @@ const CreateUser: FC<Props> = ({
 					<select
 						required
 						defaultValue={
-							organizations?.data.data.find((item) => item.name === userData?.data?.organization.name)?.id
+							organizations?.data.find((item) => item.name === userData?.data?.organization.name)?.id
 						}
 						name='organizationId'
 						className='h-11 mt-1 border border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
-						{organizations?.data.data.map((item) => (
+						{organizations?.data.map((item) => (
 							<option key={item.id} value={item.id}>
 								{item.name}
 							</option>
