@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import ModalUpdateCustomer from '../_components/modals/ModalUpdateCustomer';
 import { ApiResponse } from '../api/types';
 import { Organization, fetchOrganizations, updateOrganization } from '../api/organizations';
+import UpdateOrganization from '../_features/UpdateOrganization';
 
 const TABLE_HEAD = [
 	{ name: 'УНП' },
@@ -61,42 +62,34 @@ const TableCustomers = () => {
 		setUpdateCustomerModalData(null);
 	};
 
-	const handleSubmitUpdateCustomer: FormEventHandler<HTMLFormElement> = async (e) => {
-		if (updateCustomerModalData) {
-			e.preventDefault();
-			const formData = new FormData(e.target as HTMLFormElement);
-			const employees = client.getQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime(), 'isActive']);
-			const newResponsibleUserId = formData.get('responsibleUserId') as string;
-			client.setQueryData<ApiResponse<Organization[]>>(['customers', page, search, getLoginTime()], (prev) =>
-				prev
-					? {
-							...prev,
-							data: prev.data.map((item) => {
-								let newItem = item;
-								if (item.id === updateCustomerModalData.id) {
-									newItem.name = formData.get('name') as string;
-									newItem.address = formData.get('address') as string;
-									newItem.email = formData.get('email') as string;
-									newItem.phone = formData.get('phone') as string;
-									newItem.responsibleUser =
-										newResponsibleUserId !== 'none'
-											? (employees?.data.find(
-													(item) => item.id === +newResponsibleUserId
-											  ) as UserAPI)
-											: undefined;
-									newItem.responsibleUserId =
-										newResponsibleUserId !== 'none' ? +newResponsibleUserId : undefined;
-								}
-								return newItem;
-							})
-					  }
-					: undefined
-			);
-			updateOrganizationMutation.mutateAsync({ id: updateCustomerModalData.id, data: formData });
-			client.invalidateQueries(['organizations']);
-			alert('Клиент изменен');
-			setUpdateCustomerModalData(null);
-		}
+	const handleUpdated = (data: Organization, formData: FormData) => {
+		const employees = client.getQueryData<ApiResponse<UserAPI[]>>(['employees', getLoginTime(), 'isActive']);
+		const newResponsibleUserId = formData.get('responsibleUserId') as string;
+		client.setQueryData<ApiResponse<Organization[]>>(['customers', page, search, getLoginTime()], (prev) =>
+			prev
+				? {
+						...prev,
+						data: prev.data.map((item) => {
+							let newItem = item;
+							if (item.id === data.id) {
+								newItem.name = formData.get('name') as string;
+								newItem.address = formData.get('address') as string;
+								newItem.email = formData.get('email') as string;
+								newItem.phone = formData.get('phone') as string;
+								newItem.responsibleUser =
+									newResponsibleUserId !== 'none'
+										? (employees?.data.find((item) => item.id === +newResponsibleUserId) as UserAPI)
+										: undefined;
+								newItem.responsibleUserId =
+									newResponsibleUserId !== 'none' ? +newResponsibleUserId : undefined;
+							}
+							return newItem;
+						})
+				  }
+				: undefined
+		);
+		client.invalidateQueries(['employees']);
+		setUpdateCustomerModalData(null);
 	};
 
 	const customers = data?.data || [];
@@ -153,11 +146,10 @@ const TableCustomers = () => {
 			</table>
 			<Pagination page={page} countPages={countPages} onChangePage={handleChangePage} />
 			{updateCustomerModalData && (
-				<ModalUpdateCustomer
+				<UpdateOrganization
+					onUpdated={handleUpdated}
 					data={updateCustomerModalData}
-					onSubmit={handleSubmitUpdateCustomer}
-					onCancel={handleCancel}
-				/>
+					onCancel={handleCancel}></UpdateOrganization>
 			)}
 		</>
 	);
