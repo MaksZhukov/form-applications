@@ -25,7 +25,7 @@ interface Props<T extends ApplicationType> {
 	selectedOrganizationId: string | 'none';
 	selectedResponsibleUserId?: string | 'none';
 	onChangeStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
-	onChangeOrganization?: (item: AutocompleteItem) => void;
+	onChangeOrganization?: (item: string) => void;
 	onChangePage: (page: number) => () => void;
 	onChangeResponsibleUser: ChangeEventHandler<HTMLSelectElement>;
 }
@@ -73,19 +73,19 @@ const Table: FC<Props<'common'> | Props<'internal'>> = ({
 					{
 						name: 'Организация',
 						filter: (
-							<>
-								<Autocomplete
-									value={selectedOrganizationId}
-									onChange={onChangeOrganization}
-									data={[
-										{ title: 'Не выбрано', value: 'none' },
-										...organizations.map((item) => ({
-											title: item.name,
-											value: item.id.toString(),
-											uid: item.uid
-										}))
-									]}></Autocomplete>
-							</>
+							<select
+								value={selectedOrganizationId}
+								onChange={(event) => {
+									onChangeOrganization(event.target.value);
+								}}
+								className='mt-1 border font-normal border-gray-300 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-1 focus:ring-accent focus:outline-none'>
+								<option value='none'>Не выбрано</option>
+								{organizations.map((item) => (
+									<option key={item.id} value={item.id}>
+										{item.name}
+									</option>
+								))}
+							</select>
 						),
 						width: 250
 					}

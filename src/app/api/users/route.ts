@@ -1,51 +1,20 @@
-import { API_LIMIT_ITEMS } from '@/constants';
 import { initialize } from '@/db';
 import { Role } from '@/db/organization/types';
 import bcrypt from 'bcrypt';
 import { isUndefined, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
-import { Op } from 'sequelize';
 
 export async function GET(request: NextRequest) {
 	const organizationId = request.nextUrl.searchParams.get('organizationId') as string;
-	const rawOnlyCustomers = request.nextUrl.searchParams.get('onlyCustomers') as string;
-	const onlyCustomers = rawOnlyCustomers === null ? undefined : rawOnlyCustomers === 'true';
 	const rawIsActive = request.nextUrl.searchParams.get('isActive') as string;
 	const isActive = rawIsActive === null ? undefined : rawIsActive === 'true';
-	const search = request.nextUrl.searchParams.get('search') as string;
-	const limit = parseInt(request.nextUrl.searchParams.get('limit') || '') || API_LIMIT_ITEMS;
-	const offset = parseInt(request.nextUrl.searchParams.get('offset') || '') || 0;
 
 	try {
-		const { UserModel, OrganizationModel } = await initialize();
+		const { UserModel } = await initialize();
 		const { count, rows } = await UserModel.findAndCountAll({
 			attributes: ['id', 'name', 'departmentName', 'role', 'isActive', 'email', 'phone'],
-			include: [
-				{
-					model: OrganizationModel,
-					include: [{ model: UserModel, attributes: ['id', 'name'], as: 'responsibleUser' }]
-				}
-			],
-			where: onlyCustomers
-				? {
-						'$organization.id$': {
-							[Op.notIn]:
-								process.env.NODE_ENV === 'production'
-									? [
-											process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID,
-											process.env.NEXT_PUBLIC_DEFAULT_ORGANIZATION_ID
-									  ]
-									: [process.env.NEXT_PUBLIC_OWNER_ORGANIZATION_ID]
-						},
-						[Op.or]: [
-							{ '$organization.name$': { [Op.like]: `%${search}%` } },
-							{ '$organization.uid$': { [Op.like]: `%${search}%` } }
-						]
-				  }
-				: omitBy({ organizationId, isActive }, isUndefined),
-			limit,
-			offset,
-			order: [[{ model: OrganizationModel, as: 'organization' }, 'name', 'ASC']]
+			where: omitBy({ organizationId, isActive }, isUndefined),
+			order: [['name', 'ASC']]
 		});
 		const result = { data: rows, meta: { total: count } };
 		return NextResponse.json(result);

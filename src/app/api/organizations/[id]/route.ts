@@ -1,13 +1,14 @@
 import { initialize } from '@/db';
 import { isNil, omitBy } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
 	const { id } = params;
 	const formData = await request.formData();
 	const name = formData.get('name') as string;
 	const address = formData.get('address') as string;
+	const phone = formData.get('phone') as string;
+	const email = formData.get('email') as string;
 	const responsibleUserId = formData.get('responsibleUserId') as string;
 	try {
 		const { OrganizationModel } = await initialize();
@@ -15,6 +16,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 			{
 				name,
 				address,
+				email,
+				phone,
 				responsibleUserId: responsibleUserId === 'none' ? null : +responsibleUserId
 			},
 			{ where: { id } }

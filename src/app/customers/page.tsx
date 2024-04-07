@@ -1,16 +1,14 @@
 'use client';
 
-import React, { ChangeEventHandler, FormEventHandler, useRef, useState } from 'react';
+import React, { ChangeEventHandler, useRef, useState } from 'react';
 import { Button } from '@material-tailwind/react';
 import TableCustomers from './TableCustomers';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { debounce } from 'lodash';
-import ModalCreateOrganization from '../_components/modals/ModalCreateOrganization';
 import { createOrganization } from '../api/organizations';
-import { createUser } from '../api/users';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLoginTime } from '../localStorage';
 import CreateUser from '../_features/CreateUser';
+import CreateOrganization from '../_features/CreateOrganization';
 
 const Customers = () => {
 	const searchParams = useSearchParams();
@@ -43,17 +41,12 @@ const Customers = () => {
 		setShowModal(value);
 	};
 
-	const handleSubmitCreateOrganization: FormEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target as HTMLFormElement);
-		await createOrganizationMutation.mutateAsync(formData);
-		client.refetchQueries({ queryKey: ['organizations', getLoginTime()] });
-		alert('Организация добавлена');
-		setShowModal('createUser');
+	const handleCreatedOrganization = async () => {
+		client.invalidateQueries(['customers']);
+		setShowModal(null);
 	};
 
 	const handleCreated = () => {
-		client.invalidateQueries(['customers']);
 		setShowModal(null);
 	};
 
@@ -77,7 +70,7 @@ const Customers = () => {
 			</div>
 			<TableCustomers />
 			{showModal === 'createOrganization' && (
-				<ModalCreateOrganization onSubmit={handleSubmitCreateOrganization} onCancel={handleCancel} />
+				<CreateOrganization onCancel={handleCancel} onCreated={handleCreatedOrganization}></CreateOrganization>
 			)}
 			{showModal === 'createUser' && <CreateUser onCreated={handleCreated} onCancel={handleCancel} />}
 		</>
