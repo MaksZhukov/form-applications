@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
 			where: search
 				? omitBy(
 						{
-							[Op.or]: [{ name: { [Op.substring]: search } }, { uid: { [Op.substring]: search } }]
+							[Op.or]: [{ name: { [Op.substring]: search } }, { uid: { [Op.substring]: search } }],
+							id: { [Op.ne]: process.env.NEXT_PUBLIC_DEFAULT_ORGANIZATION_ID }
 						},
 						isUndefined
 				  )
