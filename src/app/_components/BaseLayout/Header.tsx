@@ -2,14 +2,12 @@
 
 import { Button, Menu, MenuHandler, MenuItem, MenuList } from '@material-tailwind/react';
 import Image from 'next/image';
-import { FC, FormEventHandler, useState } from 'react';
-import ModalCreateOrganization from '../modals/ModalCreateOrganization';
+import { FC, useState } from 'react';
 import { getLoginTime } from '@/app/localStorage';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUser } from '@/app/api/user';
-import { createOrganization } from '@/app/api/organizations';
-import { useRouter } from 'next/navigation';
 import CreateUser from '@/app/_features/CreateUser';
+import CreateOrganization from '@/app/_features/CreateOrganization';
 
 interface Props {
 	onClickLogo: () => void;
@@ -17,7 +15,6 @@ interface Props {
 }
 
 export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
-	const router = useRouter();
 	const [showModal, setShowModal] = useState<'createOrganization' | 'createUser' | null>(null);
 	const { data } = useQuery({
 		queryKey: ['user', getLoginTime()],
@@ -26,7 +23,7 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		queryFn: fetchUser
 	});
 
-	const createOrganizationMutation = useMutation(createOrganization);
+	const client = useQueryClient();
 	const handleClickAddOrganization = () => {
 		setShowModal('createOrganization');
 	};
@@ -39,18 +36,15 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 		setShowModal(null);
 	};
 
-	const client = useQueryClient();
-	const handleSubmitCreateOrganization: FormEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target as HTMLFormElement);
-		await createOrganizationMutation.mutateAsync(formData);
-		client.refetchQueries({ queryKey: ['organizations', getLoginTime()] });
-		alert('Организация добавлена');
+	const handleCreateOrganization = () => {
+		client.invalidateQueries(['organizations']);
+		client.invalidateQueries(['customers']);
+		console.log('INVALIDATED');
 		setShowModal(null);
 	};
 
 	const handleCreateUser = () => {
-		client.invalidateQueries(['employees', 'customers']);
+		client.invalidateQueries(['employees']);
 		setShowModal(null);
 	};
 
@@ -88,9 +82,7 @@ export const Header: FC<Props> = ({ onClickLogo, onLogout }) => {
 				</span>
 			</header>
 			{showModal === 'createOrganization' && (
-				<ModalCreateOrganization
-					onCancel={handleCancel}
-					onSubmit={handleSubmitCreateOrganization}></ModalCreateOrganization>
+				<CreateOrganization onCancel={handleCancel} onCreated={handleCreateOrganization}></CreateOrganization>
 			)}
 			{showModal === 'createUser' && (
 				<CreateUser onCancel={handleCancel} onCreated={handleCreateUser}></CreateUser>

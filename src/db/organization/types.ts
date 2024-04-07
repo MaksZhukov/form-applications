@@ -19,5 +19,5 @@ export type OrganizationAttributes = {
 export interface OrganizationAttributesCreation
 	extends Optional<
 		OrganizationAttributes,
-		'id' | 'createdAt' | 'updatedAt' | 'responsibleUser' | 'responsibleUserId'
+		'id' | 'createdAt' | 'updatedAt' | 'responsibleUser' | 'responsibleUserId' | 'email' | 'phone'
 	> {}
